@@ -13,10 +13,13 @@ INSERT INTO account_authority (account_id, authority_id) VALUES (9999999999, 999
 
 INSERT INTO idea(id, actual_cost_in_cents, actual_ttm, description, expected_cost_in_cents,expected_ttm, stage, submitted_at, title, updated_at, submitted_by) VALUES (9999999999, 100000, 10, 'Test description', 50000, 5, 'Launched', NOW(), 'Test title', NOW(), 9999999998);
 
-INSERT INTO tag(id, name) VALUES (9999999999, 'tag1');
-INSERT INTO tag(id, name) VALUES (9999999998, 'tag2');
-INSERT INTO tag(id, name) VALUES (9999999997, 'tag3');
+INSERT INTO tag(id, name, uses) VALUES (9999999999, 'tag1', 1);
+INSERT INTO tag(id, name, uses) VALUES (9999999998, 'tag2', 1);
+INSERT INTO tag(id, name, uses) VALUES (9999999997, 'tag3', 1);
 
 INSERT INTO idea_tag(idea_id, tag_id) VALUES (9999999999, 9999999999);
 INSERT INTO idea_tag(idea_id, tag_id) VALUES (9999999999, 9999999998);
 INSERT INTO idea_tag(idea_id, tag_id) VALUES (9999999999, 9999999997);
+
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999999, NOW(), 9999999999, 9999999999);
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999998, NOW(), 9999999999, 9999999998);
