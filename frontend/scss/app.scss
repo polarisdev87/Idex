@@ -1,0 +1,19 @@
+@import "component/login-full";
+@import "component/navbar";
+@import "component/register";
+
+#root {
+  min-width: 600px;
+}
+
+.red {
+  color: red;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}

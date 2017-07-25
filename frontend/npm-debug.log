@@ -1,0 +1,38 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/jsterling8/.nvm/versions/node/v0.12.6/bin/node',
+1 verbose cli   '/home/jsterling8/.nvm/versions/node/v0.12.6/bin/npm',
+1 verbose cli   'start' ]
+2 info using npm@2.11.2
+3 info using node@v0.12.6
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info prestart pipeline@0.0.1
+6 info start pipeline@0.0.1
+7 verbose unsafe-perm in lifecycle true
+8 info pipeline@0.0.1 Failed to exec start script
+9 verbose stack Error: pipeline@0.0.1 start: `webpack-dashboard -t 'React-Redux Boilerplate' -- webpack-dev-server --colors --no-info`
+9 verbose stack spawn ENOENT
+9 verbose stack     at ChildProcess.<anonymous> (/home/jsterling8/.nvm/versions/node/v0.12.6/lib/node_modules/npm/lib/utils/spawn.js:17:16)
+9 verbose stack     at ChildProcess.emit (events.js:110:17)
+9 verbose stack     at maybeClose (child_process.js:1015:16)
+9 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
+10 verbose pkgid pipeline@0.0.1
+11 verbose cwd /home/jsterling8/Dropbox/git/gs2/pipeline/frontend
+12 error Linux 4.8.0-58-generic
+13 error argv "/home/jsterling8/.nvm/versions/node/v0.12.6/bin/node" "/home/jsterling8/.nvm/versions/node/v0.12.6/bin/npm" "start"
+14 error node v0.12.6
+15 error npm  v2.11.2
+16 error file sh
+17 error code ELIFECYCLE
+18 error errno ENOENT
+19 error syscall spawn
+20 error pipeline@0.0.1 start: `webpack-dashboard -t 'React-Redux Boilerplate' -- webpack-dev-server --colors --no-info`
+20 error spawn ENOENT
+21 error Failed at the pipeline@0.0.1 start script 'webpack-dashboard -t 'React-Redux Boilerplate' -- webpack-dev-server --colors --no-info'.
+21 error This is most likely a problem with the pipeline package,
+21 error not with npm itself.
+21 error Tell the author that this fails on your system:
+21 error     webpack-dashboard -t 'React-Redux Boilerplate' -- webpack-dev-server --colors --no-info
+21 error You can get their info via:
+21 error     npm owner ls pipeline
+21 error There is likely additional logging output above.
+22 verbose exit [ 1, true ]

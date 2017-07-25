@@ -1,0 +1,12 @@
+.DS_Store
+node_modules
+
+# plugin output
+out
+react-css-modules-intellij-plugin.jar
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
