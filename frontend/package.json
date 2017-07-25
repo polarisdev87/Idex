@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dashboard -t 'React-Redux Boilerplate' -- webpack-dev-server --colors --no-info",
+    "start": "webpack-dashboard -t 'Pipeline' -- webpack-dev-server --colors --no-info",
     "build": "rm -rf ./build && NODE_ENV=\"production\" webpack",
     "lint-break-on-errors": "eslint ./js ./webpack.config.js -f table --ext .js --ext .jsx",
     "lint": "eslint ./js ./webpack.config.js -f table --ext .js --ext .jsx || true",
