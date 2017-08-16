@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 
 public class IdeaDto {
 
+    private static final String submittedByFormat = "%s <%s %s>";
+    
     private String title;
     private String description;
     private String stage;
-    private String submittedByFormat = "%s <%s %s>";
     private String submittedBy;
     private Date submittedAt;
     private Date updatedAt;
