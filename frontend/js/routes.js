@@ -6,6 +6,7 @@ import App from './views/App';
 import LoginFull from "./views/LoginFull";
 import Register from "./views/Register";
 import Users from "./views/Users";
+import Ideas from "./views/Ideas";
 
 const publicPath = '/';
 
@@ -25,7 +26,7 @@ function requireAuth(nextState, replace) {
 function requireNotAuth(nextState, replace) {
   if (localStorage.getItem(ID_TOKEN_KEY)) {
     replace({
-      pathname: '/users'
+      pathname: '/ideas'
     })
   }
 }
@@ -39,6 +40,7 @@ export default class Routes extends Component {
           <Route path={ "/login" } component={ LoginFull } onEnter={ requireNotAuth } />
           <Route path={ "/register" } component={ Register } />
           <Route path={ "/users" } component={ Users } onEnter={ requireAuth } />
+          <Route path={ "/ideas" } component={ Ideas } onEnter={ requireAuth } />
         </Route>
       </Router>
     );

@@ -37,11 +37,11 @@ class App extends Component {
 App.propTypes = {
   dispatch: PropTypes.func.isRequired,
   usersArr: PropTypes.array,
+  ideasArr: PropTypes.array,
   isAuthenticated: PropTypes.bool.isRequired,
   loginErrorMessage: PropTypes.string,
   registerErrorMessage: PropTypes.string,
-  role: PropTypes.string,
-  activeView: PropTypes.string
+  role: PropTypes.string
 };
 
 function mapStateToProps(state) {

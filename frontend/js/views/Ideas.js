@@ -2,14 +2,13 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-import { fetchIdeas, updateIdea, deleteIdea } from '../actions/ideas'
+import { fetchIdeas, updateIdea, deleteIdeas } from '../actions/ideas'
 
 class Ideas extends Component {
 
   constructor(props) {
     super(props);
     this.handleEdit = this.handleEdit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentWillMount() {
@@ -25,16 +24,6 @@ class Ideas extends Component {
     let {
       ideasArr, role, dispatch, ideasErrorMessage
     } = this.props;
-
-    if(ideasArr) {
-      ideasArr.forEach((idea) => {
-        idea.authorities.forEach((authority) => {
-          idea[authority.name] = 'true';
-        });
-
-        idea.enabledString = idea.enabled ? 'true' : 'false';
-      });
-    }
 
     function checkboxHandler(cell, row) {
       return (
