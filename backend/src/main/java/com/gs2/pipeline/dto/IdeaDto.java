@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class IdeaDto {
 
     private static final String submittedByFormat = "%s <%s %s>";
-    
+
     private String title;
     private String description;
     private String stage;
@@ -71,14 +71,6 @@ public class IdeaDto {
 
     public void setStage(String stage) {
         this.stage = stage;
-    }
-
-    public String getSubmittedByFormat() {
-        return submittedByFormat;
-    }
-
-    public void setSubmittedByFormat(String submittedByFormat) {
-        this.submittedByFormat = submittedByFormat;
     }
 
     public String getSubmittedBy() {
