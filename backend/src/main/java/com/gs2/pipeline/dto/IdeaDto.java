@@ -1,75 +1,51 @@
-package com.gs2.pipeline.domain;
+package com.gs2.pipeline.dto;
 
-import com.gs2.pipeline.dto.IdeaDto;
+import com.gs2.pipeline.domain.Account;
+import com.gs2.pipeline.domain.Idea;
+import com.gs2.pipeline.domain.Tag;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Entity
-@Table(name = "idea")
-public class Idea {
+public class IdeaDto {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idea_seq")
-    @SequenceGenerator(name = "idea_seq", sequenceName = "idea_seq", allocationSize = 1)
-    private Long id;
-
-    @Column(name = "title", length = 255)
-    @NotNull
-    @Size(min = 1, max = 255)
     private String title;
-
-    @Column(name = "description")
-    @NotNull
-    @Size(min = 1, max = 32767)
     private String description;
-
-    @Column(name = "stage", length = 50)
-    @NotNull
-    @Size(min = 1, max = 50)
     private String stage;
-
-    @ManyToOne
-    @JoinColumn(name = "submitted_by", nullable = false)
-    private Account submittedBy;
-
-    @Column(name = "submitted_at")
-    @Temporal(TemporalType.TIMESTAMP)
+    private String submittedByFormat = "%s <%s %s>";
+    private String submittedBy;
     private Date submittedAt;
-
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
-    @Column(name = "expected_cost_in_cents")
     private Long expectedCostInCents;
-
-    @Column(name = "actual_cost_in_cents")
     private Long actualCostInCents;
-
-    @Column(name = "expected_ttm")
     private Long expectedTtm;
-
-    @Column(name = "actual_ttm")
     private Long actualTtm;
+    private Set<String> tags;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "idea_tag",
-            joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
-    private Set<Tag> tags;
-
-    public Long getId() {
-        return id;
+    public IdeaDto() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public IdeaDto(Idea idea) {
+        this.title = idea.getTitle();
+        this.description = idea.getDescription();
+        this.stage = idea.getStage();
+        this.submittedBy = getSubmittedBy(idea);
+        this.submittedAt = idea.getSubmittedAt();
+        this.updatedAt = idea.getUpdatedAt();
+        this.expectedCostInCents = idea.getExpectedCostInCents();
+        this.actualCostInCents = idea.getActualCostInCents();
+        this.expectedTtm = idea.getExpectedTtm();
+        this.actualTtm = idea.getActualTtm();
+        this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+    }
+
+    private String getSubmittedBy(Idea idea) {
+        Account submittedby = idea.getSubmittedBy();
+        String firstName = submittedby.getFirstName();
+        String lastName = submittedby.getLastName();
+        String username = submittedby.getUsername();
+        return String.format(submittedByFormat, username, firstName, lastName);
     }
 
     public String getTitle() {
@@ -96,11 +72,19 @@ public class Idea {
         this.stage = stage;
     }
 
-    public Account getSubmittedBy() {
+    public String getSubmittedByFormat() {
+        return submittedByFormat;
+    }
+
+    public void setSubmittedByFormat(String submittedByFormat) {
+        this.submittedByFormat = submittedByFormat;
+    }
+
+    public String getSubmittedBy() {
         return submittedBy;
     }
 
-    public void setSubmittedBy(Account submittedBy) {
+    public void setSubmittedBy(String submittedBy) {
         this.submittedBy = submittedBy;
     }
 
@@ -152,15 +136,11 @@ public class Idea {
         this.actualTtm = actualTtm;
     }
 
-    public Set<Tag> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
-    }
-
-    public IdeaDto toDto() {
-        return new IdeaDto(this);
     }
 }

@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/ideas/**").permitAll() //TODO Remove this line. Must be authed to view ideas
                 .anyRequest().authenticated();
 
         httpSecurity
