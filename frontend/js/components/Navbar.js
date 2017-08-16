@@ -3,6 +3,7 @@ import LoginNav from './LoginNav'
 import Logout from './buttons/Logout'
 import { loginUser, logoutUser, handleLoginError } from '../actions/auth'
 import Users from "./buttons/Users";
+import Ideas from "./buttons/Ideas";
 
 export default class Navbar extends Component {
   
@@ -35,7 +36,10 @@ export default class Navbar extends Component {
              }
 
              {isAuthenticated &&
+             <span>
+               <Ideas />
                <Logout onLogoutClick={() => dispatch(logoutUser())} />
+             </span>
              }
          
          </div>

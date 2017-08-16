@@ -1,14 +1,14 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router'
 
-export default class Users extends Component {
+export default class Ideas extends Component {
 
   render() {
 
     return (
-      <Link to="/users">
+      <Link to="/ideas">
         <button className="btn btn-primary nav-btn">
-          Users
+          Ideas
         </button>
       </Link>
     )
