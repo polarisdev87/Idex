@@ -109,7 +109,7 @@ export function loginUser(creds) {
           dispatch(registrationClearErrors());
           dispatch(fetchUsers());
 
-          browserHistory.push('/users');
+          browserHistory.push('/ideas');
         }
       }).catch(err => {
         dispatch(loginError(err));

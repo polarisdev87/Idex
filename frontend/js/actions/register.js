@@ -86,7 +86,7 @@ export function registerUser(creds) {
             dispatch(registrationClearErrors());
             dispatch(fetchUsers());
 
-            browserHistory.push('/users');
+            browserHistory.push('/ideas');
           }
         }
       )
