@@ -64,20 +64,20 @@ export const UPDATE_IDEA_FAILURE = 'UPDATE_IDEA_FAILURE';
 
 function updateIdeaRequest() {
   return {
-    type: UPDATE_USER_REQUEST
+    type: UPDATE_IDEA_REQUEST
   }
 }
 
 function updateIdeaError(message) {
   return {
-    type: UPDATE_USER_FAILURE,
+    type: UPDATE_IDEA_FAILURE,
     message
   }
 }
 
 function updateIdeaSuccess(users) {
   return {
-    type: UPDATE_USER_SUCCESS,
+    type: UPDATE_IDEA_SUCCESS,
     users
   }
 }
