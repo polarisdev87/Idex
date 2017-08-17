@@ -40,7 +40,7 @@ export function fetchIdeas() {
 
   return dispatch => {
     dispatch(getIdeasRequest());
-    return fetch(`${API_BASE_URI}/ideas/all`, config)
+    return fetch(`${API_BASE_URI}/ideas`, config)
       .then(response =>
         response.json()
           .then(body => ({ body, response }))

@@ -10,8 +10,9 @@ import java.util.stream.Collectors;
 
 public class IdeaDto {
 
-    private static final String submittedByFormat = "%s <%s %s>";
+    private static final String SUBMITTED_BY_FORMAT = "%s <%s %s>";
 
+    private Long id;
     private String title;
     private String description;
     private String stage;
@@ -28,6 +29,7 @@ public class IdeaDto {
     }
 
     public IdeaDto(Idea idea) {
+        this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
         this.stage = idea.getStage();
@@ -46,7 +48,21 @@ public class IdeaDto {
         String firstName = submittedby.getFirstName();
         String lastName = submittedby.getLastName();
         String username = submittedby.getUsername();
-        return String.format(submittedByFormat, username, firstName, lastName);
+        return String.format(SUBMITTED_BY_FORMAT, username, firstName, lastName);
+    }
+
+    public Idea toDao(Set<Tag> tags) {
+        Idea idea = new Idea();
+        idea.setId(id);
+        idea.setTitle(title);
+        idea.setStage(stage);
+        idea.setSubmittedAt(submittedAt);
+        idea.setUpdatedAt(updatedAt);
+        idea.setExpectedCostInCents(expectedCostInCents);
+        idea.setActualCostInCents(actualCostInCents);
+        idea.setExpectedTtm(expectedTtm);
+        idea.setActualTtm(actualTtm);
+        idea.setTags(tags);
     }
 
     public String getTitle() {
@@ -135,5 +151,13 @@ public class IdeaDto {
 
     public void setTags(Set<String> tags) {
         this.tags = tags;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

@@ -4,6 +4,7 @@ import com.gs2.pipeline.dto.IdeaDto;
 import com.gs2.pipeline.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,8 +20,13 @@ public class IdeaRestController {
         this.ideaService = ideaService;
     }
 
-    @RequestMapping("/all")
-    public List<IdeaDto> getAllIdeas() {
-        return ideaService.getAllIdeas();
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public List<IdeaDto> getIdeas() {
+        return ideaService.getIdeas();
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public IdeaDto upsert(IdeaDto ideaDto) {
+        return ideaService.upsert(ideaDto);
     }
 }
