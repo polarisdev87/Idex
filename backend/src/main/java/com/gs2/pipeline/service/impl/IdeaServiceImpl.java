@@ -63,7 +63,7 @@ public class IdeaServiceImpl implements IdeaService {
 
     private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags) {
 
-        Idea idea = ideaRepository.save(ideaDto.toDao(tags));
+        Idea idea = ideaRepository.save(ideaDto.toDao(tags, insertedBy));
 
         return idea.toDto();
     }

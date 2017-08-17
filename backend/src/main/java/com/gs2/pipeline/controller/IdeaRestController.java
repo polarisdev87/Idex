@@ -1,5 +1,6 @@
 package com.gs2.pipeline.controller;
 
+import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.dto.IdeaDto;
 import com.gs2.pipeline.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class IdeaRestController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public IdeaDto upsert(IdeaDto ideaDto) {
-        return ideaService.upsert(ideaDto);
+
+        Account insertedBy = null;
+
+        return ideaService.upsert(ideaDto, insertedBy);
     }
 }

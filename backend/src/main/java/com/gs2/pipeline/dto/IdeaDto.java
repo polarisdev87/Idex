@@ -51,18 +51,23 @@ public class IdeaDto {
         return String.format(SUBMITTED_BY_FORMAT, username, firstName, lastName);
     }
 
-    public Idea toDao(Set<Tag> tags) {
+    public Idea toDao(Set<Tag> tags, Account submittedBy) {
         Idea idea = new Idea();
+
         idea.setId(id);
         idea.setTitle(title);
+        idea.setDescription(description);
         idea.setStage(stage);
         idea.setSubmittedAt(submittedAt);
+        idea.setSubmittedBy(submittedBy);
         idea.setUpdatedAt(updatedAt);
         idea.setExpectedCostInCents(expectedCostInCents);
         idea.setActualCostInCents(actualCostInCents);
         idea.setExpectedTtm(expectedTtm);
         idea.setActualTtm(actualTtm);
         idea.setTags(tags);
+
+        return idea;
     }
 
     public String getTitle() {
