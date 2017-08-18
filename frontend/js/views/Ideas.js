@@ -36,13 +36,17 @@ class Ideas extends Component {
           <span className="col-md-1 idea-header">Title</span>
           <span className="col-md-8 idea-header">Description</span>
           <div className="col-md-2">
-            <button>Add Idea</button>
+            <button onClick={() => this.addIdea()}>Add Idea</button>
           </div>
           <hr />
           { rows }
         </div>
       </div>
       )
+  }
+
+  addIdea() {
+
   }
 
   /*<TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>

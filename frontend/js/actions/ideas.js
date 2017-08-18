@@ -182,3 +182,66 @@ export function deleteIdeas(ideaIds) {
       })
   };
 }
+
+
+export const ADD_IDEAS_REQUEST = 'ADD_IDEAS_REQUEST';
+export const ADD_IDEAS_SUCCESS = 'ADD_IDEAS_SUCCESS';
+export const ADD_IDEAS_FAILURE = 'ADD_IDEAS_FAILURE';
+
+function addIdeasRequest() {
+  return {
+    type: ADD_IDEAS_REQUEST
+  }
+}
+
+function addIdeasError(message) {
+  return {
+    type: ADD_IDEAS_FAILURE,
+    message
+  }
+}
+
+function addIdeasSuccess(ideas) {
+  return {
+    type: ADD_IDEAS_SUCCESS,
+    ideas
+  }
+}
+
+export function addIdeas(idea) {
+
+  let token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  let config = {};
+
+  if(token) {
+    config = {
+      headers: {
+        'Authorization': `${token}`,
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(idea)
+    };
+  } else {
+    throw "No token saved!"
+  }
+
+  return dispatch => {
+    dispatch(addIdeasRequest());
+    return fetch(`${API_BASE_URI}/ideas`, config)
+      .then(response =>
+        response.json()
+          .then(body => ({ body, response }))
+      ).then(({ body, response }) =>  {
+        if (!response.ok) {
+          dispatch(addIdeasError('Failed to add idea. ' + body.error));
+          return Promise.reject('Failed to add idea');
+        } else {
+          dispatch(addIdeasSuccess(body));
+        }
+      }).catch(err => {
+        dispatch(addIdeasError('Failed to add idea. ' + err));
+        console.log("Error: ", err);
+      })
+  };
+}
