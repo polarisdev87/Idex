@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import ReactModal from 'react-modal'
 import IdeaRow from '../components/IdeaRow'
+import AddIdeaModal from '../components/AddIdeaModal'
 
 import { fetchIdeas, updateIdea, deleteIdeas } from '../actions/ideas'
 
@@ -10,6 +11,12 @@ class Ideas extends Component {
   constructor(props) {
     super(props);
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+
+    this.state = {
+      showModal: false
+    };
   }
 
   componentWillMount() {
@@ -20,8 +27,18 @@ class Ideas extends Component {
     }
   }
 
+  handleOpenModal () {
+    console.log('open modal');
+    this.setState({ showModal: true });
+  }
+
+  handleCloseModal () {
+    console.log('close modal');
+    this.setState({ showModal: false });
+  }
+
   render() {
-    var rows = [];
+    let rows = [];
 
     if(this.props.ideasArr) {
       this.props.ideasArr.forEach(function(idea) {
@@ -31,12 +48,21 @@ class Ideas extends Component {
 
     return (
       <div className="ideas-container">
+        <ReactModal
+          isOpen={this.state.showModal}
+          contentLabel="onRequestClose Example"
+          onRequestClose={this.handleCloseModal}
+          className="Modal"
+          overlayClassName="Overlay"
+        >
+          <AddIdeaModal handleCloseModal= { this.handleCloseModal }/>
+        </ReactModal>
         <div className="ideas-list">
           <span className="col-md-1 idea-header">Votes</span>
           <span className="col-md-1 idea-header">Title</span>
           <span className="col-md-8 idea-header">Description</span>
           <div className="col-md-2">
-            <button onClick={() => this.addIdea()}>Add Idea</button>
+            <button onClick={() => this.handleOpenModal()}>Add Idea</button>
           </div>
           <hr />
           { rows }

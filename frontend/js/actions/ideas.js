@@ -184,31 +184,31 @@ export function deleteIdeas(ideaIds) {
 }
 
 
-export const ADD_IDEAS_REQUEST = 'ADD_IDEAS_REQUEST';
-export const ADD_IDEAS_SUCCESS = 'ADD_IDEAS_SUCCESS';
-export const ADD_IDEAS_FAILURE = 'ADD_IDEAS_FAILURE';
+export const ADD_IDEA_REQUEST = 'ADD_IDEA_REQUEST';
+export const ADD_IDEA_SUCCESS = 'ADD_IDEA_SUCCESS';
+export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
 
-function addIdeasRequest() {
+function addIdeaRequest() {
   return {
-    type: ADD_IDEAS_REQUEST
+    type: ADD_IDEA_REQUEST
   }
 }
 
-function addIdeasError(message) {
+function addIdeaError(message) {
   return {
-    type: ADD_IDEAS_FAILURE,
+    type: ADD_IDEA_FAILURE,
     message
   }
 }
 
-function addIdeasSuccess(ideas) {
+function addIdeaSuccess(ideas) {
   return {
-    type: ADD_IDEAS_SUCCESS,
+    type: ADD_IDEA_SUCCESS,
     ideas
   }
 }
 
-export function addIdeas(idea) {
+export function addIdea(idea) {
 
   let token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
@@ -227,20 +227,20 @@ export function addIdeas(idea) {
   }
 
   return dispatch => {
-    dispatch(addIdeasRequest());
+    dispatch(addIdeaRequest());
     return fetch(`${API_BASE_URI}/ideas`, config)
       .then(response =>
         response.json()
           .then(body => ({ body, response }))
       ).then(({ body, response }) =>  {
         if (!response.ok) {
-          dispatch(addIdeasError('Failed to add idea. ' + body.error));
+          dispatch(addIdeaError('Failed to add idea. ' + body.error));
           return Promise.reject('Failed to add idea');
         } else {
-          dispatch(addIdeasSuccess(body));
+          dispatch(addIdeaSuccess(body));
         }
       }).catch(err => {
-        dispatch(addIdeasError('Failed to add idea. ' + err));
+        dispatch(addIdeaError('Failed to add idea. ' + err));
         console.log("Error: ", err);
       })
   };
