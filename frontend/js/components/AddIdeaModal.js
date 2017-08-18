@@ -10,8 +10,6 @@ class AddIdeaModal extends Component {
   }
 
   render() {
-    const tripleDot = '...';
-
     return (
       <div className='add-idea-modal'>
         <p>Modal text!</p>
