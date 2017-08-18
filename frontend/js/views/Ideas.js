@@ -66,6 +66,7 @@ class Ideas extends Component {
             search
             pagination>
             <TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>
+            <TableHeaderColumn hiddenOnInsert dataField='votes'>Votes</TableHeaderColumn>
             <TableHeaderColumn dataField='title'>Title</TableHeaderColumn>
             <TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
             <TableHeaderColumn dataField='stage'>Stage</TableHeaderColumn>
