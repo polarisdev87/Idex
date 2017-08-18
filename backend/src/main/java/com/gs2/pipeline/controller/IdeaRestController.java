@@ -1,10 +1,12 @@
 package com.gs2.pipeline.controller;
 
+import com.gs2.pipeline.config.security.jwt.JwtUser;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.dto.IdeaDto;
-import com.gs2.pipeline.repository.AccountRepository;
+import com.gs2.pipeline.service.AccountService;
 import com.gs2.pipeline.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,12 +19,12 @@ import java.util.List;
 public class IdeaRestController {
 
     private final IdeaService ideaService;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Autowired
-    public IdeaRestController(IdeaService ideaService, AccountRepository accountRepository) {
+    public IdeaRestController(IdeaService ideaService, AccountService accountService) {
         this.ideaService = ideaService;
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -33,9 +35,9 @@ public class IdeaRestController {
     @RequestMapping(value = "", method = RequestMethod.POST)
     public IdeaDto upsert(@RequestBody IdeaDto ideaDto) {
 
-        //TODO Get actual submitter
-        Account insertedBy = accountRepository.findByLowerCaseUsername("admin");
+        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requester = accountService.findByUsername(requestingUser.getUsername());
 
-        return ideaService.upsert(ideaDto, insertedBy);
+        return ideaService.upsert(ideaDto, requester);
     }
 }
