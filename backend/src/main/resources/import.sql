@@ -11,7 +11,9 @@ INSERT INTO account_authority (account_id, authority_id) VALUES (9999999997, 999
 INSERT INTO account_authority (account_id, authority_id) VALUES (9999999998, 9999999997);
 INSERT INTO account_authority (account_id, authority_id) VALUES (9999999999, 9999999999);
 
-INSERT INTO idea(id, actual_cost_in_cents, actual_ttm, description, expected_cost_in_cents,expected_ttm, stage, submitted_at, title, updated_at, submitted_by) VALUES (9999999999, 100000, 10, 'Test description', 50000, 5, 'Launched', NOW(), 'Test title', NOW(), 9999999998);
+INSERT INTO idea(id, actual_cost_in_cents, actual_ttm, description, expected_cost_in_cents,expected_ttm, stage, submitted_at, title, updated_at, submitted_by) VALUES (9999999999, 100000, 10, 'Test description 0', 50000, 51, 'Launched', NOW(), 'Test title 1', NOW(), 9999999998);
+INSERT INTO idea(id, actual_cost_in_cents, actual_ttm, description, expected_cost_in_cents,expected_ttm, stage, submitted_at, title, updated_at, submitted_by) VALUES (9999999998, 100001, 11, 'Test description 1', 50001, 52, 'Launched', NOW(), 'Test title 2', NOW(), 9999999998);
+INSERT INTO idea(id, actual_cost_in_cents, actual_ttm, description, expected_cost_in_cents,expected_ttm, stage, submitted_at, title, updated_at, submitted_by) VALUES (9999999997, 100002, 12, 'Test description 2', 50002, 53, 'Launched', NOW(), 'Test title 3', NOW(), 9999999998);
 
 INSERT INTO tag(id, name, uses) VALUES (9999999999, 'tag1', 1);
 INSERT INTO tag(id, name, uses) VALUES (9999999998, 'tag2', 1);
@@ -23,3 +25,7 @@ INSERT INTO idea_tag(idea_id, tag_id) VALUES (9999999999, 9999999997);
 
 INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999999, NOW(), 9999999999, 9999999999);
 INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999998, NOW(), 9999999999, 9999999998);
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999997, NOW(), 9999999999, 9999999997);
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999996, NOW(), 9999999998, 9999999999);
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999995, NOW(), 9999999998, 9999999998);
+INSERT INTO public.vote(id, submitted_at, idea, submitted_by) VALUES (9999999994, NOW(), 9999999997, 9999999999);

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import IdeaRow from '../components/IdeaRow'
 
 import { fetchIdeas, updateIdea, deleteIdeas } from '../actions/ideas'
 
@@ -20,82 +21,37 @@ class Ideas extends Component {
   }
 
   render() {
+    var rows = [];
 
-    let {
-      ideasArr, role, dispatch, ideasErrorMessage
-    } = this.props;
-
-    function checkboxHandler(cell, row) {
-      return (
-        <input type='checkbox' checked={ cell === 'true'} disabled />
-      );
+    if(this.props.ideasArr) {
+      this.props.ideasArr.forEach(function(idea) {
+        rows.push(<IdeaRow key = { idea.id } idea = { idea } />);
+      });
     }
 
-    const cellEditProps = {
-      mode: 'dbclick',
-      blurToSave: true,
-      beforeSaveCell: Ideas.handleBeforeSaveCell,
-      afterSaveCell: this.handleEdit
-    };
-
-    const options = {
-      afterDeleteRow: this.handleDelete,
-    };
-
-    if(typeof ideasArr !== 'undefined') {
-      return (
-        <div className="container">
-          <div className="text-center">
-            { ideasErrorMessage !== 'undefined' &&
-            <h3 className="red">
-              { ideasErrorMessage }
-            </h3>
-            }
-          </div>
-          <h1 className="text-center">Ideas</h1>
-          <BootstrapTable
-            data={ ideasArr }
-            keyField='id'
-            deleteRow={ role === 'ROLE_ADMIN' }
-            selectRow={ {mode: 'checkbox'} }
-            striped
-            cellEdit={ cellEditProps }
-            hover
-            insertRow
-            condensed
-            search
-            pagination>
-            <TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>
-            <TableHeaderColumn hiddenOnInsert dataField='votes'>Votes</TableHeaderColumn>
-            <TableHeaderColumn dataField='title'>Title</TableHeaderColumn>
-            <TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
-            <TableHeaderColumn dataField='stage'>Stage</TableHeaderColumn>
-            <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedBy'>Submitted By</TableHeaderColumn>
-            <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedAt'>Submitted At</TableHeaderColumn>
-            <TableHeaderColumn hiddenOnInsert autovalue dataField='updatedAt'>Updated At</TableHeaderColumn>
-            <TableHeaderColumn dataField='expectedCostInCents'>Expected Cost In Cents</TableHeaderColumn>
-            <TableHeaderColumn dataField='actualCostInCents'>Actual Cost In Cents</TableHeaderColumn>
-            <TableHeaderColumn dataField='expectedTtm'>Expected Time to Market</TableHeaderColumn>
-            <TableHeaderColumn dataField='actualTtm'>Actual Time to Market</TableHeaderColumn>
-          </BootstrapTable>
-          <span>Double click any field to edit it.</span>
-        </div>
-      );
-    } else {
-      return (
-        <div className="text-center">
-          <h1>Ideas</h1>
-          { ideasErrorMessage !== 'undefined' &&
-          <h3 className="red">
-            { ideasErrorMessage }
-          </h3>
-          }
-          <div>Loading data... If you see this for more than a few seconds, your session has
-            expired/invalidated and you should logout then log back in.</div>
-        </div>
-      );
-    }
+    return (
+      <div className="ideas-list">
+        <span className="col-md-1 idea-header">Votes</span>
+        <span className="col-md-1 idea-header">Title</span>
+        <span className="col-md-8 idea-header">Description</span>
+        <hr />
+        { rows }
+      </div>
+      )
   }
+
+  /*<TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>
+  <TableHeaderColumn hiddenOnInsert dataField='votes'>Votes</TableHeaderColumn>
+  <TableHeaderColumn dataField='title'>Title</TableHeaderColumn>
+  <TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
+  <TableHeaderColumn dataField='stage'>Stage</TableHeaderColumn>
+  <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedBy'>Submitted By</TableHeaderColumn>
+  <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedAt'>Submitted At</TableHeaderColumn>
+  <TableHeaderColumn hiddenOnInsert autovalue dataField='updatedAt'>Updated At</TableHeaderColumn>
+  <TableHeaderColumn dataField='expectedCostInCents'>Expected Cost In Cents</TableHeaderColumn>
+  <TableHeaderColumn dataField='actualCostInCents'>Actual Cost In Cents</TableHeaderColumn>
+  <TableHeaderColumn dataField='expectedTtm'>Expected Time to Market</TableHeaderColumn>
+  <TableHeaderColumn dataField='actualTtm'>Actual Time to Market</TableHeaderColumn>*/
 
   handleEdit(rowBeforeObject, updatedValueKey, updatedValue) {
     rowBeforeObject[updatedValueKey] = updatedValue;

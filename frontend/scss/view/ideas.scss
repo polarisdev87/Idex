@@ -1,0 +1,22 @@
+.ideas-list {
+  text-align: center;
+
+  hr {
+    border: 0;
+    clear: both;
+    display: block;
+    width: 96%;
+    background-color: black;
+    height: 0.2em;
+  }
+
+  .idea-header {
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .idea-row {
+    padding-bottom: 3em;
+  }
+}
