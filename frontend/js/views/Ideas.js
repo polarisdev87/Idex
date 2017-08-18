@@ -4,7 +4,7 @@ import ReactModal from 'react-modal'
 import IdeaRow from '../components/IdeaRow'
 import AddIdeaModal from '../components/AddIdeaModal'
 
-import { fetchIdeas, updateIdea, deleteIdeas } from '../actions/ideas'
+import { fetchIdeas, updateIdea, addIdea } from '../actions/ideas'
 
 class Ideas extends Component {
 
@@ -13,6 +13,7 @@ class Ideas extends Component {
     this.handleEdit = this.handleEdit.bind(this);
     this.handleOpenModal = this.handleOpenModal.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.addIdea = this.addIdea.bind(this);
 
     this.state = {
       showModal: false
@@ -55,7 +56,7 @@ class Ideas extends Component {
           className="Modal"
           overlayClassName="Overlay"
         >
-          <AddIdeaModal handleCloseModal= { this.handleCloseModal }/>
+          <AddIdeaModal handleCloseModal= { this.handleCloseModal } addIdea = { this.addIdea }/>
         </ReactModal>
         <div className="ideas-list">
           <span className="col-md-1 idea-header">Votes</span>
@@ -68,25 +69,13 @@ class Ideas extends Component {
           { rows }
         </div>
       </div>
-      )
+    )
   }
 
-  addIdea() {
-
+  addIdea(idea) {
+    console.log('idea', idea);
+    this.props.dispatch(addIdea(idea));
   }
-
-  /*<TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>
-  <TableHeaderColumn hiddenOnInsert dataField='votes'>Votes</TableHeaderColumn>
-  <TableHeaderColumn dataField='title'>Title</TableHeaderColumn>
-  <TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
-  <TableHeaderColumn dataField='stage'>Stage</TableHeaderColumn>
-  <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedBy'>Submitted By</TableHeaderColumn>
-  <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedAt'>Submitted At</TableHeaderColumn>
-  <TableHeaderColumn hiddenOnInsert autovalue dataField='updatedAt'>Updated At</TableHeaderColumn>
-  <TableHeaderColumn dataField='expectedCostInCents'>Expected Cost In Cents</TableHeaderColumn>
-  <TableHeaderColumn dataField='actualCostInCents'>Actual Cost In Cents</TableHeaderColumn>
-  <TableHeaderColumn dataField='expectedTtm'>Expected Time to Market</TableHeaderColumn>
-  <TableHeaderColumn dataField='actualTtm'>Actual Time to Market</TableHeaderColumn>*/
 
   handleEdit(rowBeforeObject, updatedValueKey, updatedValue) {
     rowBeforeObject[updatedValueKey] = updatedValue;

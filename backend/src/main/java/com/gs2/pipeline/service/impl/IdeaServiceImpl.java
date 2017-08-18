@@ -86,6 +86,7 @@ public class IdeaServiceImpl implements IdeaService {
         Date currentTime = new Date();
         idea.setSubmittedAt(currentTime);
         idea.setUpdatedAt(currentTime);
+        idea.setStage("Incubation");
 
         return ideaRepository.save(idea).toDto(0L);
     }
