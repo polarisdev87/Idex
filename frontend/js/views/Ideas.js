@@ -61,12 +61,21 @@ class Ideas extends Component {
             striped
             cellEdit={ cellEditProps }
             hover
+            insertRow
             condensed
             search
             pagination>
+            <TableHeaderColumn hidden hiddenOnInsert autovalue dataField='id'>Username</TableHeaderColumn>
             <TableHeaderColumn dataField='title'>Title</TableHeaderColumn>
             <TableHeaderColumn dataField='description'>Description</TableHeaderColumn>
             <TableHeaderColumn dataField='stage'>Stage</TableHeaderColumn>
+            <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedBy'>Submitted By</TableHeaderColumn>
+            <TableHeaderColumn hiddenOnInsert autovalue dataField='submittedAt'>Submitted At</TableHeaderColumn>
+            <TableHeaderColumn hiddenOnInsert autovalue dataField='updatedAt'>Updated At</TableHeaderColumn>
+            <TableHeaderColumn dataField='expectedCostInCents'>Expected Cost In Cents</TableHeaderColumn>
+            <TableHeaderColumn dataField='actualCostInCents'>Actual Cost In Cents</TableHeaderColumn>
+            <TableHeaderColumn dataField='expectedTtm'>Expected Time to Market</TableHeaderColumn>
+            <TableHeaderColumn dataField='actualTtm'>Actual Time to Market</TableHeaderColumn>
           </BootstrapTable>
           <span>Double click any field to edit it.</span>
         </div>
