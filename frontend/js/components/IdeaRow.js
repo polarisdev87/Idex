@@ -1,7 +1,12 @@
 import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-export default class IdeaRow extends Component {
+class IdeaRow extends Component {
 
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
 
   render() {
     const { idea } = this.props;
@@ -9,7 +14,7 @@ export default class IdeaRow extends Component {
 
     return (
       <div className='idea-row'>
-        <div className="idea-vote-num col-md-1">
+        <div className="idea-vote-num col-md-1" onClick={ () => this.handleClick(idea) }>
           { idea.votes }
         </div>
         <div className="idea-title col-md-1">
@@ -27,8 +32,15 @@ export default class IdeaRow extends Component {
     )
   }
 
+  handleClick(idea) {
+    idea.votes++;
+    this.forceUpdate();
+  }
+
 }
 
 IdeaRow.propTypes = {
   idea: PropTypes.object.isRequired
 };
+
+export default IdeaRow;

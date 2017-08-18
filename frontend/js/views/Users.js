@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { Link } from 'react-router'
 
 import { updateUser, fetchUsers, deleteUsers } from '../actions/users'
 
