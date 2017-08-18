@@ -160,7 +160,7 @@ public class Idea {
         this.tags = tags;
     }
 
-    public IdeaDto toDto() {
-        return new IdeaDto(this);
+    public IdeaDto toDto(Long votes) {
+        return new IdeaDto(this, votes);
     }
 }

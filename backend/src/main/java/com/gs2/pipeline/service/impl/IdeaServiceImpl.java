@@ -6,6 +6,7 @@ import com.gs2.pipeline.domain.Tag;
 import com.gs2.pipeline.dto.IdeaDto;
 import com.gs2.pipeline.repository.IdeaRepository;
 import com.gs2.pipeline.repository.TagRepository;
+import com.gs2.pipeline.repository.VoteRepository;
 import com.gs2.pipeline.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,16 +21,24 @@ public class IdeaServiceImpl implements IdeaService {
 
     private final IdeaRepository ideaRepository;
     private final TagRepository tagRepository;
+    private final VoteRepository voteRepository;
 
     @Autowired
-    public IdeaServiceImpl(IdeaRepository ideaRepository, TagRepository tagRepository) {
+    public IdeaServiceImpl(IdeaRepository ideaRepository,
+                           TagRepository tagRepository,
+                           VoteRepository voteRepository) {
         this.ideaRepository = ideaRepository;
         this.tagRepository = tagRepository;
+        this.voteRepository = voteRepository;
     }
 
     @Override
     public List<IdeaDto> getIdeas() {
-        return ideaRepository.findAll().stream().map(Idea::toDto).collect(Collectors.toList());
+        return ideaRepository
+                .findAll()
+                .stream()
+                .map((idea) -> idea.toDto(voteRepository.countByIdea(idea)))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -65,7 +74,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         Idea idea = ideaRepository.save(ideaDto.toDao(tags, insertedBy));
 
-        return idea.toDto();
+        return idea.toDto(0L);
     }
 
     private IdeaDto update(Idea existing, IdeaDto ideaDto, Account updatedBy, Set<Tag> tags) {

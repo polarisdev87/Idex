@@ -24,11 +24,12 @@ public class IdeaDto {
     private Long expectedTtm;
     private Long actualTtm;
     private Set<String> tags;
+    private Long votes;
 
     public IdeaDto() {
     }
 
-    public IdeaDto(Idea idea) {
+    public IdeaDto(Idea idea, Long votes) {
         this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
@@ -41,6 +42,7 @@ public class IdeaDto {
         this.expectedTtm = idea.getExpectedTtm();
         this.actualTtm = idea.getActualTtm();
         this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+        this.votes = votes;
     }
 
     private String getSubmittedBy(Idea idea) {
@@ -164,5 +166,13 @@ public class IdeaDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getVotes() {
+        return votes;
+    }
+
+    public void setVotes(Long votes) {
+        this.votes = votes;
     }
 }
