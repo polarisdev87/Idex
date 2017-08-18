@@ -30,12 +30,17 @@ class Ideas extends Component {
     }
 
     return (
-      <div className="ideas-list">
-        <span className="col-md-1 idea-header">Votes</span>
-        <span className="col-md-1 idea-header">Title</span>
-        <span className="col-md-8 idea-header">Description</span>
-        <hr />
-        { rows }
+      <div className="ideas-container">
+        <div className="ideas-list">
+          <span className="col-md-1 idea-header">Votes</span>
+          <span className="col-md-1 idea-header">Title</span>
+          <span className="col-md-8 idea-header">Description</span>
+          <div className="col-md-2">
+            <button>Add Idea</button>
+          </div>
+          <hr />
+          { rows }
+        </div>
       </div>
       )
   }
