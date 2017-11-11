@@ -128,7 +128,14 @@ class Ideas extends Component {
     return (
       <div className="container">
         <div className="ideas-container">
-          <Header addIdeaButtonClick={() => this.addIdeaButtonClickHandler()} />
+          <Header
+            addIdeaButtonClick={() => this.addIdeaButtonClickHandler()}
+            fetchIdeas={ (filter, stages, submittedAtMsMin, submittedAtMsMax,
+                          votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+                          implementationTimeMsMax, tags) => this.props.dispatch(fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
+                                                  votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+                                                  implementationTimeMsMax, tags)) }
+          />
           {renderIdeaItems}
         </div>
         <AddIdeaModal isOpen={isOpen} idea={this.modalIdea} type={this.type} handleIdea={(idea, type) => this.handleIdea(idea, type)} close={() => this.closeModal()} />

@@ -5,18 +5,27 @@ import $ from 'jquery';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import TagSection from '../../components/tags/TagSection';
+import {fetchIdeas} from "../../actions/ideas";
+
 type Props = {
-  addIdeaButtonClick: () => {},
-}
+  addIdeaButtonClick: () => {}
+};
 
 class Header extends Component {
   props: Props;
 
-  componentDidMount() {
+  constructor(props) {
+    super(props);
+
     this.state = {
       filterText: "Top - Past Day (Default)",
       anyStageTicked: true
-    }
+    };
+
+    this.props = props;
+
+    this.applyFilters.bind(this);
+    this.clearFilters.bind(this);
   }
 
   showContent() {
@@ -24,13 +33,29 @@ class Header extends Component {
     $this.find('#collapse-container-body').collapse('show');
   }
 
-  test() {
-    console.log('test');
+  applyFilters() {
+
+    console.log('this', this);
+    const { dispatch } = this.props;
+
+    if(this.state.filterText.startsWith('Top')) {
+      this.props.fetchIdeas('Top', ['Incubation', 'Launched'])
+    } else {
+      this.props.fetchIdeas('Newest', ['Incubation'])
+    }
+  }
+
+  clearFilters() {
+
   }
 
   setFilterText(filterText) {
 
-    this.setState({ filterText: `Top - ${filterText}`});
+    if(filterText !== 'Newest') {
+      this.setState({ filterText: `Top - ${filterText}`});
+    } else {
+      this.setState({ filterText: filterText });
+    }
   }
 
   render() {
@@ -116,7 +141,7 @@ class Header extends Component {
                             <li><a href="#" onClick={ () => this.setFilterText('All Time') }>All Time</a></li>
                           </ul>
                         </li>
-                        <li><a href="#">Newest</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterText('Newest') }>Newest</a></li>
                       </ul>
                     </li>
                   </ul>​
@@ -127,8 +152,8 @@ class Header extends Component {
               <div className="label-base-base">
                 72 Results
               </div>
-              <button type="button" className="btn btn-link label-base-base" onClick={ this.test } >Apply Filters</button>
-              <button type="button" className="btn btn-link label-base-base" onClick={ this.test } >Clear Filters</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={ this.applyFilters.bind(this) } >Apply Filters</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={ this.clearFilters.bind(this) } >Clear Filters</button>
             </div>
           </div>
         </div>
