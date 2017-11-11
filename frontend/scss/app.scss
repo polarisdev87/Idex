@@ -1,10 +1,24 @@
+// *** Variables
+@import 'variables/common';
+
 @import "component/login-full";
 @import "component/navbar";
 @import "component/register";
+@import "component/inputs";
+@import "component/buttons";
+@import "component/stage-mark";
+@import "component/modals";
+@import "component/info-box";
+@import "component/tag-section";
+
 @import "view/ideas";
+@import "view/auth";
+@import "view/admin";
 
 #root {
-  min-width: 600px;
+  min-width: 32rem;
+  height: 100vh;
+  background-color: $color-root;
 }
 
 .red {
@@ -17,4 +31,70 @@
 
 .text-right {
   text-align: right;
+}
+
+// Font style
+.auth-title {
+  font-size: $font-size-xl;
+  color: $color-base;
+  text-align: center;
+}
+.auth-sub-title {
+  font-size: $font-size-sm;
+  color: $color-base;
+  text-align: center;
+}
+.label-sm-gray {
+  font-size: $font-size-sm;
+  color: $color-gray;
+}
+.label-sm-base {
+  font-size: $font-size-sm;
+  color: $color-base;
+}
+.label-xs-base {
+  font-size: $font-size-xs;
+  color: $color-base;
+}
+.label-lg-base {
+  font-size: $font-size-lg;
+  color: $color-base;
+}
+.label-xxl-white {
+  font-size: $font-size-xxl;
+  color: $color-white;
+}
+.label-base-white {
+  font-size: $font-size-base;
+  color: $color-white;
+}
+.label-base-base {
+  font-size: $font-size-base;
+  color: $color-base;
+}
+
+// Spacing
+.no-margin-b {
+  margin-bottom: 0 !important;
+}
+
+// Shadow
+.shadow {
+  -webkit-box-shadow: 0px 3px 20px 0px rgba(0,0,0,0.2);
+  -moz-box-shadow: 0px 3px 20px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 3px 20px 0px rgba(0,0,0,0.2);
+}
+
+// Button 
+.btn {
+  opacity: 1;
+  &:active, &:focus {
+    opacity: 0.7;
+  }
+}
+
+.base-btn {
+  font-size: $font-size-base;
+  color: $color-base;
+  outline: none !important;
 }

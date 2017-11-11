@@ -1,4 +1,6 @@
-import { API_BASE_URI, ID_TOKEN_KEY } from '../const'
+const queryString = require('query-string');
+
+import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
 
 
 export const GET_IDEAS_REQUEST = 'GET_IDEAS_REQUEST';
@@ -7,54 +9,73 @@ export const GET_IDEAS_FAILURE = 'GET_IDEAS_FAILURE';
 
 function getIdeasRequest() {
   return {
-    type: GET_IDEAS_REQUEST
-  }
+    type: GET_IDEAS_REQUEST,
+  };
 }
 
 function getIdeasError(message) {
   return {
     type: GET_IDEAS_FAILURE,
-    message
-  }
+    message,
+  };
 }
 
 function getIdeasSuccess(ideas) {
   return {
     type: GET_IDEAS_SUCCESS,
-    ideas
-  }
+    ideas,
+  };
 }
 
-export function fetchIdeas() {
+export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
+                           votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+                           implementationTimeMsMax, tags) {
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
 
-  let token = localStorage.getItem(ID_TOKEN_KEY) || null;
-  let config = {};
+  let config = {
+    method: 'GET',
+  };
 
-  if(token) {
+  let query = {
+    filter,
+    stages,
+    submittedAtMsMin,
+    submittedAtMsMax,
+    votesMin,
+    votesMax,
+    profitMin,
+    profitMax,
+    implementationTimeMsMin,
+    implementationTimeMsMax,
+    tags
+  };
+
+  if (token) {
     config = {
-      headers: { 'Authorization': `${token}` }
+      headers: { Authorization: `${token}` },
     };
   } else {
-    throw "No token saved!"
+    throw 'No token saved!';
   }
 
   return dispatch => {
     dispatch(getIdeasRequest());
-    return fetch(`${API_BASE_URI}/ideas`, config)
-      .then(response =>
-        response.json()
-          .then(body => ({ body, response }))
-      ).then(({ body, response }) =>  {
+
+    let url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
+
+    return fetch(url, config)
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(getIdeasError('Failed to get ideas. ' + body.error));
-          return Promise.reject(body.error)
-        } else {
-          dispatch(getIdeasSuccess(body));
+          dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
+          return Promise.reject(body.error);
         }
+        dispatch(getIdeasSuccess(body));
+        return true;
       }).catch(err => {
-        dispatch(getIdeasError('Failed to get ideas. ' + err));
-        console.log("Error: ", err)
-      })
+        dispatch(getIdeasError(`Failed to get ideas. ${err}`));
+        console.log('Error: ', err);
+      });
   };
 }
 
@@ -64,59 +85,62 @@ export const UPDATE_IDEA_FAILURE = 'UPDATE_IDEA_FAILURE';
 
 function updateIdeaRequest() {
   return {
-    type: UPDATE_IDEA_REQUEST
-  }
+    type: UPDATE_IDEA_REQUEST,
+  };
 }
 
 function updateIdeaError(message) {
   return {
     type: UPDATE_IDEA_FAILURE,
-    message
-  }
+    message,
+  };
 }
 
 function updateIdeaSuccess(users) {
   return {
     type: UPDATE_IDEA_SUCCESS,
-    users
-  }
+    users,
+  };
+}
+
+export function handleUpdateIdeaError(message) {
+  return dispatch => {
+    dispatch(updateIdeaError(message));
+  };
 }
 
 export function updateIdea(idea) {
-
-  let token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
-  if(token) {
+  if (token) {
     config = {
       headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify(idea)
+      body: JSON.stringify(idea),
     };
   } else {
-    throw "No token saved!"
+    throw 'No token saved!';
   }
 
   return dispatch => {
     dispatch(updateIdeaRequest());
     return fetch(`${API_BASE_URI}/ideas`, config)
-      .then(response =>
-        response.json()
-          .then(body => ({ body, response }))
-      ).then(({ body, response }) =>  {
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(updateIdeaError('Failed to update idea. ' + body.error));
+          dispatch(updateIdeaError(`Failed to update idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
-        } else {
-          dispatch(updateIdeaSuccess(body));
         }
+        dispatch(updateIdeaSuccess(body));
+        return true;
       }).catch(err => {
-        dispatch(updateIdeaError('Failed to update user. ' + err));
-        console.log("Error: ", err)
-      })
+        dispatch(updateIdeaError(`Failed to update user. ${err}`));
+        console.log('Error: ', err);
+      });
   };
 }
 
@@ -127,59 +151,55 @@ export const DELETE_IDEAS_FAILURE = 'DELETE_IDEAS_FAILURE';
 
 function deleteIdeasRequest() {
   return {
-    type: DELETE_IDEAS_REQUEST
-  }
+    type: DELETE_IDEAS_REQUEST,
+  };
 }
 
 function deleteUsersError(message) {
   return {
     type: DELETE_IDEAS_FAILURE,
-    message
-  }
+    message,
+  };
 }
 
 function deleteUsersSuccess(ideas) {
   return {
     type: DELETE_IDEAS_SUCCESS,
-    ideas
-  }
+    ideas,
+  };
 }
 
 export function deleteIdeas(ideaIds) {
-
-  let token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
-  if(token) {
+  if (token) {
     config = {
       headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
       },
       method: 'DELETE',
-      body: JSON.stringify(ideaIds)
+      body: JSON.stringify(ideaIds),
     };
   } else {
-    throw "No token saved!"
+    throw 'No token saved!';
   }
 
   return dispatch => {
     dispatch(deleteIdeasRequest());
     return fetch(`${API_BASE_URI}/ideas`, config)
-      .then(response =>
-        response.json()
-          .then(body => ({ body, response }))
-      ).then(({ body, response }) =>  {
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(deleteUsersError('Failed to delete idea. ' + body.error));
+          dispatch(deleteUsersError(`Failed to delete idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
-        } else {
-          dispatch(deleteUsersSuccess(body));
         }
+        dispatch(deleteUsersSuccess(body));
       }).catch(err => {
-        dispatch(deleteUsersError('Failed to delete idea. ' + err));
-        console.log("Error: ", err);
-      })
+        dispatch(deleteUsersError(`Failed to delete idea. ${err}`));
+        console.log('Error: ', err);
+      });
   };
 }
 
@@ -190,58 +210,61 @@ export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
 
 function addIdeaRequest() {
   return {
-    type: ADD_IDEA_REQUEST
-  }
+    type: ADD_IDEA_REQUEST,
+  };
 }
 
 function addIdeaError(message) {
   return {
     type: ADD_IDEA_FAILURE,
-    message
-  }
+    message,
+  };
 }
 
 function addIdeaSuccess(ideas) {
   return {
     type: ADD_IDEA_SUCCESS,
-    ideas
-  }
+    ideas,
+  };
+}
+
+export function handleAddIdeaError(message) {
+  return dispatch => {
+    dispatch(addIdeaError(message));
+  };
 }
 
 export function addIdea(idea) {
-
-  let token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
-  if(token) {
+  if (token) {
     config = {
       headers: {
-        'Authorization': `${token}`,
-        'Content-Type': 'application/json'
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify(idea)
+      body: JSON.stringify(idea),
     };
   } else {
-    throw "No token saved!"
+    throw 'No token saved!';
   }
 
   return dispatch => {
     dispatch(addIdeaRequest());
     return fetch(`${API_BASE_URI}/ideas`, config)
-      .then(response =>
-        response.json()
-          .then(body => ({ body, response }))
-      ).then(({ body, response }) =>  {
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(addIdeaError('Failed to add idea. ' + body.error));
+          dispatch(addIdeaError(`Failed to add idea. ${body.error}`));
           return Promise.reject('Failed to add idea');
-        } else {
-          dispatch(addIdeaSuccess(body));
         }
+        dispatch(addIdeaSuccess(body));
+        return true;
       }).catch(err => {
-        dispatch(addIdeaError('Failed to add idea. ' + err));
-        console.log("Error: ", err);
-      })
+        dispatch(addIdeaError(`Failed to add idea. ${err}`));
+        console.log('Error: ', err);
+      });
   };
 }

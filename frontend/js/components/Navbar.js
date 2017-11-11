@@ -12,40 +12,46 @@ export default class Navbar extends Component {
       dispatch,
       isAuthenticated,
       loginErrorMessage,
-      role } = this.props;
+      role
+    } = this.props;
     
     return (
-      <nav className='navbar navbar-default'>
-        <div className='container-fluid'>
-          <a className="navbar-brand" href="#">Ideas Pipeline</a>
-           <div className='navbar-form text-right'>
+      <nav className="navbar navbar-default">
+        <div className="container"> {/* className="auth-require" */}
+          <a className="navbar-brand" href="#">
+            <img src="../../assets/images/logo.png" />
+          </a>
+          <div className="navbar-form text-right">
+            <button type="button" className="btn btn-link label-base-base">Users</button>
+            <button type="button" className="btn btn-link label-base-base" onClick={() => dispatch(logoutUser())} >Logout</button>
+            {/* {
+              !isAuthenticated &&
+                <LoginNav
+                  errorMessage={loginErrorMessage}
+                  onLoginClick={ creds => dispatch(loginUser(creds)) }
+                  onLoginError={ message => dispatch(handleLoginError(message)) }
+                  dispatch={ dispatch }
+                />
+            }
 
-             {!isAuthenticated &&
-             <LoginNav
-               errorMessage={loginErrorMessage}
-               onLoginClick={ creds => dispatch(loginUser(creds)) }
-               onLoginError={ message => dispatch(handleLoginError(message)) }
-               dispatch={ dispatch }
-             />
-             }
+            { (role === 'ROLE_ADMIN' || role === 'ROLE_USER_MANAGER') &&
+              <span>
+                <Users />
+              </span>
+            }
 
-             { (role === 'ROLE_ADMIN' || role === 'ROLE_USER_MANAGER') &&
-             <span>
-               <Users />
-             </span>
-             }
+            {
+              isAuthenticated &&
+              <span>
+                <Ideas />
+                <Logout onLogoutClick={() => dispatch(logoutUser())} />
+              </span>
+            } */}
 
-             {isAuthenticated &&
-             <span>
-               <Ideas />
-               <Logout onLogoutClick={() => dispatch(logoutUser())} />
-             </span>
-             }
-         
-         </div>
-       </div>
-     </nav>
-    )
+          </div>
+        </div>
+      </nav>
+    );
   }
 
 }

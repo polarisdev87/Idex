@@ -2,6 +2,7 @@ package com.gs2.pipeline.controller;
 
 import com.gs2.pipeline.exception.AccountNotFoundException;
 import com.gs2.pipeline.exception.DuplicateUsernameException;
+import com.gs2.pipeline.exception.IdeaNotFoundException;
 import com.gs2.pipeline.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,14 @@ public class ExceptionHandlers {
 
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<?> handleAccountNotFoundException(final AccountNotFoundException e) {
+
+        return ResponseEntity
+                .notFound()
+                .build();
+    }
+
+    @ExceptionHandler(IdeaNotFoundException.class)
+    public ResponseEntity<?> handleIdeaNotFoundException(final IdeaNotFoundException e) {
 
         return ResponseEntity
                 .notFound()

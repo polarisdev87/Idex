@@ -71,7 +71,7 @@ class LoginFull extends Component {
 
     const errorMessage = LoginFull.validateCreds(creds);
 
-    if(errorMessage.length > 0) {
+    if (errorMessage.length > 0) {
       this.props.dispatch(handleLoginError(errorMessage));
 
       return;
@@ -91,7 +91,7 @@ class LoginFull extends Component {
       errorMessage += "Password must be between 4-100 characters.\n"
     }
 
-    if(errorMessage.endsWith('\n')) {
+    if (errorMessage.endsWith('\n')) {
       errorMessage = errorMessage.substr(0, errorMessage.length - 1);
     }
 

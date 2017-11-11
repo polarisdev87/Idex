@@ -1,0 +1,15 @@
+.auth-input {
+  height: $input-item-height;
+  width: 100%;
+  padding: $base-margin;
+  border: none;
+  font-size: $font-size-xs;
+  background-color: $color-almost-white;
+  color: $color-base;
+  &::placeholder {
+    color: $color-gray-white;
+  }
+  &:focus {
+    outline: $color-almost-white;
+  }
+}

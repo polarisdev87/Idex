@@ -48,6 +48,11 @@ const plugins = [
       context: sourcePath,
     },
   }),
+  new webpack.ProvidePlugin({   
+    jQuery: 'jquery',
+    $: 'jquery',
+    jquery: 'jquery',
+  }),
 ];
 
 // Common rules
@@ -64,6 +69,7 @@ const rules = [
     include: imgPath,
     use: 'url-loader?limit=20480&name=assets/[name]-[hash].[ext]',
   },
+  { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' }
 ];
 
 if (isProduction) {
@@ -126,6 +132,13 @@ if (isProduction) {
         'postcss-loader',
         'sass-loader?sourceMap'
       ],
+    }
+  );
+
+  rules.push(
+    {
+      test: /\.css$/, 
+      loader: "style-loader!css-loader"
     }
   );
 }

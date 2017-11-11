@@ -1,0 +1,23 @@
+.common-button {
+  width: 100%;
+  height: 4rem;
+  border-radius: 0;
+  text-align: center;
+  font-size: $font-size-base;
+}
+
+.circle-icon-button {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  padding: 0;
+  margin-left: 0.8rem;
+  &.btn:focus, &.btn:active {
+    outline: $color-yellow;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

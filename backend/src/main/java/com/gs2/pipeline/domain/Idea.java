@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -51,6 +52,12 @@ public class Idea {
     @Column(name = "actual_cost_in_cents")
     private Long actualCostInCents;
 
+    @Column(name = "expected_profit_in_cents")
+    private Long expectedProfitInCents;
+
+    @Column(name = "actual_profit_in_cents")
+    private Long actualProfitInCents;
+
     @Column(name = "expected_ttm")
     private Long expectedTtm;
 
@@ -63,6 +70,12 @@ public class Idea {
             joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private Set<Tag> tags;
+
+    @Column(name = "votes")
+    private Long votes;
+
+    @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Comment> comments;
 
     public Long getId() {
         return id;
@@ -160,7 +173,39 @@ public class Idea {
         this.tags = tags;
     }
 
-    public IdeaDto toDto(Long votes) {
-        return new IdeaDto(this, votes);
+    public IdeaDto toDto() {
+        return new IdeaDto(this);
+    }
+
+    public void setVotes(Long votes) {
+        this.votes = votes;
+    }
+
+    public Long getVotes() {
+        return votes;
+    }
+
+    public Long getExpectedProfitInCents() {
+        return expectedProfitInCents;
+    }
+
+    public void setExpectedProfitInCents(Long expectedProfitInCents) {
+        this.expectedProfitInCents = expectedProfitInCents;
+    }
+
+    public Long getActualProfitInCents() {
+        return actualProfitInCents;
+    }
+
+    public void setActualProfitInCents(Long actualProfitInCents) {
+        this.actualProfitInCents = actualProfitInCents;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

@@ -4,6 +4,7 @@ node_modules
 # plugin output
 out
 react-css-modules-intellij-plugin.jar
+build/
 
 ### IntelliJ IDEA ###
 .idea

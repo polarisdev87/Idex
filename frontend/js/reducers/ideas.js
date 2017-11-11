@@ -1,29 +1,29 @@
 import {
   GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE
-} from '../actions/ideas'
+} from '../actions/ideas';
 
 export function ideas(state = {
   isFetchingIdeas: false,
   ideasArr: undefined,
-  ideasErrorMessage: undefined
+  ideasErrorMessage: undefined,
 }, action) {
   switch (action.type) {
     case GET_IDEAS_REQUEST:
       return Object.assign({}, state, {
-        isFetchingIdeas: true
+        isFetchingIdeas: true,
       });
     case GET_IDEAS_SUCCESS:
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasArr: action.ideas,
-        ideasErrorMessage: undefined
+        ideasErrorMessage: undefined,
       });
     case GET_IDEAS_FAILURE:
       return Object.assign({}, state, {
         isFetchingIdeas: false,
-        ideasErrorMessage: action.message
+        ideasErrorMessage: action.message,
       });
     default:
-      return state
+      return state;
   }
 }

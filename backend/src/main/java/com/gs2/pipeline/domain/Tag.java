@@ -45,4 +45,29 @@ public class Tag {
     public void setUses(Long uses) {
         this.uses = uses;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tag tag = (Tag) o;
+
+        if (!id.equals(tag.id)) return false;
+        if (!name.equals(tag.name)) return false;
+        return uses.equals(tag.uses);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + uses.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "" + id;
+    }
 }

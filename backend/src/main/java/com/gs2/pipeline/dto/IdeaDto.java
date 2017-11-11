@@ -1,10 +1,13 @@
 package com.gs2.pipeline.dto;
 
 import com.gs2.pipeline.domain.Account;
+import com.gs2.pipeline.domain.Comment;
 import com.gs2.pipeline.domain.Idea;
 import com.gs2.pipeline.domain.Tag;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,11 +28,15 @@ public class IdeaDto {
     private Long actualTtm;
     private Set<String> tags;
     private Long votes;
+    private Long expectedProfitInCents;
+    private Long actualProfitInCents;
+    private List<CommentDto> comments;
 
     public IdeaDto() {
+
     }
 
-    public IdeaDto(Idea idea, Long votes) {
+    public IdeaDto(Idea idea) {
         this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
@@ -41,16 +48,11 @@ public class IdeaDto {
         this.actualCostInCents = idea.getActualCostInCents();
         this.expectedTtm = idea.getExpectedTtm();
         this.actualTtm = idea.getActualTtm();
+        this.expectedProfitInCents = idea.getExpectedProfitInCents();
+        this.actualProfitInCents = idea.getActualProfitInCents();
         this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
-        this.votes = votes;
-    }
-
-    private String getSubmittedBy(Idea idea) {
-        Account submittedby = idea.getSubmittedBy();
-        String firstName = submittedby.getFirstName();
-        String lastName = submittedby.getLastName();
-        String username = submittedby.getUsername();
-        return String.format(SUBMITTED_BY_FORMAT, username, firstName, lastName);
+        this.votes = idea.getVotes();
+        this.comments = getCommentDtos(idea.getComments(), idea);
     }
 
     public Idea toDao(Set<Tag> tags, Account submittedBy) {
@@ -68,8 +70,31 @@ public class IdeaDto {
         idea.setExpectedTtm(expectedTtm);
         idea.setActualTtm(actualTtm);
         idea.setTags(tags);
+        idea.setVotes(votes);
+        idea.setExpectedProfitInCents(expectedProfitInCents);
+        idea.setActualProfitInCents(actualProfitInCents);
 
         return idea;
+    }
+
+    private String getSubmittedBy(Idea idea) {
+
+        Account submittedby = idea.getSubmittedBy();
+        String firstName = submittedby.getFirstName();
+        String lastName = submittedby.getLastName();
+        String username = submittedby.getUsername();
+        return String.format(SUBMITTED_BY_FORMAT, username, firstName, lastName);
+    }
+
+    private List<CommentDto> getCommentDtos(List<Comment> comments, Idea idea) {
+
+        List<CommentDto> commentDtos = new ArrayList<>(comments.size());
+
+        for(Comment comment: comments) {
+            commentDtos.add(new CommentDto(comment, idea.getId(), getSubmittedBy(idea), comment.getSubmittedAt().getTime()));
+        }
+
+        return commentDtos;
     }
 
     public String getTitle() {
@@ -174,5 +199,29 @@ public class IdeaDto {
 
     public void setVotes(Long votes) {
         this.votes = votes;
+    }
+
+    public Long getExpectedProfitInCents() {
+        return expectedProfitInCents;
+    }
+
+    public void setExpectedProfitInCents(Long expectedProfitInCents) {
+        this.expectedProfitInCents = expectedProfitInCents;
+    }
+
+    public Long getActualProfitInCents() {
+        return actualProfitInCents;
+    }
+
+    public void setActualProfitInCents(Long actualProfitInCents) {
+        this.actualProfitInCents = actualProfitInCents;
+    }
+
+    public List<CommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
     }
 }

@@ -5,9 +5,10 @@ import { Provider } from 'react-redux'
 import Routes from 'routes';
 import thunk from 'redux-thunk';
 import pipelineApp from './reducers/index'
-
+import 'jquery';
+import 'bootstrap/dist/js/bootstrap';
+import 'bootstrap-checkbox/dist/js/bootstrap-checkbox';
 import 'babel-polyfill';
-
 
 // Load SCSS
 import '../scss/app.scss';
@@ -34,10 +35,9 @@ if (isProduction) {
     // Enable DevTools if browser extension is installed
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() // eslint-disable-line
   );
-
   store = createStore(
     pipelineApp,
-    enhancer
+    middleware
   );
 }
 
