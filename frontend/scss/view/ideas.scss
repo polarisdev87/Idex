@@ -83,6 +83,7 @@
       }
 
       .dropdown-container {
+        width: fit-content;
         .nav{
           list-style:none;
           margin-left:0;
@@ -160,8 +161,10 @@
         .site-nav a.dropdown-title:hover {
           color: $color-base;
           background: white;
+          width: fit-content;
         }
         a.dropdown-title {
+          width: fit-content !important;
           text-align: right;
         }
         .site-nav .flyout-alt > a:after{
