@@ -264,7 +264,7 @@
         }
       }
     }
-    #comment-container {
+    [id^=comment-container] {
       .comment-wrapper {
         padding: 3rem 6rem;
         border-top: solid 1px $color-light;

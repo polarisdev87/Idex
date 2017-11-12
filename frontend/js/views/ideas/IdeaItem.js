@@ -30,7 +30,7 @@ class IdeaItem extends Component {
   props: Props;
 
   state = {
-    comments: [],
+    comments: []
   }
 
   handleKeyPress = e => {
@@ -45,7 +45,10 @@ class IdeaItem extends Component {
   }
 
   render() {
+
     const { idea, edit, view } = this.props;
+    const commentBoxId = `comment-container-${idea.id}`;
+    const commentBoxHref = `#comment-container-${idea.id}`;
     const { comments } = this.state;
     const commentsMark = (comments !== undefined) ?
       comments.map((comment, index) => (
@@ -104,11 +107,11 @@ class IdeaItem extends Component {
           <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
           <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
           <div className="footer-item bottom-item label-sm-gray">
-            <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href="#comment-container">Add Idea</button>
+            <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>Add Comment</button>
           </div>
         </div>
 
-        <div id="comment-container" className="collapse">
+        <div id={ commentBoxId } className="collapse">
           <div className="comment-wrapper">
             {commentsMark}
             {addCommentMark}
