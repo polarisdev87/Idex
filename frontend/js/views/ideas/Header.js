@@ -5,7 +5,7 @@ import $ from 'jquery';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import TagSection from '../../components/tags/TagSection';
-import {fetchIdeas} from "../../actions/ideas";
+const moment = require('moment');
 
 type Props = {
   addIdeaButtonClick: () => {}
@@ -37,9 +37,27 @@ class Header extends Component {
 
     console.log('this', this);
     const { dispatch } = this.props;
+    const filterText = this.state.filterText;
 
-    if(this.state.filterText.startsWith('Top')) {
-      this.props.fetchIdeas('Top', ['Incubation', 'Launched'])
+    if(filterText.startsWith('Top')) {
+
+      let submittedAtMsMin;
+
+      if(filterText.includes('Hour')) {
+        submittedAtMsMin = moment.utc().add(-1, 'hours').valueOf();
+      } else if (filterText.includes('Day')) {
+        submittedAtMsMin = moment.utc().add(-1, 'days').valueOf();
+      } else if (filterText.includes('Week')) {
+        submittedAtMsMin = moment.utc().add(-1, 'weeks').valueOf();
+      } else if (filterText.includes('Month')) {
+        submittedAtMsMin = moment.utc().add(-1, 'months').valueOf();
+      } else if (filterText.includes('Year')) {
+        submittedAtMsMin = moment.utc().add(-1, 'years').valueOf();
+      } else {
+        submittedAtMsMin = 0;
+      }
+
+      this.props.fetchIdeas('Top', ['Incubation', 'Launched'], submittedAtMsMin)
     } else {
       this.props.fetchIdeas('Newest', ['Incubation'])
     }
