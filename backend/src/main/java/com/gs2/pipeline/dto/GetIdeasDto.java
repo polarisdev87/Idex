@@ -65,7 +65,7 @@ public class GetIdeasDto {
     }
 
     public Long getSubmittedAtMsMin() {
-        return submittedAtMsMin != null ? submittedAtMsMin : 0;
+        return submittedAtMsMin != null ? submittedAtMsMin : System.currentTimeMillis() - 1000L * 60l * 60L * 24L;
     }
 
     public void setSubmittedAtMsMin(Long submittedAtMsMin) {
