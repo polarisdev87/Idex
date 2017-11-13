@@ -19,7 +19,13 @@ class Header extends Component {
 
     this.state = {
       filterText: "Top - Past Day (Default)",
-      anyStageTicked: true
+      stagesSelected: {
+        any: true,
+        incubation: true,
+        prototyping: true,
+        launched: true,
+        cancelled: true
+      }
     };
 
     this.props = props;
@@ -38,6 +44,8 @@ class Header extends Component {
     console.log('this', this);
     const { dispatch } = this.props;
     const filterText = this.state.filterText;
+
+
 
     if(filterText.startsWith('Top')) {
 
@@ -76,8 +84,18 @@ class Header extends Component {
     }
   }
 
+  checkAny() {
+    this.setState( {
+      stagesSelected: {
+        any: !this.state.stagesSelected.any
+      }
+    } )
+  }
+
   render() {
     const { addIdeaButtonClick } = this.props;
+    const { stagesSelected } = this.state;
+
 
     return (
       <div className="header-container shadow">
@@ -104,7 +122,7 @@ class Header extends Component {
                 <div className="">
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" />
+                      <input type="checkbox" value="" checked={stagesSelected.any} onClick={ () =>  this.checkAny() } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Any Stage (default)
                     </label>
