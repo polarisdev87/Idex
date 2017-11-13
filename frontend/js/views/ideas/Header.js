@@ -208,7 +208,7 @@ class Header extends Component {
             </div>
             <div className="result-container">
               <div className="label-base-base">
-                72 Results
+                <span>{ this.props.numIdeas } Results</span>
               </div>
               <button type="button" className="btn btn-link label-base-base" onClick={ this.applyFilters.bind(this) } >Apply Filters</button>
               <button type="button" className="btn btn-link label-base-base" onClick={ this.clearFilters.bind(this) } >Clear Filters</button>

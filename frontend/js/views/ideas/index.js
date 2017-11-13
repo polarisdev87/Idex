@@ -120,11 +120,13 @@ class Ideas extends Component {
     const { isOpen } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
     const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas } } = this.props;
+    const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
         <IdeaItem key={item.id.toString()} idea={item} edit={() => this.editIdeaButtonClickHandler(item)} view={() => this.viewIdeaClickHandler(item)} />
       )) :
       null;
+
     return (
       <div className="container">
         <div className="ideas-container">
@@ -135,6 +137,7 @@ class Ideas extends Component {
                           implementationTimeMsMax, tags) => this.props.dispatch(fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
                                                   votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
                                                   implementationTimeMsMax, tags)) }
+            numIdeas = { numIdeas }
           />
           {renderIdeaItems}
         </div>
