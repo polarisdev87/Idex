@@ -150,35 +150,35 @@ class Header extends Component {
                 <div className="">
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" checked={stagesSelected.any} onClick={ () =>  this.checkStageBox('any') } />
+                      <input type="checkbox" value="" checked={stagesSelected.any} onChange={ () =>  this.checkStageBox('any') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Any Stage (default)
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.incubation } onClick={ () =>  this.checkStageBox('incubation') } />
+                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.incubation } onChange={ () =>  this.checkStageBox('incubation') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Incubation
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.prototyping } onClick={ () =>  this.checkStageBox('prototyping') } />
+                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.prototyping } onChange={ () =>  this.checkStageBox('prototyping') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Prototyping
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value=""  checked={ stagesSelected.any || stagesSelected.launched } onClick={ () =>  this.checkStageBox('launched') } />
+                      <input type="checkbox" value=""  checked={ stagesSelected.any || stagesSelected.launched } onChange={ () =>  this.checkStageBox('launched') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Launched
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled } onClick={ () =>  this.checkStageBox('cancelled') } />
+                      <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled } onChange={ () =>  this.checkStageBox('cancelled') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Canceled
                     </label>
