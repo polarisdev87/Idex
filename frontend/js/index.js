@@ -37,7 +37,7 @@ if (isProduction) {
   );
   store = createStore(
     pipelineApp,
-    middleware
+    enhancer
   );
 }
 

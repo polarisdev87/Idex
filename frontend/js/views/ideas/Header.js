@@ -21,10 +21,10 @@ class Header extends Component {
       filterText: "Top - Past Day (Default)",
       stagesSelected: {
         any: true,
-        incubation: true,
-        prototyping: true,
-        launched: true,
-        cancelled: true
+        incubation: false,
+        prototyping: false,
+        launched: false,
+        cancelled: false
       }
     };
 
@@ -78,18 +78,28 @@ class Header extends Component {
   setFilterText(filterText) {
 
     if(filterText !== 'Newest') {
-      this.setState({ filterText: `Top - ${filterText}`});
+      this.setState({
+          filterText: `Top - ${filterText}`,
+          stagesSelected: this.state.stagesSelected
+        });
     } else {
       this.setState({ filterText: filterText });
     }
   }
 
-  checkAny() {
+  checkStageBox(stageBox) {
+
+    let stagesSelected = this.state.stagesSelected;
+    stagesSelected[stageBox] =  !stagesSelected[stageBox];
+
+    if(stageBox !== 'any' && stagesSelected['any'] === true) {
+      stagesSelected['any'] = false;
+    }
+
     this.setState( {
-      stagesSelected: {
-        any: !this.state.stagesSelected.any
-      }
-    } )
+      stagesSelected,
+      filterText: this.state.filterText
+    })
   }
 
   render() {
@@ -122,35 +132,35 @@ class Header extends Component {
                 <div className="">
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" checked={stagesSelected.any} onClick={ () =>  this.checkAny() } />
+                      <input type="checkbox" value="" checked={stagesSelected.any} onClick={ () =>  this.checkStageBox('any') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Any Stage (default)
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" />
+                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.incubation } onClick={ () =>  this.checkStageBox('incubation') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Incubation
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" />
+                      <input type="checkbox" value="" checked={ stagesSelected.any || stagesSelected.prototyping } onClick={ () =>  this.checkStageBox('prototyping') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Prototyping
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" />
+                      <input type="checkbox" value=""  checked={ stagesSelected.any || stagesSelected.launched } onClick={ () =>  this.checkStageBox('launched') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Launched
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
-                      <input type="checkbox" value="" />
+                      <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled } onClick={ () =>  this.checkStageBox('cancelled') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
                       Canceled
                     </label>
