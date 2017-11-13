@@ -42,10 +42,22 @@ class Header extends Component {
   applyFilters() {
 
     console.log('this', this);
-    const { dispatch } = this.props;
-    const filterText = this.state.filterText;
+    const { filterText, stagesSelected } = this.state;
 
+    let stages = [];
 
+    if(stagesSelected['any'] === true) {
+      stages.push('Incubation');
+      stages.push('Prototyping');
+      stages.push('Launched');
+      stages.push('Cancelled');
+    } else {
+      stagesSelected['incubation'] === true ? stages.push('Incubation') : null;
+      stagesSelected['prototyping'] === true ? stages.push('Prototyping') : null;
+      stagesSelected['launched'] === true ? stages.push('Launched') : null;
+      stagesSelected['cancelled'] === true ? stages.push('Cancelled') : null;
+
+    }
 
     if(filterText.startsWith('Top')) {
 
@@ -65,9 +77,9 @@ class Header extends Component {
         submittedAtMsMin = 0;
       }
 
-      this.props.fetchIdeas('Top', ['Incubation', 'Launched'], submittedAtMsMin)
+      this.props.fetchIdeas('Top', stages, submittedAtMsMin)
     } else {
-      this.props.fetchIdeas('Newest', ['Incubation'])
+      this.props.fetchIdeas('Newest', stages)
     }
   }
 
