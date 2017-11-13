@@ -17,7 +17,17 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.setDefaultState();
+
+    this.props = props;
+
+    this.applyFilters.bind(this);
+    this.clearFilters.bind(this);
+  }
+
+  setDefaultState() {
+
+    this.setState({
       filterText: "Top - Past Day (Default)",
       stagesSelected: {
         any: true,
@@ -25,13 +35,9 @@ class Header extends Component {
         prototyping: false,
         launched: false,
         cancelled: false
-      }
-    };
-
-    this.props = props;
-
-    this.applyFilters.bind(this);
-    this.clearFilters.bind(this);
+      },
+      tags: []
+    });
   }
 
   showContent() {
@@ -84,7 +90,7 @@ class Header extends Component {
   }
 
   clearFilters() {
-
+    this.setDefaultState();
   }
 
   setFilterText(filterText) {
