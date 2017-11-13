@@ -17,7 +17,7 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
-    this.setDefaultState();
+    this.state = this.getDefaultState();
 
     this.props = props;
 
@@ -25,9 +25,9 @@ class Header extends Component {
     this.clearFilters.bind(this);
   }
 
-  setDefaultState() {
+  getDefaultState() {
 
-    this.setState({
+    return {
       filterText: "Top - Past Day (Default)",
       stagesSelected: {
         any: true,
@@ -37,7 +37,7 @@ class Header extends Component {
         cancelled: false
       },
       tags: []
-    });
+    };
   }
 
   showContent() {
@@ -90,7 +90,7 @@ class Header extends Component {
   }
 
   clearFilters() {
-    this.setDefaultState();
+    this.setState(this.getDefaultState());
   }
 
   setFilterText(filterText) {
