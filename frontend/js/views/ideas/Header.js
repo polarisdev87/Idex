@@ -180,7 +180,7 @@ class Header extends Component {
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled } onChange={ () =>  this.checkStageBox('cancelled') } />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Canceled
+                      Cancelled
                     </label>
                   </div>
                 </div>
