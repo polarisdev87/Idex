@@ -11,7 +11,7 @@
 8. The backend is now running at `localhost:8080`
 
 ## Running the Frontend
-1. Navigate to the frontend irectory in your terminal
+1. Navigate to the frontend directory in your terminal
 2. `npm install`  (node version => 7.8.0 )
 3. `npm start`
 4. In your browser got to `localhost:3000`
