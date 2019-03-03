@@ -178,7 +178,7 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Time range:
+                        Submission Date:
                       </div>
                     </div>
                     <div className="row row-content">
@@ -203,7 +203,7 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Votes range (size of circles):
+                        Vote Range (circles size):
                       </div>
                     </div>
                     <div className="row row-content">
@@ -224,7 +224,7 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Profit range (y-axis):
+                        Profit Range (y-axis):
                       </div>
                     </div>
                     <div className="row row-content">
@@ -243,24 +243,18 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Implementation time range (x-axis):
+                        Implementation Months (x-axis):
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <DatePicker
-                          selected={this.state.startDate}
-                          onChange={(date) => this.handleChange(date)}
-                        />
+                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minImplRange = el; }} />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
                         To
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <DatePicker
-                          selected={this.state.startDateOfaxis}
-                          onChange={(date) => this.handleChangeOfaxis(date)}
-                        />
+                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxImplRange = el; }} />
                       </div>
                     </div>
                   </div>

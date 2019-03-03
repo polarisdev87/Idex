@@ -150,6 +150,7 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
+    filters: state.filters
   };
 }
 
