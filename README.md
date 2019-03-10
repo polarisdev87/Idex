@@ -14,4 +14,4 @@
 1. Navigate to the frontend directory in your terminal
 2. `npm install`  (node version => 7.8.0 )
 3. `npm start`
-4. In your browser got to `localhost:3000`
+4. In your browser got to `localhost:4000`
