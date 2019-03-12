@@ -12,27 +12,13 @@ type Props = {
 class ProfitFilterSection extends Component {
   props: Props;
 
-  state = {
-    profitMin: 0,
-    profitMax: 999999,
-  }
-
-  handleChangeMin(profitMin) {
-    this.setState({ profitMin });
-  }
-
-  handleChangeMax(profitMax) {
-    this.setState({ profitMax });
-  }
-  
-  
   render() {
     return (
   		<div className="form-group">
           <div className="input-container">
               <div className="select-label label-base-base">Profit:</div>
-              <NumericInput  min={0} max={999999} value={this.state.profitMin} placeholder="Min" onChange={this.handleChangeMin} />
-              <NumericInput  min={0} max={999999} value={this.state.profitMax} placeholder="Max" onChange={this.handleChangeMax} />
+              <NumericInput  min={0} max={999999} value={this.props.min} placeholder="Min" onChange={this.props.changeMin} />
+              <NumericInput  min={0} max={999999} value={this.props.max} placeholder="Max" onChange={this.props.changeMax} />
           </div>
         </div>
     		

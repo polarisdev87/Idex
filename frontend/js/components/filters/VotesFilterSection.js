@@ -12,27 +12,13 @@ type Props = {
 class VotesFilterSection extends Component {
   props: Props;
 
-  state = {
-    votesMin: 0,
-    votesMax: 999999,
-  }
-
-  handleChangeMin(votesMin) {
-    this.setState({ votesMin });
-  }
-
-  handleChangeMax(votesMax) {
-    this.setState({ votesMax });
-  }
-  
-  
   render() {
     return (
   		<div className="form-group">
           <div className="input-container">
               <div className="select-label label-base-base">Votes:</div>
-              <NumericInput  min={0} max={999999} value={this.state.votesMin} placeholder="Min" onChange={this.handleChangeMin} />
-              <NumericInput  min={0} max={999999} value={this.state.votesMax} placeholder="Max" onChange={this.handleChangeMax} />
+              <NumericInput  min={0} max={999999} value={this.props.min} placeholder="Min" onChange={this.props.changeMin} />
+              <NumericInput  min={0} max={999999} value={this.props.max} placeholder="Max" onChange={this.props.changeMax} />
           </div>
         </div>
     		

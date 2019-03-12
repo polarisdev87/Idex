@@ -57,9 +57,14 @@ class Header extends Component {
         cancelled: false
       },
       implementedFilterSelected: false,
-      tags: []
+      tags: [],
+      votesMin: 0,
+      votesMax: 999999,
+      profitMin: 0,
+      profitMax: 999999,
     };
   }
+
 
   showContent() {
     const $this = $(findDOMNode(this));
@@ -100,11 +105,31 @@ class Header extends Component {
   }
 
 
+  changeVotesMin(value) {
+    console.log("changeVotesMin");
+    console.log(value);
+    this.setState({ votesMin: value });
+  }
+
+  changeVotesMax(value) {
+    this.setState({ votesMax: value });
+  }
+  
+
+  changeProfitMin(value) {
+    this.setState({ profitMin: value });
+  }
+
+  changeProfitMax(value) {
+    this.setState({ profitMax: value });
+  }
+  
+
 
   applyFilters() {
 
     console.log('this', this);
-    const { filterText, stagesSelected, filterImplementatedText,implementedFilterSelected } = this.state;
+    const { filterText, stagesSelected, filterImplementedText,implementedFilterSelected } = this.state;
 
     console.log("applyFilters().state");
     console.log(this.state);
@@ -125,7 +150,7 @@ class Header extends Component {
 
 
     if (implementedFilterSelected) {
-      let submittedImplementedMsMin = this.getMomentFromLabel(filterImplementatedText);
+      let submittedImplementedMsMin = this.getMomentFromLabel(filterImplementedText);
     }
     if(filterText.startsWith('Top')) {
 
@@ -323,17 +348,13 @@ class Header extends Component {
               
             {/* Votes Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <VotesFilterSection />
+                <VotesFilterSection min={this.state.votesMin} max={this.state.votesMax} changeMin={(value) => this.changeVotesMin(value)} changeMax={(value) => this.changeVotesMax(value) } />
               </div>
               
             {/* Profit Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <ProfitFilterSection />
+                <ProfitFilterSection min={this.state.profitMin} max={this.state.profitMax}  changeMin={(value) => this.changeProfitMin(value) } changeMax={(value) => this.changeProfitMax(value)} />
               </div>
-
-
-
-
             </div>
             
 
