@@ -14,22 +14,17 @@ class TagSection extends Component {
   props: Props;
 
   state = {
-    tags: [],
     inputValue: '',
   }
 
   handleChange(tags) {
-    this.setState({ tags });
+    this.props.handleTagsChange(tags);
   }
 
   handleKeyPress = e => {
     if (e.key === 'Enter') {
-      const newTags = this.state.tags;
       console.log(e.target.value);
-      newTags.push(e.target.value);
-      this.setState({
-        tags: newTags,
-      });
+      this.props.addTag(e.target.value);
       this.searchTag.value = '';
     }
   }
@@ -41,7 +36,7 @@ class TagSection extends Component {
       <div className="form-group tag-container">
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
-          <TagsInput value={this.state.tags} onChange={::this.handleChange} />
+          <TagsInput value={this.props.tags} onChange={::this.handleChange} />
         </div>
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>

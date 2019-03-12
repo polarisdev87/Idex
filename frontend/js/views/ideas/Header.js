@@ -46,7 +46,6 @@ class Header extends Component {
   }
 
   getDefaultState() {
-
     return {
       filterText: "Top - Past Day (Default)",
       filterImplementedText: "All Time (default)",
@@ -84,11 +83,31 @@ class Header extends Component {
       return atMsMin;
   }
 
+
+  /* Make changes when tags elements change
+  */
+  handleTagsChange(tags) {
+    this.setState({ tags });
+  }
+
+
+  addTag(value) {
+      const newTags = this.state.tags;
+      newTags.push(value);
+      this.setState({
+        tags: newTags,
+      });
+  }
+
+
+
   applyFilters() {
 
     console.log('this', this);
-    const { filterText, stagesSelected, filterImplementationText } = this.state;
+    const { filterText, stagesSelected, filterImplementatedText,implementedFilterSelected } = this.state;
 
+    console.log("applyFilters().state");
+    console.log(this.state);
     let stages = [];
 
     if(stagesSelected['any'] === true) {
@@ -104,6 +123,10 @@ class Header extends Component {
 
     }
 
+
+    if (implementedFilterSelected) {
+      let submittedImplementedMsMin = this.getMomentFromLabel(filterImplementatedText);
+    }
     if(filterText.startsWith('Top')) {
 
       let submittedAtMsMin = this.getMomentFromLabel(filterText);
@@ -133,7 +156,6 @@ class Header extends Component {
 
 
   setFilterImplementedText(filterText) {
-
       this.setState({
           filterImplementedText: `${filterText}`,
         });
@@ -164,6 +186,9 @@ class Header extends Component {
     // todo: disable implemented combo on false
   }
 
+
+
+
   render() {
     const { addIdeaButtonClick } = this.props;
     const { stagesSelected, implementedFilterSelected } = this.state;
@@ -190,7 +215,7 @@ class Header extends Component {
         <div id="collapse-container-body" className="collapse">
           <div className="collapse-container">
             <div className="tag-section">
-              <TagSection />
+              <TagSection tags={this.state.tags} handleTagsChange={(tags) => this.handleTagsChange(tags)} addTag={(tag) => this.addTag(tag)} />
             </div>
         
             {/* Stage */}
