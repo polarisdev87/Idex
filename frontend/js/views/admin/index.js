@@ -106,8 +106,27 @@ class Admin extends Component {
           }
         },
       ],
-    }
+    },
+    tags:[]
   };
+
+
+  /* Make changes when tags elements change
+  */
+  handleTagsChange(tags) {
+    this.setState({ tags });
+  }
+
+
+  addTag(value) {
+      const newTags = this.state.tags;
+      newTags.push(value);
+      this.setState({
+        tags: newTags,
+      });
+  }
+
+
 
   handleChange(date) {
     this.setState({
@@ -171,7 +190,7 @@ class Admin extends Component {
           <div className="body">
             <div className="section1">
               <div className="tag-section">
-                <TagSection />
+                <TagSection tags={this.state.tags} handleTagsChange={(tags) => this.handleTagsChange(tags)} addTag={(tag) => this.addTag(tag)} />
               </div>
               <div className="date-section">
                 <div className="row row-item">
