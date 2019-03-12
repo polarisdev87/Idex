@@ -7,6 +7,8 @@ import { Link } from 'react-router';
 import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
+import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
+
 const moment = require('moment');
 
 type Props = {
@@ -25,15 +27,6 @@ class Header extends Component {
     allTime : 'All Time'
   };
 
-  implementedTypeFilters = {
-    pastHour : "Past Hour",
-    pastDay : 'Past Day',
-    pastWeek : 'Past Week',
-    pastMonth : 'Past Month',
-    pastYear : 'Past Year',
-    allTime : 'All Time'
-  };
-
   constructor(props) {
     super(props);
 
@@ -43,12 +36,13 @@ class Header extends Component {
 
     this.applyFilters.bind(this);
     this.clearFilters.bind(this);
+
+    this.applyFilters();
   }
 
   getDefaultState() {
     return {
-      filterText: "Top - Past Day (Default)",
-      filterImplementedText: "All Time (default)",
+      filterText: `Top - ${this.topTypeFilters.pastDay} (Default)`,
       stagesSelected: {
         any: true,
         incubation: false,
@@ -56,12 +50,13 @@ class Header extends Component {
         launched: false,
         cancelled: false
       },
-      implementedFilterSelected: false,
       tags: [],
       votesMin: 0,
       votesMax: 999999,
       profitMin: 0,
       profitMax: 999999,
+      implementationTimeMin:0,
+      implementationTimeMax:999999,
     };
   }
 
@@ -123,16 +118,31 @@ class Header extends Component {
   changeProfitMax(value) {
     this.setState({ profitMax: value });
   }
+
+
+  changeImplementationTimeMin(value) {
+    this.setState({ implementationTimeMin: value });
+  } 
   
+  changeImplementationTimeMax(value) {
+    this.setState({ implementationTimeMax: value });
+  } 
 
 
   applyFilters() {
 
     console.log('this', this);
-    const { filterText, stagesSelected, filterImplementedText,implementedFilterSelected, votesMin, votesMax, profitMin, profitMax, tags } = this.state;
+    const { filterText, 
+        stagesSelected, 
+        filterImplementedText,
+        implementationTimeMin,
+        implementationTimeMax, 
+        votesMin, 
+        votesMax, 
+        profitMin, 
+        profitMax, 
+        tags } = this.state;
 
-    console.log("applyFilters().state");
-    console.log(this.state);
     let stages = [];
 
     if(stagesSelected['any'] === true) {
@@ -148,22 +158,15 @@ class Header extends Component {
 
     }
 
-    let implementationTimeMsMin=0;
-    let implementationTimeMsMax=null;
-    if (implementedFilterSelected) {
-      implementationTimeMsMin = this.getMomentFromLabel(filterImplementedText);
-    }
     let mainFilter="";
-    let submittedAtMsMin = 0;
+    let submittedAtMsMin = null;
     let submittedAtMsMax = null;
-    console.log("test1");
     if(filterText.startsWith('Top')) {
-	    console.log("Top");
-      let submittedAtMsMin = this.getMomentFromLabel(filterText);
+        submittedAtMsMin = this.getMomentFromLabel(filterText);
     } else {
-      mainFilter = 'Newest';
+        mainFilter = 'Newest';
     }
-    this.props.fetchIdeas(mainFilter, stages, submittedAtMsMin,submittedAtMsMax,votesMin,votesMax,profitMin,profitMax,implementationTimeMsMin,implementationTimeMsMax, tags);
+    this.props.fetchIdeas(mainFilter, stages, submittedAtMsMin,submittedAtMsMax,votesMin,votesMax,profitMin,profitMax,implementationTimeMin,implementationTimeMax, tags);
 
   }
 
@@ -205,16 +208,6 @@ class Header extends Component {
       filterText: this.state.filterText
     })
   }
-
-  toggleImplemented() {
-    let implementedFilterSelected = this.state.implementedFilterSelected;
-    implementedFilterSelected = !implementedFilterSelected;
-    this.setState({
-      implementedFilterSelected,
-    })
-  }
-
-
 
 
   render() {
@@ -319,44 +312,36 @@ class Header extends Component {
                   </ul>​
                 </div>
               </div>
+            </div>
 
-
-            {/* Implementated section */}
+            <div className="row">
+            {/* Expected Time To Market */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-                  <div className="checkbox label-xs-base">
-                    <label>
-                      <input type="checkbox" value="" checked={implementedFilterSelected} onChange={ () =>  this.toggleImplemented() } />
-                      <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Only Implemented
-                    </label>
-                  </div>
-                <div className="dropdown-container">
-                  <ul className="nav site-nav">
-                    <li className={implementedFilterSelected?"flyout":"flyout disabled"}>
-                      <a href="#" className="dropdown-title"><span id="selected">{ this.state.filterImplementedText }</span><span>▼</span></a>
-                      <ul className="flyout-content sub nav stacked">
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastHour) }>{this.implementedTypeFilters.pastHour}</a></li>
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastDay) }>{this.implementedTypeFilters.pastDay}</a></li>
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastWeek) }>{this.implementedTypeFilters.pastWeek}</a></li>
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastMonth) }>{this.implementedTypeFilters.pastMonth}</a></li>
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastYear) }>{this.implementedTypeFilters.pastYear}</a></li>
-                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.allTime) }>{this.implementedTypeFilters.allTime} (Default)</a></li>
-                      </ul>  
-                    </li>
-                  </ul>​
-                </div>
+                <TimeToMarketFilterSection 
+                    min={this.state.implementationTimeMin} 
+                    max={this.state.implementationTimeMax} 
+                    changeMin={(value) => this.changeImplementationTimeMin(value)} 
+                    changeMax={(value) => this.changeImplementationTimeMax(value) } />
               </div>
+
 
               
             {/* Votes Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <VotesFilterSection min={this.state.votesMin} max={this.state.votesMax} changeMin={(value) => this.changeVotesMin(value)} changeMax={(value) => this.changeVotesMax(value) } />
+                <VotesFilterSection 
+                    min={this.state.votesMin} 
+                    max={this.state.votesMax} 
+                    changeMin={(value) => this.changeVotesMin(value)} 
+                    changeMax={(value) => this.changeVotesMax(value) } />
               </div>
               
             {/* Profit Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <ProfitFilterSection min={this.state.profitMin} max={this.state.profitMax}  changeMin={(value) => this.changeProfitMin(value) } changeMax={(value) => this.changeProfitMax(value)} />
+                <ProfitFilterSection 
+                    min={this.state.profitMin} 
+                    max={this.state.profitMax}  
+                    changeMin={(value) => this.changeProfitMin(value) } 
+                    changeMax={(value) => this.changeProfitMax(value)} />
               </div>
             </div>
             
