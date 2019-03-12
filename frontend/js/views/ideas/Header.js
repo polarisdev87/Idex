@@ -129,7 +129,7 @@ class Header extends Component {
   applyFilters() {
 
     console.log('this', this);
-    const { filterText, stagesSelected, filterImplementedText,implementedFilterSelected } = this.state;
+    const { filterText, stagesSelected, filterImplementedText,implementedFilterSelected, votesMin, votesMax, profitMin, profitMax, tags } = this.state;
 
     console.log("applyFilters().state");
     console.log(this.state);
@@ -148,18 +148,22 @@ class Header extends Component {
 
     }
 
-
+    let implementationTimeMsMin=0;
+    let implementationTimeMsMax=null;
     if (implementedFilterSelected) {
-      let submittedImplementedMsMin = this.getMomentFromLabel(filterImplementedText);
+      implementationTimeMsMin = this.getMomentFromLabel(filterImplementedText);
     }
+    let mainFilter="";
+    let submittedAtMsMin = 0;
+    let submittedAtMsMax = null;
+    console.log("test1");
     if(filterText.startsWith('Top')) {
-
+	    console.log("Top");
       let submittedAtMsMin = this.getMomentFromLabel(filterText);
-      this.props.fetchIdeas('Top', stages, submittedAtMsMin)
     } else {
-      this.props.fetchIdeas('Newest', stages)
+      mainFilter = 'Newest';
     }
-
+    this.props.fetchIdeas(mainFilter, stages, submittedAtMsMin,submittedAtMsMax,votesMin,votesMax,profitMin,profitMax,implementationTimeMsMin,implementationTimeMsMax, tags);
 
   }
 
@@ -208,7 +212,6 @@ class Header extends Component {
     this.setState({
       implementedFilterSelected,
     })
-    // todo: disable implemented combo on false
   }
 
 
