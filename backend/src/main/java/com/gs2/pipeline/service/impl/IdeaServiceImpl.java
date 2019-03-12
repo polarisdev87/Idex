@@ -39,6 +39,12 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * fetch the ideas according to filters defined in getIdeasDto
+     * 
+     * 
+     * 
+     */
     @Override
     public List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto) {
 
@@ -52,6 +58,7 @@ public class IdeaServiceImpl implements IdeaService {
             lowercaseTagNames.add(tag.toLowerCase());
         }
 
+        // It has specified tags in filters
         if(getIdeasDto.getTags() != null && getIdeasDto.getTags().size() != 0) {
 
             if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
@@ -72,7 +79,7 @@ public class IdeaServiceImpl implements IdeaService {
                         getIdeasDto.getStages());
             }
 
-        } else {
+        } else { // it does not have specified tags in filters
 
             if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
                 ideas = ideaRepository.findWithParamsOrderByVotes(

@@ -127,6 +127,9 @@
           height:0;
           overflow:hidden;
         }
+        .disabled.flyout:hover > .flyout-content{
+          left:-99999px;
+        }
         .flyout:hover > .flyout-content{
           left:0;
         }

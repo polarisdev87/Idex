@@ -5,6 +5,8 @@ import $ from 'jquery';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import TagSection from '../../components/tags/TagSection';
+import VotesFilterSection from '../../components/filters/VotesFilterSection';
+import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 const moment = require('moment');
 
 type Props = {
@@ -13,6 +15,24 @@ type Props = {
 
 class Header extends Component {
   props: Props;
+
+  topTypeFilters = {
+    pastHour : "Past Hour",
+    pastDay : 'Past Day',
+    pastWeek : 'Past Week',
+    pastMonth : 'Past Month',
+    pastYear : 'Past Year',
+    allTime : 'All Time'
+  };
+
+  implementedTypeFilters = {
+    pastHour : "Past Hour",
+    pastDay : 'Past Day',
+    pastWeek : 'Past Week',
+    pastMonth : 'Past Month',
+    pastYear : 'Past Year',
+    allTime : 'All Time'
+  };
 
   constructor(props) {
     super(props);
@@ -29,6 +49,7 @@ class Header extends Component {
 
     return {
       filterText: "Top - Past Day (Default)",
+      filterImplementedText: "All Time (default)",
       stagesSelected: {
         any: true,
         incubation: false,
@@ -36,6 +57,7 @@ class Header extends Component {
         launched: false,
         cancelled: false
       },
+      implementedFilterSelected: false,
       tags: []
     };
   }
@@ -45,10 +67,27 @@ class Header extends Component {
     $this.find('#collapse-container-body').collapse('show');
   }
 
+
+  getMomentFromLabel(timeLabel) {
+      var atMsMin=0;
+      if(timeLabel.includes('Hour')) {
+        atMsMin = moment.utc().add(-1, 'hours').valueOf();
+      } else if (timeLabel.includes('Day')) {
+        atMsMin = moment.utc().add(-1, 'days').valueOf();
+      } else if (timeLabel.includes('Week')) {
+        atMsMin = moment.utc().add(-1, 'weeks').valueOf();
+      } else if (timeLabel.includes('Month')) {
+        atMsMin = moment.utc().add(-1, 'months').valueOf();
+      } else if (timeLabel.includes('Year')) {
+        atMsMin = moment.utc().add(-1, 'years').valueOf();
+      }
+      return atMsMin;
+  }
+
   applyFilters() {
 
     console.log('this', this);
-    const { filterText, stagesSelected } = this.state;
+    const { filterText, stagesSelected, filterImplementationText } = this.state;
 
     let stages = [];
 
@@ -67,26 +106,13 @@ class Header extends Component {
 
     if(filterText.startsWith('Top')) {
 
-      let submittedAtMsMin;
-
-      if(filterText.includes('Hour')) {
-        submittedAtMsMin = moment.utc().add(-1, 'hours').valueOf();
-      } else if (filterText.includes('Day')) {
-        submittedAtMsMin = moment.utc().add(-1, 'days').valueOf();
-      } else if (filterText.includes('Week')) {
-        submittedAtMsMin = moment.utc().add(-1, 'weeks').valueOf();
-      } else if (filterText.includes('Month')) {
-        submittedAtMsMin = moment.utc().add(-1, 'months').valueOf();
-      } else if (filterText.includes('Year')) {
-        submittedAtMsMin = moment.utc().add(-1, 'years').valueOf();
-      } else {
-        submittedAtMsMin = 0;
-      }
-
+      let submittedAtMsMin = this.getMomentFromLabel(filterText);
       this.props.fetchIdeas('Top', stages, submittedAtMsMin)
     } else {
       this.props.fetchIdeas('Newest', stages)
     }
+
+
   }
 
   clearFilters() {
@@ -105,6 +131,15 @@ class Header extends Component {
     }
   }
 
+
+  setFilterImplementedText(filterText) {
+
+      this.setState({
+          filterImplementedText: `${filterText}`,
+        });
+  }
+
+
   checkStageBox(stageBox) {
 
     let stagesSelected = this.state.stagesSelected;
@@ -120,15 +155,27 @@ class Header extends Component {
     })
   }
 
+  toggleImplemented() {
+    let implementedFilterSelected = this.state.implementedFilterSelected;
+    implementedFilterSelected = !implementedFilterSelected;
+    this.setState({
+      implementedFilterSelected,
+    })
+    // todo: disable implemented combo on false
+  }
+
   render() {
     const { addIdeaButtonClick } = this.props;
-    const { stagesSelected } = this.state;
+    const { stagesSelected, implementedFilterSelected } = this.state;
 
 
     return (
       <div className="header-container shadow">
-        <div className="nav-container">
-          <div className="row">
+
+            {/* Header */}
+      
+      	<div className="nav-container">
+        <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
               <button type="button" className="btn btn-link" data-toggle="collapse" href="#collapse-container-body">Filter</button>
             </div>
@@ -137,11 +184,17 @@ class Header extends Component {
             </div>
           </div>
         </div>
+
+        
+        
         <div id="collapse-container-body" className="collapse">
           <div className="collapse-container">
             <div className="tag-section">
               <TagSection />
             </div>
+        
+            {/* Stage */}
+            
             <div className="row">
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
@@ -185,6 +238,8 @@ class Header extends Component {
                   </div>
                 </div>
               </div>
+
+            {/* Sort by section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
                   Sort by:
@@ -197,12 +252,12 @@ class Header extends Component {
                         <li className="flyout-alt">
                           <a href="#">Top (default)</a>
                           <ul className="flyout-content sub nav stacked">
-                            <li><a href="#" onClick={ () => this.setFilterText('Past Hour') }>Past Hour</a></li>
-                            <li><a href="#" onClick={ () => this.setFilterText('Past Day') }>Past Day (default)</a></li>
-                            <li><a href="#" onClick={ () => this.setFilterText('Past Week') }>Past Week</a></li>
-                            <li><a href="#" onClick={ () => this.setFilterText('Past Month') }>Past Month</a></li>
-                            <li><a href="#" onClick={ () => this.setFilterText('Past Year') }>Past Year</a></li>
-                            <li><a href="#" onClick={ () => this.setFilterText('All Time') }>All Time</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.pastHour) }>{this.topTypeFilters.pastHour}</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.pastDay) }>{this.topTypeFilters.pastDay} (Default)</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.pastWeek) }>{this.topTypeFilters.pastWeek}</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.pastMonth) }>{this.topTypeFilters.pastMonth}</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.pastYear) }>{this.topTypeFilters.pastYear}</a></li>
+                            <li><a href="#" onClick={ () => this.setFilterText(this.topTypeFilters.allTime) }>{this.topTypeFilters.allTime}</a></li>
                           </ul>
                         </li>
                         <li><a href="#" onClick={ () => this.setFilterText('Newest') }>Newest</a></li>
@@ -211,7 +266,53 @@ class Header extends Component {
                   </ul>​
                 </div>
               </div>
+
+
+            {/* Implementated section */}
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+                  <div className="checkbox label-xs-base">
+                    <label>
+                      <input type="checkbox" value="" checked={implementedFilterSelected} onChange={ () =>  this.toggleImplemented() } />
+                      <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
+                      Only Implemented
+                    </label>
+                  </div>
+                <div className="dropdown-container">
+                  <ul className="nav site-nav">
+                    <li className={implementedFilterSelected?"flyout":"flyout disabled"}>
+                      <a href="#" className="dropdown-title"><span id="selected">{ this.state.filterImplementedText }</span><span>▼</span></a>
+                      <ul className="flyout-content sub nav stacked">
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastHour) }>{this.implementedTypeFilters.pastHour}</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastDay) }>{this.implementedTypeFilters.pastDay}</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastWeek) }>{this.implementedTypeFilters.pastWeek}</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastMonth) }>{this.implementedTypeFilters.pastMonth}</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.pastYear) }>{this.implementedTypeFilters.pastYear}</a></li>
+                        <li><a href="#" onClick={ () => this.setFilterImplementedText(this.implementedTypeFilters.allTime) }>{this.implementedTypeFilters.allTime} (Default)</a></li>
+                      </ul>  
+                    </li>
+                  </ul>​
+                </div>
+              </div>
+
+              
+            {/* Votes Section */}
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <VotesFilterSection />
+              </div>
+              
+            {/* Profit Section */}
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                <ProfitFilterSection />
+              </div>
+
+
+
+
             </div>
+            
+
+            {/* Base Section */}
             <div className="result-container">
               <div className="label-base-base">
                 <span>{ this.props.numIdeas } Results</span>

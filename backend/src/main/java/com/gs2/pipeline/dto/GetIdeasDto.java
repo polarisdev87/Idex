@@ -14,8 +14,21 @@ public class GetIdeasDto {
         add("Cancelled");
     }};
 
+    
+    /**
+     * Preseted Filters
+     * 
+     * 2 kinds of filters
+     * 	Top
+     * 		
+     *  Newest
+     * 
+     */
     private String filter;
     private Set<String> stages;
+    /**
+     * 
+     */
     private Long submittedAtMsMin;
     private Long submittedAtMsMax;
     private Long votesMin;
@@ -24,6 +37,9 @@ public class GetIdeasDto {
     private Long profitMax;
     private Long implementationTimeMsMin;
     private Long implementationTimeMsMax;
+    /**
+     * Set of tags. They are case insensitive
+     */
     private Set<String> tags;
 
     public GetIdeasDto() {
