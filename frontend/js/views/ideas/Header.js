@@ -101,31 +101,35 @@ class Header extends Component {
 
 
   changeVotesMin(value) {
-    console.log("changeVotesMin");
-    console.log(value);
-    this.setState({ votesMin: value });
+    let votesMax=value > this.state.votesMax ? value: this.state.votesMax;
+    this.setState({ votesMin: value, votesMax: votesMax });
   }
 
   changeVotesMax(value) {
-    this.setState({ votesMax: value });
+    let votesMin=value < this.state.votesMin ? value: this.state.votesMin;
+    this.setState({ votesMax: value, votesMin:votesMin });
   }
   
 
   changeProfitMin(value) {
-    this.setState({ profitMin: value });
+    let profitMax=value > this.state.profitMax ? value: this.state.profitMax;
+    this.setState({ profitMin: value, profitMax: profitMax });
   }
 
   changeProfitMax(value) {
-    this.setState({ profitMax: value });
+    let profitMin=value < this.state.profitMin ? value: this.state.profitMin;
+    this.setState({ profitMax: value, profitMin: profitMin });
   }
 
 
   changeImplementationTimeMin(value) {
-    this.setState({ implementationTimeMin: value });
+    let implementationTimeMax=value > this.state.implementationTimeMax ? value: this.state.implementationTimeMax;
+    this.setState({ implementationTimeMin: value, implementationTimeMax: implementationTimeMax });
   } 
   
   changeImplementationTimeMax(value) {
-    this.setState({ implementationTimeMax: value });
+    let implementationTimeMin=value < this.state.implementationTimeMin ? value: this.state.implementationTimeMin;
+    this.setState({ implementationTimeMax: value, implementationTimeMin:implementationTimeMin });
   } 
 
 
@@ -134,7 +138,6 @@ class Header extends Component {
     console.log('this', this);
     const { filterText, 
         stagesSelected, 
-        filterImplementedText,
         implementationTimeMin,
         implementationTimeMax, 
         votesMin, 
