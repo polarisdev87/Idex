@@ -27,6 +27,22 @@ function getIdeasSuccess(ideas) {
   };
 }
 
+/**
+ * 
+ * Get the ideas according to the filter
+ * 
+ * @param {} filter 
+ * @param {*} stages 
+ * @param {*} submittedAtMsMin 
+ * @param {*} submittedAtMsMax 
+ * @param {*} votesMin 
+ * @param {*} votesMax 
+ * @param {*} profitMin 
+ * @param {*} profitMax 
+ * @param {*} implementationTimeMsMin 
+ * @param {*} implementationTimeMsMax 
+ * @param {*} tags 
+ */
 export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
                            votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
                            implementationTimeMsMax, tags) {
@@ -204,9 +220,15 @@ export function deleteIdeas(ideaIds) {
 }
 
 
+/**
+ * Add a new idea async
+ */
+
 export const ADD_IDEA_REQUEST = 'ADD_IDEA_REQUEST';
 export const ADD_IDEA_SUCCESS = 'ADD_IDEA_SUCCESS';
 export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
+
+
 
 function addIdeaRequest() {
   return {

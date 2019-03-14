@@ -105,6 +105,8 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) {
@@ -158,6 +160,13 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * Add a comment to an idea
+     * 
+     * Returns exception if idea id does not exist
+     * 
+     * On success. returns the idea with the added comment
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException {
@@ -240,6 +249,14 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * Adds a new idea
+     * @param ideaDto
+     * @param insertedBy
+     * @param tags
+     * @return
+     */
+    
     private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags) {
 
         for(Tag tag : tags) {
@@ -259,7 +276,7 @@ public class IdeaServiceImpl implements IdeaService {
         return ideaRepository.save(idea).toDto();
     }
 
-
+    
     private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags) {
 
         updateTags(existing.getTags(), tags);

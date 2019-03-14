@@ -141,7 +141,9 @@ class Ideas extends Component {
           />
           {renderIdeaItems}
         </div>
-        <AddIdeaModal isOpen={isOpen} idea={this.modalIdea} type={this.type} handleIdea={(idea, type) => this.handleIdea(idea, type)} close={() => this.closeModal()} />
+        <AddIdeaModal isOpen={isOpen} idea={this.modalIdea} type={this.type} 
+            handleIdea={(idea, type) => this.handleIdea(idea, type)} 
+            close={() => this.closeModal()} />
       </div>
     );
   }

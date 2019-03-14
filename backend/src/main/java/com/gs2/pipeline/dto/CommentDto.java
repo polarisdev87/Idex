@@ -3,7 +3,6 @@ package com.gs2.pipeline.dto;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
 import com.gs2.pipeline.domain.Idea;
-import com.gs2.pipeline.domain.Vote;
 
 public class CommentDto {
 

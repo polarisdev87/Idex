@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import StageMark from '../../components/StageMark';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
+import { addComment } from '../../actions/comments';
 
 type Props = {
   idea: {
@@ -33,15 +34,25 @@ class IdeaItem extends Component {
     comments: []
   }
 
-  handleKeyPress = e => {
+  handleKeyPress = (ideaId,e) => {
     if (e.key === 'Enter') {
-      const newComments = this.state.comments;
+    const newComments = this.state.comments;
+      this.props.dispatch(addComment({
+        ideaId:ideaId,
+        text:e.target.value,
+        sumittedBy:'',
+        submittedAt:''
+      })); 
+
+      //TODO: move this as a result of reducer
       newComments.push(e.target.value);
       this.setState({
         comments: newComments,
       });
       this.commentInput.value = '';
+
     }
+
   }
 
   render() {
@@ -68,7 +79,7 @@ class IdeaItem extends Component {
           <div className="avatar-container"><img src="" alt="" /></div>
         </div>
         <div className="col-xs-10 col-sm-11 col-md-11 col-lg-11 comment">
-          <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={this.handleKeyPress} />
+          <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={(e) =>this.handleKeyPress(idea.id,e)} />
         </div>
       </div>
     );
@@ -122,4 +133,14 @@ class IdeaItem extends Component {
   }
 }
 
-export default IdeaItem;
+
+function mapStateToProps(state) {
+  return {
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return { dispatch };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IdeaItem);

@@ -364,4 +364,16 @@ class Header extends Component {
   }
 }
 
-export default Header;
+function mapStateToProps(state) {
+  return {
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return { dispatch };
+}
+
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
