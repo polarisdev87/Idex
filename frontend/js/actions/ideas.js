@@ -85,6 +85,10 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
         if (!response.ok) {
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
+        } else {
+          console.log("ideas.js.fetchIdeas(...)");
+          console.log(queryString);
+          console.log(body);
         }
         dispatch(getIdeasSuccess(body));
         return true;

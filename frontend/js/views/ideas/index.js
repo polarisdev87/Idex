@@ -117,12 +117,13 @@ class Ideas extends Component {
   }
 
   render() {
+
+    console.log("index.js");
+    console.log(this.props);
     const { isOpen } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
     const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas } } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
-    console.log("index.js");
-    console.log(this.props);
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
         <IdeaItem 
