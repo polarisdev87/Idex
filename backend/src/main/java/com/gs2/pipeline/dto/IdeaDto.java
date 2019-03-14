@@ -6,6 +6,7 @@ import com.gs2.pipeline.domain.Idea;
 import com.gs2.pipeline.domain.Tag;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -86,13 +87,15 @@ public class IdeaDto {
         return String.format(SUBMITTED_BY_FORMAT, username, firstName, lastName);
     }
 
-    private List<CommentDto> getCommentDtos(List<Comment> comments, Idea idea) {
+    private List<CommentDto> getCommentDtos(Set<Comment> comments, Idea idea) {
 
         List<CommentDto> commentDtos = new ArrayList<>(comments.size());
 
         for(Comment comment: comments) {
             commentDtos.add(new CommentDto(comment, idea.getId(), getSubmittedBy(idea), comment.getSubmittedAt().getTime()));
         }
+        
+        Collections.sort(commentDtos);
 
         return commentDtos;
     }

@@ -85,4 +85,5 @@ public class Comment {
     public void setSubmittedBy(Account submittedBy) {
         this.submittedBy = submittedBy;
     }
+
 }

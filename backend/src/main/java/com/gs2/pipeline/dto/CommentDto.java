@@ -4,7 +4,7 @@ import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
 import com.gs2.pipeline.domain.Idea;
 
-public class CommentDto {
+public class CommentDto implements Comparable<CommentDto>  {
 
     private Long ideaId;
     private String text;
@@ -53,4 +53,10 @@ public class CommentDto {
     public void setSubmittedAt(Long submittedAt) {
         this.submittedAt = submittedAt;
     }
+    
+	@Override
+	public int compareTo(CommentDto comment) {
+		return this.getSubmittedAt().compareTo(comment.getSubmittedAt());
+	}
+    
 }

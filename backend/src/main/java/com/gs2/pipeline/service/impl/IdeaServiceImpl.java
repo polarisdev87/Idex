@@ -271,7 +271,7 @@ public class IdeaServiceImpl implements IdeaService {
         idea.setUpdatedAt(currentTime);
         idea.setStage("Incubation");
         idea.setVotes(0L);
-        idea.setComments(new ArrayList<>());
+        idea.setComments(new HashSet<>());
 
         return ideaRepository.save(idea).toDto();
     }
