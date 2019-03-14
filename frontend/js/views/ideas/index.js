@@ -121,9 +121,15 @@ class Ideas extends Component {
     console.log('this.modalIdea ===>', this.modalIdea);
     const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas } } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
+    console.log("index.js");
+    console.log(this.props);
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
-        <IdeaItem key={item.id.toString()} idea={item} edit={() => this.editIdeaButtonClickHandler(item)} view={() => this.viewIdeaClickHandler(item)} />
+        <IdeaItem 
+            key={item.id.toString()} 
+            idea={item} 
+            edit={() => this.editIdeaButtonClickHandler(item)} 
+            view={() => this.viewIdeaClickHandler(item)} />
       )) :
       null;
 

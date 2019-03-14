@@ -24,32 +24,33 @@ type Props = {
     votes: number,
   },
   edit: () => {},
-  view: () => {}
+  view: () => {},
 }
 
 class IdeaItem extends Component {
   props: Props;
 
-  state = {
-    comments: []
-  }
-
-  handleKeyPress = (ideaId,e) => {
+  handleKeyPress = e => {
     if (e.key === 'Enter') {
-    const newComments = this.state.comments;
-      this.props.dispatch(addComment({
-        ideaId:ideaId,
+
+      const { dispatch,idea } = this.props;
+      dispatch(addComment({
+        ideaId:idea.id,
         text:e.target.value,
         sumittedBy:'',
         submittedAt:''
       })); 
 
+
       //TODO: move this as a result of reducer
+      let newComments = idea.comments;
       newComments.push(e.target.value);
       this.setState({
         comments: newComments,
       });
+
       this.commentInput.value = '';
+
 
     }
 
@@ -60,15 +61,19 @@ class IdeaItem extends Component {
     const { idea, edit, view } = this.props;
     const commentBoxId = `comment-container-${idea.id}`;
     const commentBoxHref = `#comment-container-${idea.id}`;
-    const { comments } = this.state;
-    const commentsMark = (comments !== undefined) ?
-      comments.map((comment, index) => (
+    console.log("IdeaItem.js");
+    console.log(idea);
+
+    console.log("comments");
+    console.log(idea.comments);
+    const commentsMark = (idea.comments !== undefined) ?
+      idea.comments.map((comment, index) => (
         <div key={index.toString()} className="row">
           <div className="col-xs-2 col-sm-1 col-md-1 col-lg-1">
             <div className="avatar-container"><img src="" alt="" /></div>
           </div>
           <div className="col-xs-10 col-sm-11 col-md-11 col-lg-11 comment">
-            <div className="label-base-base">{comment}</div>
+            <div className="label-base-base">{comment.text}</div>
           </div>
         </div>
       )) :
@@ -79,7 +84,7 @@ class IdeaItem extends Component {
           <div className="avatar-container"><img src="" alt="" /></div>
         </div>
         <div className="col-xs-10 col-sm-11 col-md-11 col-lg-11 comment">
-          <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={(e) =>this.handleKeyPress(idea.id,e)} />
+          <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={this.handleKeyPress} />
         </div>
       </div>
     );
@@ -124,7 +129,7 @@ class IdeaItem extends Component {
 
         <div id={ commentBoxId } className="collapse">
           <div className="comment-wrapper">
-            {commentsMark}
+             {commentsMark}         
             {addCommentMark}
           </div>
         </div>

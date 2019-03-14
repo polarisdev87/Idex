@@ -89,7 +89,6 @@ export function addComment(comment) {
         return true;
       }).catch(err => {
         dispatch(addCommentError(`Failed to add comment. ${err}`));
-        console.log('Error: ', err);
       });
   };
 }
