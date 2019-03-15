@@ -17,14 +17,16 @@ function addCommentRequest() {
 }
 
 function addCommentError(message) {
-  return {
-    type: ADD_COMMENT_FAILURE,
-    message,
+    console.log("actions/comments.js");
+    console.log("addCommentError");
+    console.log(message);
+    return {
+        type: ADD_COMMENT_FAILURE,
+        message,
   };
 }
 
 /**
- * 
  * @param {*} idea
  *  The updated idea with the added comment that is returned by the backend
  * 
@@ -81,10 +83,12 @@ export function addComment(comment) {
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
+            console.log("!response.ok");
           dispatch(addCommentError(`Failed to add comment. ${body.error}`));
           return Promise.reject('Failed to add comment');
-        }
+        } 
         // body is the returned idea from backend
+        console.log("afte !response.ok");
         dispatch(addCommentSuccess(body));
         return true;
       }).catch(err => {

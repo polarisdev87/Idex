@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import StageMark from '../../components/StageMark';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment } from '../../actions/comments';
+import { Alert } from 'react-bootstrap';
 
 type Props = {
   idea: {
@@ -33,24 +34,15 @@ class IdeaItem extends Component {
   handleKeyPress = e => {
     if (e.key === 'Enter') {
 
-      const { dispatch,idea } = this.props;
+      const { dispatch, idea } = this.props;
       dispatch(addComment({
-        ideaId:idea.id,
-        text:e.target.value,
-        sumittedBy:'',
-        submittedAt:''
+        ideaId: idea.id,
+        text: e.target.value,
+        sumittedBy: '',
+        submittedAt: ''
       })); 
 
-
-      //TODO: move this as a result of reducer
-      let newComments = idea.comments;
-      newComments.push(e.target.value);
-      this.setState({
-        comments: newComments,
-      });
-
       this.commentInput.value = '';
-
 
     }
 
@@ -88,7 +80,7 @@ class IdeaItem extends Component {
         </div>
       </div>
     );
-
+        let showCommentError = typeof this.props.commentsErrorMessage != "undefined";
     return (
       <div className="idea-item-container shadow">
         <div className="body-container" onClick={() => view()} >
@@ -129,8 +121,10 @@ class IdeaItem extends Component {
 
         <div id={ commentBoxId } className="collapse">
           <div className="comment-wrapper">
-             {commentsMark}         
-            {addCommentMark}
+              {showCommentError  &&
+                <Alert bsStyle="danger"  >{this.props.commentsErrorMessage}</Alert>  }
+             { commentsMark }         
+            { addCommentMark }
           </div>
         </div>
       </div>
@@ -141,7 +135,9 @@ class IdeaItem extends Component {
 
 function mapStateToProps(state) {
   return {
+      commentsErrorMessage: state.ideas.commentsErrorMessage
   };
+
 }
 
 function mapDispatchToProps(dispatch) {

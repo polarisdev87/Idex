@@ -2,7 +2,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-
 import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
@@ -122,7 +121,7 @@ class Ideas extends Component {
     console.log(this.props);
     const { isOpen } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
-    const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas } } = this.props;
+    const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments } } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
@@ -130,7 +129,8 @@ class Ideas extends Component {
             key={item.id.toString()} 
             idea={item} 
             edit={() => this.editIdeaButtonClickHandler(item)} 
-            view={() => this.viewIdeaClickHandler(item)} />
+            view={() => this.viewIdeaClickHandler(item)}
+            />
       )) :
       null;
 
