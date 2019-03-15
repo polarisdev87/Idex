@@ -17,9 +17,6 @@ function addCommentRequest() {
 }
 
 function addCommentError(message) {
-    console.log("actions/comments.js");
-    console.log("addCommentError");
-    console.log(message);
     return {
         type: ADD_COMMENT_FAILURE,
         message,
@@ -84,7 +81,7 @@ export function addComment(comment) {
       .then(({ body, response }) => {
         if (!response.ok) {
             console.log("!response.ok");
-          dispatch(addCommentError(`Failed to add comment. ${body.error}`));
+          dispatch(addCommentError(`${body.error}`)); // failed to add comment
           return Promise.reject('Failed to add comment');
         } 
         // body is the returned idea from backend
@@ -92,7 +89,7 @@ export function addComment(comment) {
         dispatch(addCommentSuccess(body));
         return true;
       }).catch(err => {
-        dispatch(addCommentError(`Failed to add comment. ${err}`));
+        dispatch(addCommentError(`${err}`));
       });
   };
 }
