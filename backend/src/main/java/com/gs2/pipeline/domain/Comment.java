@@ -23,7 +23,7 @@ public class Comment {
     @JoinColumn(name = "idea")
     private Idea idea;
 
-    @Column(name = "name", length = 16383, unique = true)
+    @Column(name = "name", length = 16383, unique = false)
     @NotNull
     private String text;
 
