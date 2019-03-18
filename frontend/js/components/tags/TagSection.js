@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import TagsInput from 'react-tagsinput';
 import Toggle from 'react-bootstrap-toggle';
+import { connect } from 'react-redux';
+import { toggleFilterFullPartial } from '../../actions/ideas';
 
 type Props = {
   placeholder: '',
@@ -22,34 +24,27 @@ class TagSection extends Component {
   }
 
   onToggle(x) {
-    console.log(this);
-    const newToggleActive = !this.state.toggleActive;
-    this.setState({ toggleActive: newToggleActive });
+    const { dispatch } = this.props;
+    console.log("onToggle(x)");
+    console.log(dispatch);
+    dispatch(toggleFilterFullPartial()); 
   }
 
 
-  /*
-      <span>
-
-  */
-
   defaultRenderLayout(tagComponents, inputComponent, toggleActive) {
-    console.log('defaultRender');
-    console.log(tagComponents);
-    console.log(inputComponent);
     return (
       <span>
-          { tagComponents.length>0 && 
-        <span>
-          <Toggle
-            onClick={(x) => { this.onToggle(x) ;}}
-            on="Partial"
-            off="Full"
-            size="sm"
-            active={toggleActive}
-          />
-        </span>
-          }
+        { tagComponents.length > 0 &&
+          <span>
+            <Toggle
+              onClick={(x) => { this.onToggle(x); }}
+              on="Partial"
+              off="Full"
+              size="sm"
+              active={toggleActive}
+            />
+          </span>
+        }
 
         {tagComponents}
         {inputComponent}
@@ -73,7 +68,7 @@ class TagSection extends Component {
       <div className="form-group tag-container">
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
-          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout ={(a, b) => this.defaultRenderLayout(a, b, this.state.toggleActive)} />
+          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout={(a, b) => this.defaultRenderLayout(a, b, this.props.togglePartialFullActive)} />
         </div>
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>
@@ -108,4 +103,21 @@ class TagSection extends Component {
   }
 }
 
-export default TagSection;
+
+function mapStateToProps(state) {
+    console.log("TagSection.mapStateToProps");
+    console.log(state);
+
+  return {
+      togglePartialFullActive: state.ideas.togglePartialFullActive,      
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return { dispatch };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(TagSection);
+
+

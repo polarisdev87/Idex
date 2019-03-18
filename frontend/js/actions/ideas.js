@@ -294,3 +294,16 @@ export function addIdea(idea) {
       });
   };
 }
+
+
+export const TOGGLE_FILTER_FULL_PARTIAL = 'TOGGLE_FILTER_FULL_PARTIAL';
+
+
+export function toggleFilterFullPartial() {
+  return {
+    type: TOGGLE_FILTER_FULL_PARTIAL,
+  };
+}
+
+
+

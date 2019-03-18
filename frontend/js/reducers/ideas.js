@@ -1,4 +1,4 @@
-import { GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE } from '../actions/ideas';
+import { GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE, TOGGLE_FILTER_FULL_PARTIAL } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE } from '../actions/comments';
 
 export function ideas(state = {
@@ -7,6 +7,7 @@ export function ideas(state = {
   ideasArr: [],
   ideasErrorMessage: undefined,
   commentsErrorMessage: undefined,
+  togglePartialFullActive: true,
 }, action) {
   switch (action.type) {
     case GET_IDEAS_REQUEST:
@@ -50,6 +51,11 @@ export function ideas(state = {
       return Object.assign({}, state, {
         isFetchingComments: false,
         commentsErrorMessage: action.message,
+      });
+    }
+    case TOGGLE_FILTER_FULL_PARTIAL: {
+      return Object.assign({}, state, {
+        togglePartialFullActive: !state.togglePartialFullActive,
       });
     }
     default:

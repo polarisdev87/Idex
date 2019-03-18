@@ -8,7 +8,6 @@ import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
-import Toggle from 'react-bootstrap-toggle';
 
 const moment = require('moment');
 
@@ -96,8 +95,6 @@ class Header extends Component {
 
 
   addTag(value) {
-      console.log("addTag(...)");
-      console.log(this);
     const newTags = this.state.tags;
     const newOptionalMarks = this.state.optionalMarks;
 
@@ -107,6 +104,7 @@ class Header extends Component {
       optionalMarks: newOptionalMarks,
     });
   }
+
 
 
   changeVotesMin(value) {
