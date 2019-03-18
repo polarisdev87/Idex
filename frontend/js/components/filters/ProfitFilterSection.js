@@ -1,7 +1,9 @@
 // @flow
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import cx from 'classnames';
 import NumericInput from 'react-numeric-input'; 
+import PropTypes from 'prop-types'
+
 
 type Props = {
   placeholder: '',

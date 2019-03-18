@@ -8,6 +8,7 @@ import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
+import Toggle from 'react-bootstrap-toggle';
 
 const moment = require('moment');
 
@@ -58,6 +59,7 @@ class Header extends Component {
       profitMax: 999999,
       implementationTimeMin: 0,
       implementationTimeMax: 999999,
+      toggleActive: true,
     };
   }
 
@@ -92,7 +94,10 @@ class Header extends Component {
   }
 
 
+
   addTag(value) {
+      console.log("addTag(...)");
+      console.log(this);
     const newTags = this.state.tags;
     const newOptionalMarks = this.state.optionalMarks;
 
@@ -224,7 +229,6 @@ class Header extends Component {
       <div className="header-container shadow">
 
         {/* Header */}
-
         <div className="nav-container">
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
