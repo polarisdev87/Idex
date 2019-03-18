@@ -117,21 +117,26 @@ class Ideas extends Component {
   }
 
   render() {
-
-    console.log("index.js");
+    console.log('index.js');
     console.log(this.props);
     const { isOpen } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
-    const { ideas: { ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments } } = this.props;
+    const {
+      ideas: {
+         ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments, togglePartialFullActive,
+        } } = this.props;
+    console.log(ideasArr);    
+    console.log("togglePartialFullActive");    
+    console.log(togglePartialFullActive);    
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
-        <IdeaItem 
-            key={item.id.toString()} 
-            idea={item} 
-            edit={() => this.editIdeaButtonClickHandler(item)} 
-            view={() => this.viewIdeaClickHandler(item)}
-            />
+        <IdeaItem
+          key={item.id.toString()}
+          idea={item}
+          edit={() => this.editIdeaButtonClickHandler(item)}
+          view={() => this.viewIdeaClickHandler(item)}
+        />
       )) :
       null;
 
@@ -140,18 +145,24 @@ class Ideas extends Component {
         <div className="ideas-container">
           <Header
             addIdeaButtonClick={() => this.addIdeaButtonClickHandler()}
-            fetchIdeas={ (filter, stages, submittedAtMsMin, submittedAtMsMax,
-                          votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-                          implementationTimeMsMax, tags) => this.props.dispatch(fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
-                                                  votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-                                                  implementationTimeMsMax, tags)) }
-            numIdeas = { numIdeas }
+            fetchIdeas={(
+              filter, stages, submittedAtMsMin, submittedAtMsMax,
+              votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+              implementationTimeMsMax, tags,
+            ) => this.props.dispatch(fetchIdeas(
+              filter, stages, submittedAtMsMin, submittedAtMsMax,
+              votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+              implementationTimeMsMax, tags, togglePartialFullActive,
+))}
+            numIdeas= {numIdeas}
           />
           {renderIdeaItems}
         </div>
-        <AddIdeaModal isOpen={isOpen} idea={this.modalIdea} type={this.type} 
-            handleIdea={(idea, type) => this.handleIdea(idea, type)} 
-            close={() => this.closeModal()} />
+        <AddIdeaModal
+          isOpen={isOpen} idea={this.modalIdea} type={this.type}
+          handleIdea={(idea, type) => this.handleIdea(idea, type)}
+          close={() => this.closeModal()}
+        />
       </div>
     );
   }
@@ -160,7 +171,7 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
-    filters: state.filters
+    filters: state.filters,
   };
 }
 

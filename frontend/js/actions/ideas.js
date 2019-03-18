@@ -43,16 +43,21 @@ function getIdeasSuccess(ideas) {
  * @param {*} implementationTimeMsMax 
  * @param {*} tags 
  */
-export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
-                           votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-                           implementationTimeMsMax, tags) {
+export function fetchIdeas(
+  filter, stages, submittedAtMsMin, submittedAtMsMax,
+  votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+  implementationTimeMsMax, tags, togglePartialFullActive,
+) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+
+  console.log("fetchIdeas");
+  console.log(togglePartialFullActive);
 
   let config = {
     method: 'GET',
   };
 
-  let query = {
+  const query = {
     filter,
     stages,
     submittedAtMsMin,
@@ -63,9 +68,12 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
     profitMax,
     implementationTimeMsMin,
     implementationTimeMsMax,
-    tags
+    tags,
+    togglePartialFullActive,
   };
 
+  console.log("query");
+  console.log(query);
   if (token) {
     config = {
       headers: { Authorization: `${token}` },
@@ -77,16 +85,22 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
   return dispatch => {
     dispatch(getIdeasRequest());
 
-    let url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
+    const url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
 
     return fetch(url, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
+          console.log("ideas.js.fetchIdeas(...) !ok");
+          console.log(query);
+          console.log(queryString);
+          console.log(body);
+
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
         } else {
-          console.log("ideas.js.fetchIdeas(...)");
+          console.log("ideas.js.fetchIdeas(...) is ok");
+          console.log(query);
           console.log(queryString);
           console.log(body);
         }

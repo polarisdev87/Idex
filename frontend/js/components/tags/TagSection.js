@@ -25,8 +25,6 @@ class TagSection extends Component {
 
   onToggle(x) {
     const { dispatch } = this.props;
-    console.log("onToggle(x)");
-    console.log(dispatch);
     dispatch(toggleFilterFullPartial()); 
   }
 
@@ -34,7 +32,7 @@ class TagSection extends Component {
   defaultRenderLayout(tagComponents, inputComponent, toggleActive) {
     return (
       <span>
-        { tagComponents.length > 0 &&
+        { tagComponents.length > 1 &&
           <span>
             <Toggle
               onClick={(x) => { this.onToggle(x); }}
@@ -54,7 +52,6 @@ class TagSection extends Component {
 
   handleKeyPress = e => {
     if (e.key === 'Enter') {
-      console.log(e.target.value);
       this.props.addTag(e.target.value);
       this.searchTag.value = '';
     }
@@ -105,9 +102,6 @@ class TagSection extends Component {
 
 
 function mapStateToProps(state) {
-    console.log("TagSection.mapStateToProps");
-    console.log(state);
-
   return {
       togglePartialFullActive: state.ideas.togglePartialFullActive,      
   };
