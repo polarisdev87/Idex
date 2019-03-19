@@ -188,7 +188,7 @@ public class IdeaServiceImpl implements IdeaService {
      * 
      * Returns exception if idea id does not exist
      * 
-     * On success. returns the idea with the added comment
+     * On success. returns the idea in IdeaDto format with the added comment
      */
     @Override
     @Transactional(rollbackFor = Exception.class)

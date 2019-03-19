@@ -80,12 +80,12 @@ export function addComment(comment) {
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-            console.log("!response.ok");
+          console.log('!response.ok');
           dispatch(addCommentError(`${body.error}`)); // failed to add comment
           return Promise.reject('Failed to add comment');
-        } 
+        }
         // body is the returned idea from backend
-        console.log("afte !response.ok");
+        console.log("after !response.ok");
         dispatch(addCommentSuccess(body));
         return true;
       }).catch(err => {

@@ -28,20 +28,20 @@ function getIdeasSuccess(ideas) {
 }
 
 /**
- * 
+ *
  * Get the ideas according to the filter
- * 
- * @param {} filter 
- * @param {*} stages 
- * @param {*} submittedAtMsMin 
- * @param {*} submittedAtMsMax 
- * @param {*} votesMin 
- * @param {*} votesMax 
- * @param {*} profitMin 
- * @param {*} profitMax 
- * @param {*} implementationTimeMsMin 
- * @param {*} implementationTimeMsMax 
- * @param {*} tags 
+ *
+ * @param {} filter
+ * @param {*} stages
+ * @param {*} submittedAtMsMin
+ * @param {*} submittedAtMsMax
+ * @param {*} votesMin
+ * @param {*} votesMax
+ * @param {*} profitMin
+ * @param {*} profitMax
+ * @param {*} implementationTimeMsMin
+ * @param {*} implementationTimeMsMax
+ * @param {*} tags
  */
 export function fetchIdeas(
   filter, stages, submittedAtMsMin, submittedAtMsMax,

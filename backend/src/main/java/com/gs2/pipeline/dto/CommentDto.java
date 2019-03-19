@@ -10,16 +10,22 @@ public class CommentDto implements Comparable<CommentDto>  {
     private String text;
     private String submittedBy;
     private Long submittedAt;
+    /**
+     * submittedBy could be deduced from account
+     */
+    private AccountDto account;
 
     public CommentDto() {
     }
 
-    public CommentDto(Comment comment, Long ideaId, String submittedBy, Long submittedAt) {
+    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt) {
 
         this.ideaId = ideaId;
         this.text = comment.getText();
         this.submittedBy = submittedBy;
         this.submittedAt = submittedAt;
+        this.account = account;
+        
     }
 
     public Long getIdeaId() {
@@ -53,10 +59,23 @@ public class CommentDto implements Comparable<CommentDto>  {
     public void setSubmittedAt(Long submittedAt) {
         this.submittedAt = submittedAt;
     }
+
     
+    
+    
+	public AccountDto getAccount() {
+		return account;
+	}
+
+	public void setAccount(AccountDto account) {
+		this.account = account;
+	}
+
 	@Override
 	public int compareTo(CommentDto comment) {
 		return this.getSubmittedAt().compareTo(comment.getSubmittedAt());
 	}
+	
+	
     
 }

@@ -46,8 +46,6 @@ export function ideas(state = {
         isFetchingComments: true,
       });
     case ADD_COMMENT_FAILURE: {
-        console.log("ADD_COMMENT_FAILURE");
-        console.log(action.message);
       return Object.assign({}, state, {
         isFetchingComments: false,
         commentsErrorMessage: action.message,

@@ -17,16 +17,27 @@ public class AccountDto {
 
     public AccountDto() {
     }
-
-    public AccountDto(Account account) {
-
-        this.id = account.getId();
+    
+    /**
+     * 
+     * @param account
+     * @param onlySummary
+     *     a type of dto to be returned avoiding to violate privacy of user
+     */
+    public AccountDto(Account account,boolean onlySummary) {
         this.username = account.getUsername();
         this.firstName = account.getFirstName();
         this.lastName = account.getLastName();
-        this.email = account.getEmail();
-        this.enabled = account.getEnabled();
-        this.authorities = account.getAuthorities();
+       	if (!onlySummary) {
+            this.id = account.getId();
+            this.email = account.getEmail();
+            this.enabled = account.getEnabled();
+            this.authorities = account.getAuthorities();
+    	} 
+    }
+
+    public AccountDto(Account account) {
+    	this(account,false);
     }
 
     public Long getId() {
