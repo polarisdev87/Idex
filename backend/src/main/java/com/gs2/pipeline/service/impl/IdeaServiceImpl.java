@@ -24,6 +24,8 @@ public class IdeaServiceImpl implements IdeaService {
     private final TagRepository tagRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
+    
+    private static final String TOP_FILTER = "Top";
 
 
     @Autowired
@@ -60,28 +62,49 @@ public class IdeaServiceImpl implements IdeaService {
 
         // It has specified tags in filters
         if(getIdeasDto.getTags() != null && getIdeasDto.getTags().size() != 0) {
-
-            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
-                ideas = ideaRepository.findWithParamsAndTagsOrderByVotes(
-                        lowercaseTagNames,
-                        submittedAtMin, submittedAtMax,
-                        getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
-                        getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
-                        getIdeasDto.getImplementationTimeMsMax(),
-                        getIdeasDto.getStages());
-            } else {
-                ideas = ideaRepository.findWithParamsAndTagsOrderBySubmittedAt(
-                        lowercaseTagNames,
-                        submittedAtMin, submittedAtMax,
-                        getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
-                        getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
-                        getIdeasDto.getImplementationTimeMsMax(),
-                        getIdeasDto.getStages());
-            }
+        	if (getIdeasDto.getTags().size()==1 || getIdeasDto.getPartialFullSwitch()) {
+                if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
+                    ideas = ideaRepository.findWithParamsAndTagsOrderByVotes(
+                            lowercaseTagNames,
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                } else {
+                    ideas = ideaRepository.findWithParamsAndTagsOrderBySubmittedAt(
+                            lowercaseTagNames,
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                }
+        	} else {  // apply AND to Tags
+                if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
+                    ideas = ideaRepository.findWithParamsAndFullTagsOrderByVotes(
+                            lowercaseTagNames,
+                            lowercaseTagNames.size(),
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                } else {
+                    ideas = ideaRepository.findWithParamsAndFullTagsOrderBySubmittedAt(
+                            lowercaseTagNames,
+                            lowercaseTagNames.size(),
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                }
+        	}
 
         } else { // it does not have specified tags in filters
 
-            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
+            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
                 ideas = ideaRepository.findWithParamsOrderByVotes(
                         submittedAtMin, submittedAtMax,
                         getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),

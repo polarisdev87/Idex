@@ -42,14 +42,21 @@ public class GetIdeasDto {
      */
     private Set<String> tags;
 
-    public GetIdeasDto() {
+    /**
+     * Indicates if the set of tags should be joined by OR (partial) or by AND (Full)
+     * If it is true it means Partial (Joined by Or: find all ideas that has any of the tags)
+     */
+	private Boolean partialFullSwitch;
 
+    public GetIdeasDto() {
+    	this.tags = new HashSet<String>();
+    	this.partialFullSwitch=true;
     }
 
     public GetIdeasDto(String filter, Set<String> stages, Long submittedAtMsMin,
                        Long submittedAtMsMax, Long votesMin, Long votesMax, Long profitMin,
                        Long profitMax, Long implementationTimeMsMin, Long implementationTimeMsMax,
-                       Set<String> tags) {
+                       Set<String> tags, Boolean partialFullSwitch) {
 
         this.filter = filter;
         this.stages = stages;
@@ -62,6 +69,7 @@ public class GetIdeasDto {
         this.implementationTimeMsMin = implementationTimeMsMin;
         this.implementationTimeMsMax = implementationTimeMsMax;
         this.tags = tags;
+        this.partialFullSwitch = partialFullSwitch;
     }
 
     public String getFilter() {
@@ -151,4 +159,16 @@ public class GetIdeasDto {
     public void setTags(Set<String> tags) {
         this.tags = tags;
     }
+
+	public Boolean getPartialFullSwitch() {
+		return partialFullSwitch;
+	}
+
+	public void setPartialFullSwitch(Boolean partialFullSwitch) {
+		this.partialFullSwitch = partialFullSwitch;
+	}
+    
+    
+    
+    
 }

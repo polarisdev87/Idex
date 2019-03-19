@@ -65,7 +65,7 @@ class TagSection extends Component {
       <div className="form-group tag-container">
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
-          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout={(a, b) => this.defaultRenderLayout(a, b, this.props.togglePartialFullActive)} />
+          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout={(a, b) => this.defaultRenderLayout(a, b, this.props.partialFullSwitch)} />
         </div>
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>
@@ -103,7 +103,7 @@ class TagSection extends Component {
 
 function mapStateToProps(state) {
   return {
-      togglePartialFullActive: state.ideas.togglePartialFullActive,      
+      partialFullSwitch: state.ideas.partialFullSwitch,      
   };
 }
 

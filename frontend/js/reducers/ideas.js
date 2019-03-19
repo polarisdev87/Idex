@@ -7,7 +7,7 @@ export function ideas(state = {
   ideasArr: [],
   ideasErrorMessage: undefined,
   commentsErrorMessage: undefined,
-  togglePartialFullActive: true,
+  partialFullSwitch: true,
 }, action) {
   switch (action.type) {
     case GET_IDEAS_REQUEST:
@@ -55,7 +55,7 @@ export function ideas(state = {
     }
     case TOGGLE_FILTER_FULL_PARTIAL: {
       return Object.assign({}, state, {
-        togglePartialFullActive: !state.togglePartialFullActive,
+        partialFullSwitch: !state.partialFullSwitch,
       });
     }
     default:

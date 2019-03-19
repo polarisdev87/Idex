@@ -123,11 +123,8 @@ class Ideas extends Component {
     console.log('this.modalIdea ===>', this.modalIdea);
     const {
       ideas: {
-         ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments, togglePartialFullActive,
+         ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments, partialFullSwitch,
         } } = this.props;
-    console.log(ideasArr);    
-    console.log("togglePartialFullActive");    
-    console.log(togglePartialFullActive);    
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
@@ -152,7 +149,7 @@ class Ideas extends Component {
             ) => this.props.dispatch(fetchIdeas(
               filter, stages, submittedAtMsMin, submittedAtMsMax,
               votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-              implementationTimeMsMax, tags, togglePartialFullActive,
+              implementationTimeMsMax, tags, partialFullSwitch,
 ))}
             numIdeas= {numIdeas}
           />

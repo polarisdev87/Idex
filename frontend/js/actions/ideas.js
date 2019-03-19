@@ -46,12 +46,9 @@ function getIdeasSuccess(ideas) {
 export function fetchIdeas(
   filter, stages, submittedAtMsMin, submittedAtMsMax,
   votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-  implementationTimeMsMax, tags, togglePartialFullActive,
+  implementationTimeMsMax, tags, partialFullSwitch,
 ) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
-
-  console.log("fetchIdeas");
-  console.log(togglePartialFullActive);
 
   let config = {
     method: 'GET',
@@ -69,11 +66,9 @@ export function fetchIdeas(
     implementationTimeMsMin,
     implementationTimeMsMax,
     tags,
-    togglePartialFullActive,
+    partialFullSwitch,
   };
 
-  console.log("query");
-  console.log(query);
   if (token) {
     config = {
       headers: { Authorization: `${token}` },
@@ -91,11 +86,6 @@ export function fetchIdeas(
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-          console.log("ideas.js.fetchIdeas(...) !ok");
-          console.log(query);
-          console.log(queryString);
-          console.log(body);
-
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
         } else {
