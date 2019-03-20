@@ -16,14 +16,6 @@ const sourcePath = path.join(__dirname, '');
 
 // Common plugins
 const plugins = [
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    filename: 'vendor-[hash].js',
-    minChunks(module) {
-      const context = module.context;
-      return context && context.indexOf('node_modules') >= 0;
-    },
-  }),
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(nodeEnv),
@@ -143,7 +135,17 @@ if (isProduction) {
   );
 }
 
-module.exports = {
+   module.exports = {
+	 optimization: {
+	     splitChunks: {
+		 // include all types of chunks
+		 // replace previous CommonsChunkPlugin
+		 // todo: check if it is equivalent to previous configuration
+		 chunks: 'all'
+	 }
+},
+	
+	
   devtool: isProduction ? false : 'source-map',
   context: jsSourcePath,
   entry: {

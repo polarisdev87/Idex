@@ -3,24 +3,29 @@ package com.gs2.pipeline.dto;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
 import com.gs2.pipeline.domain.Idea;
-import com.gs2.pipeline.domain.Vote;
 
-public class CommentDto {
+public class CommentDto implements Comparable<CommentDto>  {
 
     private Long ideaId;
     private String text;
     private String submittedBy;
     private Long submittedAt;
+    /**
+     * submittedBy could be deduced from account
+     */
+    private AccountDto account;
 
     public CommentDto() {
     }
 
-    public CommentDto(Comment comment, Long ideaId, String submittedBy, Long submittedAt) {
+    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt) {
 
         this.ideaId = ideaId;
         this.text = comment.getText();
         this.submittedBy = submittedBy;
         this.submittedAt = submittedAt;
+        this.account = account;
+        
     }
 
     public Long getIdeaId() {
@@ -54,4 +59,23 @@ public class CommentDto {
     public void setSubmittedAt(Long submittedAt) {
         this.submittedAt = submittedAt;
     }
+
+    
+    
+    
+	public AccountDto getAccount() {
+		return account;
+	}
+
+	public void setAccount(AccountDto account) {
+		this.account = account;
+	}
+
+	@Override
+	public int compareTo(CommentDto comment) {
+		return this.getSubmittedAt().compareTo(comment.getSubmittedAt());
+	}
+	
+	
+    
 }

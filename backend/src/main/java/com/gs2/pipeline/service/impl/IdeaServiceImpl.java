@@ -24,6 +24,8 @@ public class IdeaServiceImpl implements IdeaService {
     private final TagRepository tagRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
+    
+    private static final String TOP_FILTER = "Top";
 
 
     @Autowired
@@ -39,6 +41,12 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * fetch the ideas according to filters defined in getIdeasDto
+     * 
+     * 
+     * 
+     */
     @Override
     public List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto) {
 
@@ -52,29 +60,51 @@ public class IdeaServiceImpl implements IdeaService {
             lowercaseTagNames.add(tag.toLowerCase());
         }
 
+        // It has specified tags in filters
         if(getIdeasDto.getTags() != null && getIdeasDto.getTags().size() != 0) {
+        	if (getIdeasDto.getTags().size()==1 || getIdeasDto.getPartialFullSwitch()) {
+                if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
+                    ideas = ideaRepository.findWithParamsAndTagsOrderByVotes(
+                            lowercaseTagNames,
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                } else {
+                    ideas = ideaRepository.findWithParamsAndTagsOrderBySubmittedAt(
+                            lowercaseTagNames,
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                }
+        	} else {  // apply AND to Tags
+                if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
+                    ideas = ideaRepository.findWithParamsAndFullTagsOrderByVotes(
+                            lowercaseTagNames,
+                            lowercaseTagNames.size(),
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                } else {
+                    ideas = ideaRepository.findWithParamsAndFullTagsOrderBySubmittedAt(
+                            lowercaseTagNames,
+                            lowercaseTagNames.size(),
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+                }
+        	}
 
-            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
-                ideas = ideaRepository.findWithParamsAndTagsOrderByVotes(
-                        lowercaseTagNames,
-                        submittedAtMin, submittedAtMax,
-                        getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
-                        getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
-                        getIdeasDto.getImplementationTimeMsMax(),
-                        getIdeasDto.getStages());
-            } else {
-                ideas = ideaRepository.findWithParamsAndTagsOrderBySubmittedAt(
-                        lowercaseTagNames,
-                        submittedAtMin, submittedAtMax,
-                        getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
-                        getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
-                        getIdeasDto.getImplementationTimeMsMax(),
-                        getIdeasDto.getStages());
-            }
+        } else { // it does not have specified tags in filters
 
-        } else {
-
-            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), "Top")) {
+            if (StringUtils.equalsIgnoreCase(getIdeasDto.getFilter(), TOP_FILTER)) {
                 ideas = ideaRepository.findWithParamsOrderByVotes(
                         submittedAtMin, submittedAtMax,
                         getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
@@ -98,6 +128,8 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) {
@@ -151,6 +183,13 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * Add a comment to an idea
+     * 
+     * Returns exception if idea id does not exist
+     * 
+     * On success. returns the idea in IdeaDto format with the added comment
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException {
@@ -233,6 +272,14 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    /**
+     * Adds a new idea
+     * @param ideaDto
+     * @param insertedBy
+     * @param tags
+     * @return
+     */
+    
     private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags) {
 
         for(Tag tag : tags) {
@@ -247,12 +294,12 @@ public class IdeaServiceImpl implements IdeaService {
         idea.setUpdatedAt(currentTime);
         idea.setStage("Incubation");
         idea.setVotes(0L);
-        idea.setComments(new ArrayList<>());
+        idea.setComments(new HashSet<>());
 
         return ideaRepository.save(idea).toDto();
     }
 
-
+    
     private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags) {
 
         updateTags(existing.getTags(), tags);

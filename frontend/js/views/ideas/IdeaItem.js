@@ -2,8 +2,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import { Alert } from 'react-bootstrap';
+import * as moment from 'moment';
 import StageMark from '../../components/StageMark';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
+import { addComment } from '../../actions/comments';
+
 
 type Props = {
   idea: {
@@ -23,56 +27,64 @@ type Props = {
     votes: number,
   },
   edit: () => {},
-  view: () => {}
+  view: () => {},
 }
 
 class IdeaItem extends Component {
   props: Props;
 
-  state = {
-    comments: []
-  }
-
   handleKeyPress = e => {
     if (e.key === 'Enter') {
-      const newComments = this.state.comments;
-      newComments.push(e.target.value);
-      this.setState({
-        comments: newComments,
-      });
+      const { dispatch, idea } = this.props;
+      dispatch(addComment({
+        ideaId: idea.id,
+        text: e.target.value,
+        sumittedBy: '',
+        submittedAt: '',
+      }));
       this.commentInput.value = '';
     }
   }
 
   render() {
-
     const { idea, edit, view } = this.props;
     const commentBoxId = `comment-container-${idea.id}`;
     const commentBoxHref = `#comment-container-${idea.id}`;
-    const { comments } = this.state;
-    const commentsMark = (comments !== undefined) ?
-      comments.map((comment, index) => (
+    console.log("IdeaItem.js");
+    console.log(idea);
+
+    console.log("comments");
+    console.log(idea.comments);
+    console.log(moment([2007, 0, 29]).fromNow()); 
+    console.log(moment([2019, 2, 1]).fromNow()); 
+    console.log(moment([2019, 2, 19]).fromNow()); 
+    console.log(moment([2019, 2, 19,15,20]).fromNow()); 
+    console.log(moment([2019, 2, 19,20,52]).fromNow());
+    console.log(idea.comments); 
+    console.log(idea.comments[0] ? new Date( idea.comments[0].submittedAt ):"");
+    const commentsMark = (idea.comments !== undefined) ?
+      idea.comments.map((comment, index) => (
         <div key={index.toString()} className="row">
-          <div className="col-xs-2 col-sm-1 col-md-1 col-lg-1">
-            <div className="avatar-container"><img src="" alt="" /></div>
+          <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <div className="avatar-container"><span> {comment.account.firstName} {comment.account.lastName.charAt(0)} </span></div>
           </div>
-          <div className="col-xs-10 col-sm-11 col-md-11 col-lg-11 comment">
-            <div className="label-base-base">{comment}</div>
+          <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
+            <div className="label-base-base">{comment.text}</div>
           </div>
         </div>
       )) :
       null;
     const addCommentMark = (
       <div className="row">
-        <div className="col-xs-2 col-sm-1 col-md-1 col-lg-1">
+        <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
           <div className="avatar-container"><img src="" alt="" /></div>
         </div>
-        <div className="col-xs-10 col-sm-11 col-md-11 col-lg-11 comment">
+        <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
           <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={this.handleKeyPress} />
         </div>
       </div>
     );
-
+        let showCommentError = typeof this.props.commentsErrorMessage != "undefined";
     return (
       <div className="idea-item-container shadow">
         <div className="body-container" onClick={() => view()} >
@@ -113,8 +125,10 @@ class IdeaItem extends Component {
 
         <div id={ commentBoxId } className="collapse">
           <div className="comment-wrapper">
-            {commentsMark}
-            {addCommentMark}
+              {showCommentError  &&
+                <Alert bsStyle="danger"  >{this.props.commentsErrorMessage}</Alert>  }
+             { commentsMark }         
+            { addCommentMark }
           </div>
         </div>
       </div>
@@ -122,4 +136,15 @@ class IdeaItem extends Component {
   }
 }
 
-export default IdeaItem;
+
+function mapStateToProps(state) {
+  return {
+    commentsErrorMessage: state.ideas.commentsErrorMessage,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return { dispatch };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IdeaItem);

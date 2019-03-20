@@ -38,11 +38,12 @@ public class IdeaRestController {
                                   @RequestParam(value = "profitMax", required = false) Long profitMax,
                                   @RequestParam(value = "implementationTimeMsMin", required = false) Long implementationTimeMsMin,
                                   @RequestParam(value = "implementationTimeMsMax", required = false) Long implementationTimeMsMax,
-                                  @RequestParam(value = "tags", required = false) Set<String> tags) {
+                                  @RequestParam(value = "tags", required = false) Set<String> tags,
+                                  @RequestParam(value = "partialFullSwitch", required = false) Boolean partialFullSwitch ) {
 
         GetIdeasDto getIdeasDto =
                 new GetIdeasDto(filter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin,
-                                    profitMax, implementationTimeMsMin, implementationTimeMsMax, tags);
+                                    profitMax, implementationTimeMsMin, implementationTimeMsMax, tags, partialFullSwitch);
 
         return ideaService.getIdeas(getIdeasDto);
     }

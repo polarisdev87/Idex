@@ -21,6 +21,10 @@
       }
     }
 
+    .btn-primary {
+        color: #fff,
+    }
+
     .collapse-container {
       padding: 0.8rem 7rem;
       @media (max-width: 599px) {
@@ -126,6 +130,9 @@
           left:-99999px;
           height:0;
           overflow:hidden;
+        }
+        .disabled.flyout:hover > .flyout-content{
+          left:-99999px;
         }
         .flyout:hover > .flyout-content{
           left:0;
@@ -294,14 +301,21 @@
         }
       }
       .avatar-container {
-        width: 4rem;
-        height: 4rem;
+        min-width: 8rem;
+        min-height: 4rem;
         border-radius: 2rem;
         background-color: $color-gray-white;
+        text-align: center;
+        text-transform: capitalize;
+        display: flex;
+        align-items: center;
         img {
           width: 100%;
           height: 100%;
           object-fit: contain;
+        }
+        span {
+            width: 100%;
         }
       }
     }

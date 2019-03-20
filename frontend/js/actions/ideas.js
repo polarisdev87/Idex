@@ -27,16 +27,34 @@ function getIdeasSuccess(ideas) {
   };
 }
 
-export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
-                           votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
-                           implementationTimeMsMax, tags) {
+/**
+ *
+ * Get the ideas according to the filter
+ *
+ * @param {} filter
+ * @param {*} stages
+ * @param {*} submittedAtMsMin
+ * @param {*} submittedAtMsMax
+ * @param {*} votesMin
+ * @param {*} votesMax
+ * @param {*} profitMin
+ * @param {*} profitMax
+ * @param {*} implementationTimeMsMin
+ * @param {*} implementationTimeMsMax
+ * @param {*} tags
+ */
+export function fetchIdeas(
+  filter, stages, submittedAtMsMin, submittedAtMsMax,
+  votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
+  implementationTimeMsMax, tags, partialFullSwitch,
+) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
 
   let config = {
     method: 'GET',
   };
 
-  let query = {
+  const query = {
     filter,
     stages,
     submittedAtMsMin,
@@ -47,7 +65,8 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
     profitMax,
     implementationTimeMsMin,
     implementationTimeMsMax,
-    tags
+    tags,
+    partialFullSwitch,
   };
 
   if (token) {
@@ -61,7 +80,7 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
   return dispatch => {
     dispatch(getIdeasRequest());
 
-    let url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
+    const url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
 
     return fetch(url, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -69,6 +88,11 @@ export function fetchIdeas(filter, stages, submittedAtMsMin, submittedAtMsMax,
         if (!response.ok) {
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
+        } else {
+          console.log("ideas.js.fetchIdeas(...) is ok");
+          console.log(query);
+          console.log(queryString);
+          console.log(body);
         }
         dispatch(getIdeasSuccess(body));
         return true;
@@ -204,9 +228,15 @@ export function deleteIdeas(ideaIds) {
 }
 
 
+/**
+ * Add a new idea async
+ */
+
 export const ADD_IDEA_REQUEST = 'ADD_IDEA_REQUEST';
 export const ADD_IDEA_SUCCESS = 'ADD_IDEA_SUCCESS';
 export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
+
+
 
 function addIdeaRequest() {
   return {
@@ -268,3 +298,16 @@ export function addIdea(idea) {
       });
   };
 }
+
+
+export const TOGGLE_FILTER_FULL_PARTIAL = 'TOGGLE_FILTER_FULL_PARTIAL';
+
+
+export function toggleFilterFullPartial() {
+  return {
+    type: TOGGLE_FILTER_FULL_PARTIAL,
+  };
+}
+
+
+

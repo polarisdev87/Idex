@@ -1,5 +1,5 @@
 // @flow
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import DatePicker from 'react-datepicker';
@@ -8,6 +8,7 @@ import moment from 'moment';
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
 import { Bubble } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -106,8 +107,27 @@ class Admin extends Component {
           }
         },
       ],
-    }
+    },
+    tags:[]
   };
+
+
+  /* Make changes when tags elements change
+  */
+  handleTagsChange(tags) {
+    this.setState({ tags });
+  }
+
+
+  addTag(value) {
+      const newTags = this.state.tags;
+      newTags.push(value);
+      this.setState({
+        tags: newTags,
+      });
+  }
+
+
 
   handleChange(date) {
     this.setState({
@@ -171,7 +191,7 @@ class Admin extends Component {
           <div className="body">
             <div className="section1">
               <div className="tag-section">
-                <TagSection />
+                <TagSection tags={this.state.tags} handleTagsChange={(tags) => this.handleTagsChange(tags)} addTag={(tag) => this.addTag(tag)} />
               </div>
               <div className="date-section">
                 <div className="row row-item">

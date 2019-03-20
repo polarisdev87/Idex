@@ -6,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -75,7 +74,7 @@ public class Idea {
     private Long votes;
 
     @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Comment> comments;
+    private Set<Comment> comments;
 
     public Long getId() {
         return id;
@@ -201,11 +200,11 @@ public class Idea {
         this.actualProfitInCents = actualProfitInCents;
     }
 
-    public List<Comment> getComments() {
+    public Set<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
 }

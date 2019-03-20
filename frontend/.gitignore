@@ -11,3 +11,7 @@ build/
 *.iws
 *.iml
 *.ipr
+/.gradle/
+### Eclipse ###
+.project
+/.settings/

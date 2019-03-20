@@ -1,9 +1,10 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import LoginNav from './LoginNav'
 import Logout from './buttons/Logout'
 import { loginUser, logoutUser, handleLoginError } from '../actions/auth'
 import Users from "./buttons/Users";
 import Ideas from "./buttons/Ideas";
+import PropTypes from 'prop-types';
 
 export default class Navbar extends Component {
   
