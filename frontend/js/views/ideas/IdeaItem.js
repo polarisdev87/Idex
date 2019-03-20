@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { Alert } from 'react-bootstrap';
+import * as moment from 'moment';
 import StageMark from '../../components/StageMark';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment } from '../../actions/comments';
+
 
 type Props = {
   idea: {
@@ -53,6 +55,13 @@ class IdeaItem extends Component {
 
     console.log("comments");
     console.log(idea.comments);
+    console.log(moment([2007, 0, 29]).fromNow()); 
+    console.log(moment([2019, 2, 1]).fromNow()); 
+    console.log(moment([2019, 2, 19]).fromNow()); 
+    console.log(moment([2019, 2, 19,15,20]).fromNow()); 
+    console.log(moment([2019, 2, 19,20,52]).fromNow());
+    console.log(idea.comments); 
+    console.log(idea.comments[0] ? new Date( idea.comments[0].submittedAt ):"");
     const commentsMark = (idea.comments !== undefined) ?
       idea.comments.map((comment, index) => (
         <div key={index.toString()} className="row">
