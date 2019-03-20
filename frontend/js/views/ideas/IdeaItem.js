@@ -2,9 +2,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Alert } from 'react-bootstrap';
+import { Alert, } from 'react-bootstrap';
 import * as moment from 'moment';
 import StageMark from '../../components/StageMark';
+import Comment from './Comment';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment } from '../../actions/comments';
 
@@ -50,41 +51,47 @@ class IdeaItem extends Component {
     const { idea, edit, view } = this.props;
     const commentBoxId = `comment-container-${idea.id}`;
     const commentBoxHref = `#comment-container-${idea.id}`;
-    console.log("IdeaItem.js");
+    console.log('IdeaItem.js');
     console.log(idea);
 
-    console.log("comments");
+    console.log('comments');
     console.log(idea.comments);
-    console.log(moment([2007, 0, 29]).fromNow()); 
-    console.log(moment([2019, 2, 1]).fromNow()); 
-    console.log(moment([2019, 2, 19]).fromNow()); 
-    console.log(moment([2019, 2, 19,15,20]).fromNow()); 
-    console.log(moment([2019, 2, 19,20,52]).fromNow());
-    console.log(idea.comments); 
-    console.log(idea.comments[0] ? new Date( idea.comments[0].submittedAt ):"");
+
+
+    console.log(moment([2007, 0, 29]).fromNow());
+    console.log(moment([2019, 2, 1]).fromNow());
+    console.log(moment([2019, 2, 19]).fromNow());
+    console.log(moment([2019, 2, 19, 15, 20]).fromNow());
+    console.log(moment([2019, 2, 19, 20, 52]).fromNow());
+    console.log(idea.comments);
+    console.log(idea.comments[0] ? new Date(idea.comments[0].submittedAt) : '');
+
+
     const commentsMark = (idea.comments !== undefined) ?
       idea.comments.map((comment, index) => (
-        <div key={index.toString()} className="row">
-          <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-            <div className="avatar-container"><span> {comment.account.firstName} {comment.account.lastName.charAt(0)} </span></div>
-          </div>
-          <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
-            <div className="label-base-base">{comment.text}</div>
-          </div>
-        </div>
+        <Comment 
+            key={index.toString()} 
+            index={index} 
+            comment={comment} 
+            shortDateTime = {moment(comment.submittedAt).fromNow()} 
+            fullDateTime = {(new Date(comment.submittedAt)).toString()} />
       )) :
       null;
+
     const addCommentMark = (
       <div className="row">
         <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
           <div className="avatar-container"><img src="" alt="" /></div>
         </div>
         <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
-          <input type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }} onKeyPress={this.handleKeyPress} />
+          <input
+            type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
+            onKeyPress={this.handleKeyPress}
+          />
         </div>
       </div>
     );
-        let showCommentError = typeof this.props.commentsErrorMessage != "undefined";
+    const showCommentError = typeof this.props.commentsErrorMessage !== 'undefined';
     return (
       <div className="idea-item-container shadow">
         <div className="body-container" onClick={() => view()} >
@@ -123,11 +130,11 @@ class IdeaItem extends Component {
           </div>
         </div>
 
-        <div id={ commentBoxId } className="collapse">
+        <div id={commentBoxId} className="collapse">
           <div className="comment-wrapper">
-              {showCommentError  &&
-                <Alert bsStyle="danger"  >{this.props.commentsErrorMessage}</Alert>  }
-             { commentsMark }         
+            {showCommentError &&
+            <Alert bsStyle="danger" >{this.props.commentsErrorMessage}</Alert> }
+            { commentsMark }
             { addCommentMark }
           </div>
         </div>

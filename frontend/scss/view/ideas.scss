@@ -288,8 +288,10 @@
         .comment {
           min-height: 4rem;
           flex-direction: row;
-          display: flex;
           align-items: center;
+          .date {
+              font-size: 11px;
+          }
           input {
             height: 4rem;
             color: $color-base;
