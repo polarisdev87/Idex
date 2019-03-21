@@ -3,14 +3,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import DatePicker from 'react-datepicker';
+import { Bubble } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 import moment from 'moment';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
-import { Bubble } from 'react-chartjs-2';
-import PropTypes from 'prop-types';
+import { fetchIdeasForBubbleGraph } from '../../actions/admin';
 
-import 'react-datepicker/dist/react-datepicker.css';
 
 const defaultConfig = {
   label: '',
@@ -41,20 +42,22 @@ const deafultOption = {
       ticks: {
         min: 0,
         max: 100,
-        stepSize: 20
-      }
+        stepSize: 20,
+      },
     }],
     xAxes: [{
       ticks: {
         min: 0,
         max: 100,
-        stepSize: 20
-      }
+        stepSize: 20,
+      },
     }],
-  }
+  },
 };
 
 class Admin extends Component {
+
+      props: props;
 
   state = {
     startDate: moment(),
@@ -71,7 +74,7 @@ class Admin extends Component {
             backgroundColor: this.getColor(0),
             borderColor: this.getColor(0),
             pointBorderColor: this.getColor(0),
-          },          
+          },
         },
         {
           ...defaultConfig,
@@ -82,7 +85,7 @@ class Admin extends Component {
             backgroundColor: this.getColor(1),
             borderColor: this.getColor(1),
             pointBorderColor: this.getColor(1),
-          }
+          },
         },
         {
           ...defaultConfig,
@@ -93,7 +96,7 @@ class Admin extends Component {
             backgroundColor: this.getColor(2),
             borderColor: this.getColor(2),
             pointBorderColor: this.getColor(2),
-          }
+          },
         },
         {
           ...defaultConfig,
@@ -104,11 +107,11 @@ class Admin extends Component {
             backgroundColor: this.getColor(3),
             borderColor: this.getColor(3),
             pointBorderColor: this.getColor(3),
-          }
+          },
         },
       ],
     },
-    tags:[]
+    tags: [],
   };
 
 
@@ -120,13 +123,12 @@ class Admin extends Component {
 
 
   addTag(value) {
-      const newTags = this.state.tags;
-      newTags.push(value);
-      this.setState({
-        tags: newTags,
-      });
+    const newTags = this.state.tags;
+    newTags.push(value);
+    this.setState({
+      tags: newTags,
+    });
   }
-
 
 
   handleChange(date) {
@@ -156,9 +158,42 @@ class Admin extends Component {
     return color;
   }
 
+  applyFilters() {
+    const {
+      partialFullSwitch,
+      submittedAtMsMin,
+      submittedAtMsMax,
+      votesMin,
+      votesMax,
+      profitMin,
+      profitMax,
+      implementationTimeMsMin,
+      implementationTimeMsMax,
+      tags,
+      dispatch,
+    } = this.props;
+
+    dispatch(fetchIdeasForBubbleGraph(
+      submittedAtMsMin,
+      submittedAtMsMax,
+      votesMin,
+      votesMax,
+      profitMin,
+      profitMax,
+      implementationTimeMsMin,
+      implementationTimeMsMax,
+      tags,
+      partialFullSwitch
+    ));
+  }
+
   render() {
+    console.log('Admin.render()');
     const { bubbleData } = this.state;
     console.log(bubbleData);
+    console.log(this.props);
+
+
     return (
       <div className="container admin-container">
         <div className="info-container">
@@ -184,7 +219,10 @@ class Admin extends Component {
                 <div className="label-base-base">Ideas Statistics</div>
               </div>
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6 filter-btn">
-                <button type="button" className="btn btn-link base-btn">Filter Ideas</button>
+                <button
+                  type="button" className="btn btn-link base-btn" onClick={(x) =>
+                    this.applyFilters()}>Filter Ideas
+                </button>
               </div>
             </div>
           </div>
@@ -292,11 +330,23 @@ class Admin extends Component {
       </div>
     );
   }
-
 }
 
 function mapStateToProps(state) {
-  return {};
+  console.log('admin/index.js - mapStateToProps');
+  console.log(state);
+  return {
+    partialFullSwitch: state.admin.partialFullSwitch,
+    submittedAtMsMin: state.admin.submittedAtMsMin,
+    submittedAtMsMax: state.admin.submittedAtMsMax,
+    votesMin: state.admin.votesMin,
+    votesMax: state.admin.votesMax,
+    profitMin: state.admin.profitMin,
+    profitMax: state.admin.profitMax,
+    implementationTimeMsMin: state.admin.implementationTimeMsMin,
+    implementationTimeMsMax: state.admin.implementationTimeMsMax,
+    tags: state.admin.tags,
+  };
 }
 
 function mapDispatchToProps(dispatch) {

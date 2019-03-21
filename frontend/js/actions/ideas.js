@@ -1,6 +1,6 @@
-const queryString = require('query-string');
-
 import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
+
+const queryString = require('query-string');
 
 
 export const GET_IDEAS_REQUEST = 'GET_IDEAS_REQUEST';
@@ -32,8 +32,11 @@ function getIdeasSuccess(ideas) {
  * Get the ideas according to the filter
  *
  * @param {} filter
+ *      Value entered on the sortby field (main filter is Newest or Top)
  * @param {*} stages
+ *      Asked stages : Any Stage (default) / Incubation / Prototyping / Launched / Cancelled
  * @param {*} submittedAtMsMin
+ *      Type of top filter Past Hour / Past Day / Past Week / Past Month / Past Year / All time
  * @param {*} submittedAtMsMax
  * @param {*} votesMin
  * @param {*} votesMax
@@ -80,7 +83,7 @@ export function fetchIdeas(
   return dispatch => {
     dispatch(getIdeasRequest());
 
-    const url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
+    const url = `${API_BASE_URI}/ideas?${queryString.stringify(query)}`;
 
     return fetch(url, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -88,12 +91,12 @@ export function fetchIdeas(
         if (!response.ok) {
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
-        } else {
-          console.log("ideas.js.fetchIdeas(...) is ok");
-          console.log(query);
-          console.log(queryString);
-          console.log(body);
         }
+        console.log('ideas.js.fetchIdeas(...) is ok');
+        console.log(query);
+        console.log(queryString);
+        console.log(body);
+
         dispatch(getIdeasSuccess(body));
         return true;
       }).catch(err => {
@@ -237,7 +240,6 @@ export const ADD_IDEA_SUCCESS = 'ADD_IDEA_SUCCESS';
 export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
 
 
-
 function addIdeaRequest() {
   return {
     type: ADD_IDEA_REQUEST,
@@ -308,6 +310,12 @@ export function toggleFilterFullPartial() {
     type: TOGGLE_FILTER_FULL_PARTIAL,
   };
 }
+
+
+
+
+
+
 
 
 

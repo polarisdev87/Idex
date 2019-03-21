@@ -51,14 +51,12 @@ class Header extends Component {
         cancelled: false,
       },
       tags: [],
-      optionalMarks: [],
       votesMin: 0,
       votesMax: 999999,
       profitMin: 0,
       profitMax: 999999,
       implementationTimeMin: 0,
       implementationTimeMax: 999999,
-      toggleActive: true,
     };
   }
 
@@ -93,18 +91,14 @@ class Header extends Component {
   }
 
 
-
   addTag(value) {
     const newTags = this.state.tags;
-    const newOptionalMarks = this.state.optionalMarks;
 
     newTags.push(value);
     this.setState({
       tags: newTags,
-      optionalMarks: newOptionalMarks,
     });
   }
-
 
 
   changeVotesMin(value) {
@@ -152,8 +146,7 @@ class Header extends Component {
       profitMin,
       profitMax,
       tags,
-      optionalMarks, 
-} = this.state;
+    } = this.state;
 
     const stages = [];
 

@@ -57,21 +57,45 @@ public class GetIdeasDto {
                        Long submittedAtMsMax, Long votesMin, Long votesMax, Long profitMin,
                        Long profitMax, Long implementationTimeMsMin, Long implementationTimeMsMax,
                        Set<String> tags, Boolean partialFullSwitch) {
-
-        this.filter = filter;
+    	this(submittedAtMsMin,submittedAtMsMax, votesMin, votesMax, profitMin,
+                profitMax, implementationTimeMsMin, implementationTimeMsMax,
+                tags, partialFullSwitch);
+    	this.filter = filter;
         this.stages = stages;
-        this.submittedAtMsMin = submittedAtMsMin;
-        this.submittedAtMsMax = submittedAtMsMax;
-        this.votesMin = votesMin;
-        this.votesMax = votesMax;
-        this.profitMin = profitMin;
-        this.profitMax = profitMax;
-        this.implementationTimeMsMin = implementationTimeMsMin;
-        this.implementationTimeMsMax = implementationTimeMsMax;
-        this.tags = tags;
-        this.partialFullSwitch = partialFullSwitch;
     }
 
+    /**
+     * Constructor mainly used by getting Bubble Report
+     * @param submittedAtMsMin
+     * @param submittedAtMsMax
+     * @param votesMin
+     * @param votesMax
+     * @param profitMin
+     * @param profitMax
+     * @param implementationTimeMsMin
+     * @param implementationTimeMsMax
+     * @param tags
+     * @param partialFullSwitch
+     */
+    public GetIdeasDto(Long submittedAtMsMin,
+            Long submittedAtMsMax, Long votesMin, Long votesMax, Long profitMin,
+            Long profitMax, Long implementationTimeMsMin, Long implementationTimeMsMax,
+            Set<String> tags, Boolean partialFullSwitch) {
+
+			this.submittedAtMsMin = submittedAtMsMin;
+			this.submittedAtMsMax = submittedAtMsMax;
+			this.votesMin = votesMin;
+			this.votesMax = votesMax;
+			this.profitMin = profitMin;
+			this.profitMax = profitMax;
+			this.implementationTimeMsMin = implementationTimeMsMin;
+			this.implementationTimeMsMax = implementationTimeMsMax;
+			this.tags = tags;
+			this.partialFullSwitch = partialFullSwitch;
+    }
+
+    
+    
     public String getFilter() {
         return StringUtils.isNotBlank(filter) ? filter : "Top";
     }

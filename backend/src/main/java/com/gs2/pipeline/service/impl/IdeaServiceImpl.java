@@ -20,14 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class IdeaServiceImpl implements IdeaService {
 
+    private static final String TOP_FILTER = "Top";
+
     private final IdeaRepository ideaRepository;
     private final TagRepository tagRepository;
     private final VoteRepository voteRepository;
     private final CommentRepository commentRepository;
     
-    private static final String TOP_FILTER = "Top";
-
-
     @Autowired
     public IdeaServiceImpl(IdeaRepository ideaRepository,
                            TagRepository tagRepository,
@@ -41,10 +40,18 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    
+    private Set<String> getNormalizedTags(Set<String> tags)  {
+        Set<String> lowercaseTagNames = new HashSet<>(tags.size());
+        for(String tag : tags) {
+            lowercaseTagNames.add(tag.toLowerCase());
+        }
+        return lowercaseTagNames;
+    }
+    
+    
     /**
      * fetch the ideas according to filters defined in getIdeasDto
-     * 
-     * 
      * 
      */
     @Override
@@ -55,11 +62,8 @@ public class IdeaServiceImpl implements IdeaService {
         Date submittedAtMin = new Date(getIdeasDto.getSubmittedAtMsMin());
         Date submittedAtMax = new Date(getIdeasDto.getSubmittedAtMsMax());
 
-        Set<String> lowercaseTagNames = new HashSet<>(getIdeasDto.getTags().size());
-        for(String tag : getIdeasDto.getTags()) {
-            lowercaseTagNames.add(tag.toLowerCase());
-        }
-
+        Set<String> lowercaseTagNames = getNormalizedTags(getIdeasDto.getTags()); 
+        
         // It has specified tags in filters
         if(getIdeasDto.getTags() != null && getIdeasDto.getTags().size() != 0) {
         	if (getIdeasDto.getTags().size()==1 || getIdeasDto.getPartialFullSwitch()) {
@@ -126,6 +130,58 @@ public class IdeaServiceImpl implements IdeaService {
                 .map(Idea::toDto)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * fetch summary of ideas according to filters defined in getIdeasDto for specified reports
+     * TODO: It does not need to use the repository methods OrderByVotes but does not have side effects to use it
+     */
+    @Override
+    public List<IdeaDto> getIdeasSummary(GetIdeasDto getIdeasDto) {
+
+        Collection<Idea> ideas;
+
+        Date submittedAtMin = new Date(getIdeasDto.getSubmittedAtMsMin());
+        Date submittedAtMax = new Date(getIdeasDto.getSubmittedAtMsMax());
+        
+        Set<String> lowercaseTagNames = getNormalizedTags(getIdeasDto.getTags()); 
+
+        // It has specified tags in filters
+        if(getIdeasDto.getTags() != null && getIdeasDto.getTags().size() != 0) {
+        	if (getIdeasDto.getTags().size()==1 || getIdeasDto.getPartialFullSwitch()) {
+                    ideas = ideaRepository.findWithParamsAndTagsOrderByVotes(
+                            lowercaseTagNames,
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+        	} else {  // apply AND to Tags
+                    ideas = ideaRepository.findWithParamsAndFullTagsOrderByVotes(
+                            lowercaseTagNames,
+                            lowercaseTagNames.size(),
+                            submittedAtMin, submittedAtMax,
+                            getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                            getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                            getIdeasDto.getImplementationTimeMsMax(),
+                            getIdeasDto.getStages());
+        	}
+
+        } else { // it does not have specified tags in filters
+
+                ideas = ideaRepository.findWithParamsOrderByVotes(
+                        submittedAtMin, submittedAtMax,
+                        getIdeasDto.getVotesMin(), getIdeasDto.getVotesMax(), getIdeasDto.getProfitMin(),
+                        getIdeasDto.getProfitMax(), getIdeasDto.getImplementationTimeMsMin(),
+                        getIdeasDto.getImplementationTimeMsMax(),
+                        getIdeasDto.getStages());
+        }
+
+        return ideas
+                .stream()
+                .map(Idea::toDto)
+                .collect(Collectors.toList());
+    }
+
 
 
     
@@ -241,7 +297,7 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
-    private Set<Tag> upsertInitialTagsFromStrings(Set<String> tagNames) {
+    private Set<Tag> upsertInitialTagsFromStrings(List<String> tagNames) {
 
         Set<Tag> tags = new HashSet<>(tagNames.size());
 
