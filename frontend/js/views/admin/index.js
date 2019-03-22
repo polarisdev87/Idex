@@ -204,8 +204,6 @@ class Admin extends Component {
       ],
     };
 
-    console.log('ideasSummary');
-    console.log(ideasSummary);
     for (const bubbleIdeaIndex in ideasSummary.items) {
       const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
       bubbleDataNew.datasets.push({
@@ -225,10 +223,9 @@ class Admin extends Component {
 
 
   getRadiusUnit(ideasSummary) {
-
     // define biggestBubble as 1/6 of width
-    var viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const biggestBubble = viewPortWidth/16;
+    const viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const biggestBubble = viewPortWidth / 16;
 
     let maxSize = 1;
     for (const bubbleIdeaIndex in ideasSummary.items) {
@@ -239,8 +236,79 @@ class Admin extends Component {
     return biggestBubble / maxSize;
   }
 
-  prepareOptions(ideasSummary) {
 
+  calculateIncrement(minValue, maxValue, intervals) {
+    const toConvert = (maxValue - minValue) / intervals;
+
+
+    const selectedPower = Math.round(Math.log10(toConvert));
+    const standarized = toConvert / Math.pow(10, selectedPower);
+    let result = 0;
+    if (standarized <= 0.1) {
+      result = 0.1;
+    } else if (standarized <= 0.2) {
+      result = 0.2;
+    } else if (standarized <= 0.5) {
+      result = 0.5;
+    } else if (standarized <= 1) {
+      result = 1;
+    } else if (standarized <= 2) {
+      result = 2;
+    } else if (standarized <= 5) {
+      result = 5;
+    } else {
+      result = 10;
+    }
+    let increment = result * Math.pow(10, selectedPower);
+
+    // make min and max value be multiple of increment
+
+
+    let max = maxValue;
+    if (max % increment) {
+      max = (Math.round(max / increment) + 1) * increment;
+    }
+
+    let min = minValue;
+    if (min % increment) {
+      min = (Math.round(min / increment)) * increment;
+    }
+
+
+    return {max: max,
+        min: min,
+        increment: increment};
+
+  }
+
+
+  calculateMagnitude(range) {
+
+    let maxLimit = range.max;
+    let minLimit = range.min;
+
+    if (maxLimit == 0) {
+      return {
+        min: 0,
+        max: 100,
+      };
+    }
+    if (maxLimit == minLimit) {
+      maxLimit++;
+    }
+    const selectedPower = Math.floor(Math.log10(maxLimit - minLimit) - 1);
+
+    let baseMax = Math.floor(maxLimit / Math.pow(10, selectedPower)) + 1; // move base to 2 digits numbers
+    let baseMin = Math.floor(minLimit / Math.pow(10, selectedPower)) - 1; // move base to 2 digits numbers
+
+    baseMin *= Math.pow(10, selectedPower); // restore original magnitude
+    baseMax *= Math.pow(10, selectedPower); // restore original magnitude
+    const result  = this.calculateIncrement(baseMin, baseMax, 5);
+    return result;
+
+  }
+
+  prepareOptions(ideasSummary) {
     let maxX = 0;
     let maxY = 0;
     let minX = 99999999;
@@ -262,47 +330,53 @@ class Admin extends Component {
     minX = (minX - 1) * 1.2;
     */
 
-    let maxWidth = maxX - minX;
-    let maxHeight = maxY - minY;
-    maxX += maxWidth / 4;
-    minX -= maxWidth / 4;
-    maxY += maxHeight / 4;
-    minY -= maxHeight / 4; 
+    const maxWidth = maxX - minX;
+    const maxHeight = maxY - minY;
 
-    const deafultOption = {
+
+    minX -= maxWidth / 4;
+    maxX += maxWidth / 4;
+
+    minY -= maxHeight / 4;
+    maxY += maxHeight / 4;
+
+    // define magnitude (1, 2, 5, 10, 100, 1000, ...)
+    const widthRange = this.calculateMagnitude({ min: minX, max: maxX });
+
+    const heightRange = this.calculateMagnitude({ min: minY, max: maxY });
+
+
+    const defaultOption = {
       legend: { display: false },
       scales: {
         yAxes: [{
           ticks: {
-            min: minY,
-            max: maxY,
-            stepSize: (maxY - minY) / 5,
+            min: heightRange.min,
+            max: heightRange.max,
+            stepSize: heightRange.increment,
           },
         }],
         xAxes: [{
           ticks: {
-            min: minX,
-            max: maxX,
-            stepSize: (maxX  - minX) / 5,
+            min: widthRange.min,
+            max: widthRange.max,
+            stepSize: widthRange.increment,
           },
         }],
       },
     };
-    return deafultOption;
+
+    return defaultOption;
   }
 
 
   render() {
-    console.log('Admin.render()');
     const { bubbleData } = this.state;
-    console.log(bubbleData);
-    console.log(this.props);
     const { ideasSummary } = this.props;
-    console.log(ideasSummary);
 
 
     const deafultOption = this.prepareOptions(ideasSummary);
-    const bubbleDataNew = this.prepareGraph(ideasSummary,this.getRadiusUnit(ideasSummary));
+    const bubbleDataNew = this.prepareGraph(ideasSummary, this.getRadiusUnit(ideasSummary));
 
     return (
       <div className="container admin-container">
@@ -446,8 +520,6 @@ class Admin extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log('admin/index.js - mapStateToProps');
-  console.log(state);
   return {
     partialFullSwitch: state.admin.partialFullSwitch,
     submittedAtMsMin: state.admin.submittedAtMsMin,
