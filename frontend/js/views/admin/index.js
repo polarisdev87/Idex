@@ -187,7 +187,7 @@ class Admin extends Component {
   }
 
 
-  prepareGraph(ideasSummary, ratioUnit) {
+  prepareGraph(ideasSummary, radiusUnit) {
     /* Build bubbleData from ideasSummary
 
     x-axis : implementation Months
@@ -212,7 +212,7 @@ class Admin extends Component {
         ...defaultConfig,
         ...{
           data: [
-            { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * ratioUnit },
+            { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
           ],
           backgroundColor: this.getColor(0),
           borderColor: this.getColor(0),
@@ -224,8 +224,11 @@ class Admin extends Component {
   }
 
 
-  getRatioUnit(ideasSummary) {
-    const biggestBubble = 60;
+  getRadiusUnit(ideasSummary) {
+
+    // define biggestBubble as 1/6 of width
+    var viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const biggestBubble = viewPortWidth/16;
 
     let maxSize = 1;
     for (const bubbleIdeaIndex in ideasSummary.items) {
@@ -240,31 +243,47 @@ class Admin extends Component {
 
     let maxX = 0;
     let maxY = 0;
-    let maxSize = 1;
+    let minX = 99999999;
+    let minY = 99999999;
+    // find min and max of x and y
     for (const bubbleIdeaIndex in ideasSummary.items) {
       const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
       maxX = Math.max(maxX, bubbleIdea.expectedTtm);
       maxY = Math.max(maxY, bubbleIdea.expectedProfitInCents);
-      maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
+      minX = Math.min(minX, bubbleIdea.expectedTtm);
+      minY = Math.min(minY, bubbleIdea.expectedProfitInCents);
     }
 
+    // adjust min and max to allow radius
+    /*
     maxY = (maxY + 1) * 1.2;
     maxX = (maxX + 1) * 1.2;
+    minY = (minY - 1) * 1.2;
+    minX = (minX - 1) * 1.2;
+    */
+
+    let maxWidth = maxX - minX;
+    let maxHeight = maxY - minY;
+    maxX += maxWidth / 4;
+    minX -= maxWidth / 4;
+    maxY += maxHeight / 4;
+    minY -= maxHeight / 4; 
+
     const deafultOption = {
       legend: { display: false },
       scales: {
         yAxes: [{
           ticks: {
-            min: 0,
+            min: minY,
             max: maxY,
-            stepSize: maxY / 5,
+            stepSize: (maxY - minY) / 5,
           },
         }],
         xAxes: [{
           ticks: {
-            min: 0,
+            min: minX,
             max: maxX,
-            stepSize: maxX / 5,
+            stepSize: (maxX  - minX) / 5,
           },
         }],
       },
@@ -283,7 +302,7 @@ class Admin extends Component {
 
 
     const deafultOption = this.prepareOptions(ideasSummary);
-    const bubbleDataNew = this.prepareGraph(ideasSummary,this.getRatioUnit(ideasSummary));
+    const bubbleDataNew = this.prepareGraph(ideasSummary,this.getRadiusUnit(ideasSummary));
 
     return (
       <div className="container admin-container">
