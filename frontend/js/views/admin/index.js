@@ -7,33 +7,10 @@ import { Bubble } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
 import { fetchIdeasForBubbleGraph } from '../../actions/admin';
 
-
-const defaultConfig = {
-  label: '',
-  fill: true,
-  lineTension: 0.1,
-  backgroundColor: 'rgba(0, 0, 0 ,0)',
-  borderColor: 'rgba(0, 0, 0 ,0)',
-  borderCapStyle: 'butt',
-  borderDash: [],
-  borderDashOffset: 0.0,
-  borderJoinStyle: 'miter',
-  pointBorderColor: 'rgba(0, 0, 0 ,0)',
-  pointBackgroundColor: '#fff',
-  pointBorderWidth: 1,
-  pointHoverRadius: 5,
-  pointHoverBackgroundColor: 'rgba(0, 0, 0 ,0)',
-  pointHoverBorderColor: 'rgba(220,220,220,1)',
-  pointHoverBorderWidth: 2,
-  pointRadius: 1,
-  pointHitRadius: 10,
-  data: [],
-};
 
 const deafultOption = {
   legend: { display: false },
@@ -61,55 +38,6 @@ class Admin extends Component {
   state = {
     startDate: moment(),
     startDateOfaxis: moment(),
-    bubbleData: {
-      labels: '',
-      datasets: [
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 10, y: 20, r: 15 },
-            ],
-            backgroundColor: this.getColor(0),
-            borderColor: this.getColor(0),
-            pointBorderColor: this.getColor(0),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 55, y: 70, r: 30 },
-            ],
-            backgroundColor: this.getColor(1),
-            borderColor: this.getColor(1),
-            pointBorderColor: this.getColor(1),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 30, y: 50, r: 60 },
-            ],
-            backgroundColor: this.getColor(2),
-            borderColor: this.getColor(2),
-            pointBorderColor: this.getColor(2),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 20, y: 80, r: 40 },
-            ],
-            backgroundColor: this.getColor(3),
-            borderColor: this.getColor(3),
-            pointBorderColor: this.getColor(3),
-          },
-        },
-      ],
-    },
     tags: [],
   };
 
@@ -140,21 +68,6 @@ class Admin extends Component {
     this.setState({
       startDateOfaxis: date,
     });
-  }
-
-  getColor(index) {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      if (i < 2) {
-        color += letters[((i * index) + 5) % 16];
-      } else if (i < 4) {
-        color += letters[((i * index) + 7) % 16];
-      } else {
-        color += letters[((i * index) + 9) % 16];
-      }
-    }
-    return color;
   }
 
   applyFilters() {
@@ -188,66 +101,7 @@ class Admin extends Component {
       partialFullSwitch
     ));
   }
-
-
-  prepareGraph(ideasSummary, radiusUnit) {
-
-    console.log("prepareGraph");
-    console.log(ideasSummary);
-    /* Build bubbleData from ideasSummary
-
-    x-axis : implementation Months
-    y-axis : profit range
-    size : votes range
-    color : first tag
-
-    */
-
-    let bubbleDataNew = {
-      labels: '',
-      datasets: [
-
-      ],
-    };
-
-    for (const bubbleIdeaIndex in ideasSummary.items) {
-      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
-      bubbleDataNew.datasets.push({
-        ...defaultConfig,
-        ...{
-          data: [
-            { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
-          ],
-          backgroundColor: this.getColor(0),
-          borderColor: this.getColor(0),
-          pointBorderColor: this.getColor(0),
-        },
-      });
-    }
-
-    console.log(bubbleDataNew);
-
-
-    return bubbleDataNew;
-
-
-}
-
-
-  getRadiusUnit(ideasSummary) {
-    // define biggestBubble as 1/6 of width
-    const viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const biggestBubble = viewPortWidth / 16;
-
-    let maxSize = 1;
-    for (const bubbleIdeaIndex in ideasSummary.items) {
-      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
-      maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
-    }
-
-    return biggestBubble / maxSize;
-  }
-
+  
 
   calculateIncrement(minValue, maxValue, intervals) {
     console.log("calculateIncrement");
@@ -393,16 +247,12 @@ class Admin extends Component {
 
 
   render() {
-    const { bubbleData } = this.state;
-    const { ideasSummary } = this.props;
+    const { ideasSummary, bubbleData } = this.props;
 
 
     const defaultOption = this.prepareOptions(ideasSummary);
-    console.log("admin.render() defaultOption");
-    console.log(defaultOption);
-    let bubbleDataNew = this.prepareGraph(ideasSummary, this.getRadiusUnit(ideasSummary));
-    console.log("admin.render() bubbleDataNew");
-    console.log(bubbleDataNew);
+    console.log("admin/index/render()");
+    console.log(bubbleData);
 
     return (
       <div className="container admin-container">
@@ -534,7 +384,7 @@ class Admin extends Component {
             </div>
             <div className="section2">
               <Bubble
-                data={bubbleDataNew}
+                data={bubbleData}
                 options={defaultOption}
               />
             </div>
@@ -558,6 +408,7 @@ function mapStateToProps(state) {
     implementationTimeMsMax: state.admin.implementationTimeMsMax,
     tags: state.admin.tags,
     ideasSummary: state.admin.ideasSummary,
+    bubbleData: state.admin.bubbleData,
   };
 }
 

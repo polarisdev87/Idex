@@ -15,6 +15,10 @@ public class TtmProfitVoteDto {
 	Long expectedProfitInCents;
 	Long votes;
 	String firstTag;
+	/**
+	 * idea id
+	 */
+	Long id; 
 	
 	List<IdeaDto> ideas;
 	
@@ -29,6 +33,7 @@ public class TtmProfitVoteDto {
 		}
 		result.ideas = new ArrayList<IdeaDto>();
 		result.ideas.add(ideaDto);
+		result.id = ideaDto.getId();
 		return result;
 	}
 
@@ -80,7 +85,18 @@ public class TtmProfitVoteDto {
 
 	public void setIdeas(List<IdeaDto> ideas) {
 		this.ideas = ideas;
+	}
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
 	} 
+	
 	
 	
 	
