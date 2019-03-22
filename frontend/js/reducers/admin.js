@@ -9,7 +9,10 @@ import {
 export function admin(state = {
   isFetchingIdeas: false,
   isFetchingComments: false,
-  ideasArr: [],
+  ideasSummary: {
+      dimensionNames: ["ttm","profit","votes","tag"],
+      items:[],
+  },
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
   submittedAtMsMin: null,
@@ -33,13 +36,17 @@ export function admin(state = {
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS:
       return Object.assign({}, state, {
         isFetchingIdeas: false,
-        ideasArr: action.ideas,
+        ideasSummary: action.ideasSummary,
         ideasErrorMessage: undefined,
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_FAILURE:
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasErrorMessage: action.message,
+        ideasSummary: {
+            dimensionNames: ["ttm","profit","votes","tag"],
+            items:[],
+        },
       });
     case TOGGLE_FILTER_FULL_PARTIAL_ADMIN: {
       return Object.assign({}, state, {

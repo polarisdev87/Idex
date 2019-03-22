@@ -56,7 +56,6 @@ const deafultOption = {
 };
 
 class Admin extends Component {
-
       props: props;
 
   state = {
@@ -187,15 +186,108 @@ class Admin extends Component {
     ));
   }
 
+
+  prepareGraph(ideasSummary, ratioUnit) {
+    /* Build bubbleData from ideasSummary
+
+    x-axis : implementation Months
+    y-axis : profit range
+    size : votes range
+    color : first tag
+
+    */
+
+    const bubbleDataNew = {
+      labels: '',
+      datasets: [
+
+      ],
+    };
+
+    console.log('ideasSummary');
+    console.log(ideasSummary);
+    for (const bubbleIdeaIndex in ideasSummary.items) {
+      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+      bubbleDataNew.datasets.push({
+        ...defaultConfig,
+        ...{
+          data: [
+            { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * ratioUnit },
+          ],
+          backgroundColor: this.getColor(0),
+          borderColor: this.getColor(0),
+          pointBorderColor: this.getColor(0),
+        },
+      });
+    }
+    return bubbleDataNew;
+  }
+
+
+  getRatioUnit(ideasSummary) {
+    const biggestBubble = 60;
+
+    let maxSize = 1;
+    for (const bubbleIdeaIndex in ideasSummary.items) {
+      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+      maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
+    }
+
+    return biggestBubble / maxSize;
+  }
+
+  prepareOptions(ideasSummary) {
+
+    let maxX = 0;
+    let maxY = 0;
+    let maxSize = 1;
+    for (const bubbleIdeaIndex in ideasSummary.items) {
+      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+      maxX = Math.max(maxX, bubbleIdea.expectedTtm);
+      maxY = Math.max(maxY, bubbleIdea.expectedProfitInCents);
+      maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
+    }
+
+    maxY = (maxY + 1) * 1.2;
+    maxX = (maxX + 1) * 1.2;
+    const deafultOption = {
+      legend: { display: false },
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            max: maxY,
+            stepSize: maxY / 5,
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            min: 0,
+            max: maxX,
+            stepSize: maxX / 5,
+          },
+        }],
+      },
+    };
+    return deafultOption;
+  }
+
+
   render() {
     console.log('Admin.render()');
     const { bubbleData } = this.state;
     console.log(bubbleData);
     console.log(this.props);
+    const { ideasSummary } = this.props;
+    console.log(ideasSummary);
 
+
+    const deafultOption = this.prepareOptions(ideasSummary);
+    const bubbleDataNew = this.prepareGraph(ideasSummary,this.getRatioUnit(ideasSummary));
 
     return (
       <div className="container admin-container">
+        {/* header - boxes */ }
         <div className="info-container">
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
@@ -213,6 +305,7 @@ class Admin extends Component {
           </div>
         </div>
         <div className="main-container shadow">
+          {/* header - filter */ }
           <div className="header">
             <div className="row">
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
@@ -221,7 +314,8 @@ class Admin extends Component {
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6 filter-btn">
                 <button
                   type="button" className="btn btn-link base-btn" onClick={(x) =>
-                    this.applyFilters()}>Filter Ideas
+                    this.applyFilters()}
+                >Filter Ideas
                 </button>
               </div>
             </div>
@@ -321,7 +415,7 @@ class Admin extends Component {
             </div>
             <div className="section2">
               <Bubble
-                data={bubbleData}
+                data={bubbleDataNew}
                 options={deafultOption}
               />
             </div>
@@ -346,6 +440,7 @@ function mapStateToProps(state) {
     implementationTimeMsMin: state.admin.implementationTimeMsMin,
     implementationTimeMsMax: state.admin.implementationTimeMsMax,
     tags: state.admin.tags,
+    ideasSummary: state.admin.ideasSummary,
   };
 }
 
