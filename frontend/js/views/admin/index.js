@@ -168,9 +168,12 @@ class Admin extends Component {
       profitMax,
       implementationTimeMsMin,
       implementationTimeMsMax,
-      tags,
       dispatch,
     } = this.props;
+
+    const {
+      tags,
+    } = this.state;
 
     dispatch(fetchIdeasForBubbleGraph(
       submittedAtMsMin,
@@ -188,6 +191,9 @@ class Admin extends Component {
 
 
   prepareGraph(ideasSummary, radiusUnit) {
+
+    console.log("prepareGraph");
+    console.log(ideasSummary);
     /* Build bubbleData from ideasSummary
 
     x-axis : implementation Months
@@ -197,7 +203,7 @@ class Admin extends Component {
 
     */
 
-    const bubbleDataNew = {
+    let bubbleDataNew = {
       labels: '',
       datasets: [
 
@@ -218,8 +224,14 @@ class Admin extends Component {
         },
       });
     }
+
+    console.log(bubbleDataNew);
+
+
     return bubbleDataNew;
-  }
+
+
+}
 
 
   getRadiusUnit(ideasSummary) {
@@ -238,6 +250,7 @@ class Admin extends Component {
 
 
   calculateIncrement(minValue, maxValue, intervals) {
+    console.log("calculateIncrement");
     const toConvert = (maxValue - minValue) / intervals;
 
 
@@ -260,20 +273,24 @@ class Admin extends Component {
       result = 10;
     }
     let increment = result * Math.pow(10, selectedPower);
+    console.log("increment");
+    console.log(increment);
 
     // make min and max value be multiple of increment
 
 
     let max = maxValue;
     if (max % increment) {
-      max = (Math.round(max / increment) + 1) * increment;
+      max = (Math.floor(max / increment) + 1) * increment;
     }
 
     let min = minValue;
     if (min % increment) {
-      min = (Math.round(min / increment)) * increment;
+      min = (Math.floor(min / increment)) * increment;
     }
-
+    console.log("min and max");
+    console.log(min);
+    console.log(max);
 
     return {max: max,
         min: min,
@@ -284,6 +301,7 @@ class Admin extends Component {
 
   calculateMagnitude(range) {
 
+    console.log("calculateMagnitude");
     let maxLimit = range.max;
     let minLimit = range.min;
 
@@ -303,12 +321,18 @@ class Admin extends Component {
 
     baseMin *= Math.pow(10, selectedPower); // restore original magnitude
     baseMax *= Math.pow(10, selectedPower); // restore original magnitude
+
+    console.log(range);
+    console.log(baseMin);
+    console.log(baseMax);
+
     const result  = this.calculateIncrement(baseMin, baseMax, 5);
     return result;
 
   }
 
   prepareOptions(ideasSummary) {
+      console.log("prepareOptions");
     let maxX = 0;
     let maxY = 0;
     let minX = 99999999;
@@ -322,14 +346,6 @@ class Admin extends Component {
       minY = Math.min(minY, bubbleIdea.expectedProfitInCents);
     }
 
-    // adjust min and max to allow radius
-    /*
-    maxY = (maxY + 1) * 1.2;
-    maxX = (maxX + 1) * 1.2;
-    minY = (minY - 1) * 1.2;
-    minX = (minX - 1) * 1.2;
-    */
-
     const maxWidth = maxX - minX;
     const maxHeight = maxY - minY;
 
@@ -339,6 +355,12 @@ class Admin extends Component {
 
     minY -= maxHeight / 4;
     maxY += maxHeight / 4;
+
+    console.log("minX, maxX, minY, maxY");
+    console.log(minX);
+    console.log(maxX);
+    console.log(minY);
+    console.log(maxY);
 
     // define magnitude (1, 2, 5, 10, 100, 1000, ...)
     const widthRange = this.calculateMagnitude({ min: minX, max: maxX });
@@ -375,8 +397,12 @@ class Admin extends Component {
     const { ideasSummary } = this.props;
 
 
-    const deafultOption = this.prepareOptions(ideasSummary);
-    const bubbleDataNew = this.prepareGraph(ideasSummary, this.getRadiusUnit(ideasSummary));
+    const defaultOption = this.prepareOptions(ideasSummary);
+    console.log("admin.render() defaultOption");
+    console.log(defaultOption);
+    let bubbleDataNew = this.prepareGraph(ideasSummary, this.getRadiusUnit(ideasSummary));
+    console.log("admin.render() bubbleDataNew");
+    console.log(bubbleDataNew);
 
     return (
       <div className="container admin-container">
@@ -509,7 +535,7 @@ class Admin extends Component {
             <div className="section2">
               <Bubble
                 data={bubbleDataNew}
-                options={deafultOption}
+                options={defaultOption}
               />
             </div>
           </div>

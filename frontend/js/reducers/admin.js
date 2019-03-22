@@ -6,6 +6,18 @@ import {
 } from '../actions/admin';
 
 
+
+
+/*
+export function prepareGraph() {
+
+}
+*/
+
+
+
+
+
 export function admin(state = {
   isFetchingIdeas: false,
   isFetchingComments: false,
@@ -34,6 +46,10 @@ export function admin(state = {
         isFetchingIdeas: true,
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS:
+
+
+
+
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasSummary: action.ideasSummary,
