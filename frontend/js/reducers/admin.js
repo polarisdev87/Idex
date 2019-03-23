@@ -94,7 +94,7 @@ const defaultConfig = {
 
 
 function getColorList(tagsCount) {
-  const colorList = chroma.bezier(['yellow', 'red', 'black'])
+  const colorList = chroma.bezier(['#ffd54f', '#aed581'])
     .scale()
     .colors(tagsCount);
   console.log('colorList');
@@ -124,11 +124,12 @@ function getRadiusUnit(ideasSummary) {
 function generateTagColorMap(items) {
   let tagColorMapArray = items.map(item => item.firstTag);
   const distinctTagColorMapArray = [...new Set(tagColorMapArray)];
-  const colorArray = getColorList(distinctTagColorMapArray.length);
+  const colorArray = getColorList(distinctTagColorMapArray.length+1);
   let result = new Map();
   for (let i=0 ; i<distinctTagColorMapArray.length; i++) {
     result.set(distinctTagColorMapArray[i],colorArray[i]);
   }
+  result.set(null,colorArray[colorArray.length-1]);
   return result;  
 }
 
