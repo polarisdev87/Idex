@@ -1,10 +1,15 @@
+
+
 import {
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_REQUEST,
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS,
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_FAILURE,
-  TOGGLE_FILTER_FULL_PARTIAL_ADMIN
+  TOGGLE_FILTER_FULL_PARTIAL_ADMIN,
+  SET_START_DATE_ADMIN,
+  SET_END_DATE_ADMIN,
 } from '../actions/admin';
 
+const moment = require('moment');
 
 /*
     bubbleData: {
@@ -174,8 +179,8 @@ export function admin(state = {
   },
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
-  submittedAtMsMin: null,
-  submittedAtMsMax: null,
+  submittedAtMsMin: moment().utc().valueOf(),
+  submittedAtMsMax: moment().utc().add(1,'day').add(-1,'milliseconds').valueOf(),
   tags: [],
   votesMin: 0,
   votesMax: 999999,
@@ -183,6 +188,8 @@ export function admin(state = {
   profitMax: 999999,
   implementationTimeMin: 0,
   implementationTimeMax: 999999,
+  startDate: moment(),
+  endDate: moment(),
 }, action) {
   console.log('admin reducer');
   console.log(action.type);
@@ -192,12 +199,11 @@ export function admin(state = {
         isFetchingIdeas: true,
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS:
-      const bubbleDataNew = prepareGraph(action.ideasSummary, getRadiusUnit(action.ideasSummary));
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasSummary: action.ideasSummary,
         ideasErrorMessage: undefined,
-        bubbleData: bubbleDataNew,
+        bubbleData: prepareGraph(action.ideasSummary, getRadiusUnit(action.ideasSummary)),
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_FAILURE:
       return Object.assign({}, state, {
@@ -211,6 +217,18 @@ export function admin(state = {
     case TOGGLE_FILTER_FULL_PARTIAL_ADMIN: {
       return Object.assign({}, state, {
         partialFullSwitch: !state.partialFullSwitch,
+      });
+    }
+    case SET_START_DATE_ADMIN: {
+      return Object.assign({}, state, {
+        submittedAtMsMin: moment(action.date).utc().valueOf(),
+        startDate: action.date,
+      });
+    }
+    case SET_END_DATE_ADMIN: {
+      return Object.assign({}, state, {
+        submittedAtMsMax: moment(action.date).utc().add(1,'day').add(-1,'milliseconds').valueOf(),
+        endDate: action.date,
       });
     }
     default:

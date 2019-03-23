@@ -6,11 +6,12 @@ import DatePicker from 'react-datepicker';
 import { Bubble } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+
 import 'react-datepicker/dist/react-datepicker.css';
+
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
-import { fetchIdeasForBubbleGraph } from '../../actions/admin';
-import { toggleFilterFullPartialAdmin } from '../../actions/admin';
+import { fetchIdeasForBubbleGraph, setStartDate, setEndDate, toggleFilterFullPartialAdmin } from '../../actions/admin';
 
 
 const deafultOption = {
@@ -37,8 +38,6 @@ class Admin extends Component {
       props: props;
 
   state = {
-    startDate: moment(),
-    startDateOfaxis: moment(),
     tags: [],
   };
 
@@ -60,15 +59,13 @@ class Admin extends Component {
 
 
   handleChange(date) {
-    this.setState({
-      startDate: date,
-    });
+    const { dispatch } = this.props;
+    dispatch(setStartDate(date));
   }
 
   handleChangeOfaxis(date) {
-    this.setState({
-      startDateOfaxis: date,
-    });
+    const { dispatch } = this.props;
+    dispatch(setEndDate(date));
   }
 
   applyFilters() {
@@ -102,10 +99,10 @@ class Admin extends Component {
       partialFullSwitch
     ));
   }
-  
+
 
   calculateIncrement(minValue, maxValue, intervals) {
-    console.log("calculateIncrement");
+    console.log('calculateIncrement');
     const toConvert = (maxValue - minValue) / intervals;
 
 
@@ -127,8 +124,8 @@ class Admin extends Component {
     } else {
       result = 10;
     }
-    let increment = result * Math.pow(10, selectedPower);
-    console.log("increment");
+    const increment = result * Math.pow(10, selectedPower);
+    console.log('increment');
     console.log(increment);
 
     // make min and max value be multiple of increment
@@ -143,22 +140,22 @@ class Admin extends Component {
     if (min % increment) {
       min = (Math.floor(min / increment)) * increment;
     }
-    console.log("min and max");
+    console.log('min and max');
     console.log(min);
     console.log(max);
 
-    return {max: max,
-        min: min,
-        increment: increment};
-
+    return {
+ max,
+      min,
+      increment 
+};
   }
 
 
   calculateMagnitude(range) {
-
-    console.log("calculateMagnitude");
+    console.log('calculateMagnitude');
     let maxLimit = range.max;
-    let minLimit = range.min;
+    const minLimit = range.min;
 
     if (maxLimit == 0) {
       return {
@@ -183,11 +180,10 @@ class Admin extends Component {
 
     const result  = this.calculateIncrement(baseMin, baseMax, 5);
     return result;
-
   }
 
   prepareOptions(ideasSummary) {
-      console.log("prepareOptions");
+    console.log('prepareOptions');
     let maxX = 0;
     let maxY = 0;
     let minX = 99999999;
@@ -211,7 +207,7 @@ class Admin extends Component {
     minY -= maxHeight / 4;
     maxY += maxHeight / 4;
 
-    console.log("minX, maxX, minY, maxY");
+    console.log('minX, maxX, minY, maxY');
     console.log(minX);
     console.log(maxX);
     console.log(minY);
@@ -249,17 +245,16 @@ class Admin extends Component {
 
   onPartialFullToggle() {
     const { dispatch } = this.props;
-    dispatch(toggleFilterFullPartialAdmin()); 
+    dispatch(toggleFilterFullPartialAdmin());
   }
 
 
-
   render() {
-    const { ideasSummary, bubbleData, partialFullSwitch } = this.props;
+    const { ideasSummary, bubbleData, partialFullSwitch, startDate, endDate } = this.props;
 
 
     const defaultOption = this.prepareOptions(ideasSummary);
-    console.log("admin/index/render()");
+    console.log('admin/index/render()');
     console.log(bubbleData);
 
     return (
@@ -301,11 +296,11 @@ class Admin extends Component {
             <div className="section1">
               <div className="tag-section">
                 <TagSection
-                  partialFullSwitch = {partialFullSwitch} 
+                  partialFullSwitch= {partialFullSwitch}
                   tags={this.state.tags}
-                  handleTagsChange={(tags) => this.handleTagsChange(tags)} 
+                  handleTagsChange={(tags) => this.handleTagsChange(tags)}
                   addTag={(tag) => this.addTag(tag)}
-                  onPartialFullToggle = {() => this.onPartialFullToggle()}
+                  onPartialFullToggle ={() => this.onPartialFullToggle()}
                 />
               </div>
               <div className="date-section">
@@ -319,7 +314,7 @@ class Admin extends Component {
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <DatePicker
-                          selected={this.state.startDate}
+                          selected={startDate}
                           onChange={(date) => this.handleChange(date)}
                         />
                       </div>
@@ -328,7 +323,7 @@ class Admin extends Component {
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <DatePicker
-                          selected={this.state.startDateOfaxis}
+                          selected={endDate}
                           onChange={(date) => this.handleChangeOfaxis(date)}
                         />
                       </div>
@@ -423,6 +418,8 @@ function mapStateToProps(state) {
     tags: state.admin.tags,
     ideasSummary: state.admin.ideasSummary,
     bubbleData: state.admin.bubbleData,
+    startDate: state.admin.startDate,
+    endDate: state.admin.endDate,
   };
 }
 

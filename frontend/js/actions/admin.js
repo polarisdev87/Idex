@@ -28,12 +28,11 @@ function getSummaryIdeasTTMProfitVotesSuccess(ideasSummary) {
 }
 
 
-
 export function fetchIdeasForBubbleGraph(
   submittedAtMsMin, submittedAtMsMax,
-  votesMin, votesMax, 
-  profitMin, profitMax, 
-  implementationTimeMsMin,   implementationTimeMsMax, 
+  votesMin, votesMax,
+  profitMin, profitMax,
+  implementationTimeMsMin, implementationTimeMsMax,
   tags, partialFullSwitch,
 ) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
@@ -63,13 +62,13 @@ export function fetchIdeasForBubbleGraph(
     throw 'No token saved!';
   }
 
-  console.log("actions/admin/fetchIdeasForBubbleGraph");
+  console.log('actions/admin/fetchIdeasForBubbleGraph');
   return dispatch => {
-    console.log("actions/admin.js executing dispatch of request");
+    console.log('actions/admin.js executing dispatch of request');
     dispatch(getSummaryIdeasTTMProfitVotesRequest());
 
     const url = `${API_BASE_URI}/ideas/summary-ttm-profit-vote?${queryString.stringify(query)}`;
-    console.log("actions/admin.js -> ");
+    console.log('actions/admin.js -> ');
     console.log(url);
     return fetch(url, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -102,5 +101,21 @@ export function toggleFilterFullPartialAdmin() {
   };
 }
 
+export const SET_START_DATE_ADMIN = 'SET_START_DATE_ADMIN';
 
+export function setStartDate(date) {
+  return {
+    type: SET_START_DATE_ADMIN,
+    date,
+  };
+}
+
+export const SET_END_DATE_ADMIN = 'SET_END_DATE_ADMIN';
+
+export function setEndDate(date) {
+  return {
+    type: SET_END_DATE_ADMIN,
+    date,
+  };
+}
 
