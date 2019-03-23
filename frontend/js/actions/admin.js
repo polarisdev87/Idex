@@ -119,3 +119,61 @@ export function setEndDate(date) {
   };
 }
 
+
+export const SET_MIN_VOTES_RANGE_ADMIN = 'SET_MIN_VOTES_RANGE_ADMIN';
+
+export function setMinVotesRange(value) {
+  return {
+    type: SET_MIN_VOTES_RANGE_ADMIN,
+    value,
+  };
+}
+
+export const SET_MAX_VOTES_RANGE_ADMIN = 'SET_MAX_VOTES_RANGE_ADMIN';
+
+export function setMaxVotesRange(value) {
+  return {
+    type: SET_MAX_VOTES_RANGE_ADMIN,
+    value,
+  };
+}
+
+
+export const SET_MIN_PROFIT_RANGE_ADMIN = 'SET_MIN_PROFIT_RANGE_ADMIN';
+
+export function setMinProfitRange(value) {
+  return {
+    type: SET_MIN_PROFIT_RANGE_ADMIN,
+    value,
+  };
+}
+
+export const SET_MAX_PROFIT_RANGE_ADMIN = 'SET_MAX_PROFIT_RANGE_ADMIN';
+
+export function setMaxProfitRange(value) {
+  return {
+    type: SET_MAX_PROFIT_RANGE_ADMIN,
+    value,
+  };
+}
+
+export const SET_MIN_IMPLEMENTATION_RANGE_ADMIN = 'SET_MIN_IMPLEMENTATION_RANGE_ADMIN';
+
+export function setMinImplementationRange(value) {
+  return {
+    type: SET_MIN_IMPLEMENTATION_RANGE_ADMIN,
+    value,
+  };
+}
+
+export const SET_MAX_IMPLEMENTATION_RANGE_ADMIN = 'SET_MAX_IMPLEMENTATION_RANGE_ADMIN';
+
+export function setMaxImplementationRange(value) {
+  return {
+    type: SET_MAX_IMPLEMENTATION_RANGE_ADMIN,
+    value,
+  };
+}
+
+
+

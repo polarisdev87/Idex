@@ -7,6 +7,12 @@ import {
   TOGGLE_FILTER_FULL_PARTIAL_ADMIN,
   SET_START_DATE_ADMIN,
   SET_END_DATE_ADMIN,
+  SET_MIN_VOTES_RANGE_ADMIN,
+  SET_MAX_VOTES_RANGE_ADMIN,
+  SET_MIN_PROFIT_RANGE_ADMIN,
+  SET_MAX_PROFIT_RANGE_ADMIN,
+  SET_MIN_IMPLEMENTATION_RANGE_ADMIN,
+  SET_MAX_IMPLEMENTATION_RANGE_ADMIN,
 } from '../actions/admin';
 
 const moment = require('moment');
@@ -182,12 +188,12 @@ export function admin(state = {
   submittedAtMsMin: moment().utc().valueOf(),
   submittedAtMsMax: moment().utc().add(1,'day').add(-1,'milliseconds').valueOf(),
   tags: [],
-  votesMin: 0,
-  votesMax: 999999,
-  profitMin: 0,
-  profitMax: 999999,
-  implementationTimeMin: 0,
-  implementationTimeMax: 999999,
+  minVotesRange: 0,
+  maxVotesRange: 999999,
+  minProfitRange: 0,
+  maxProfitRange: 999999,
+  minImplementationRange: 0,
+  maxImplementationRange: 999999,
   startDate: moment(),
   endDate: moment(),
 }, action) {
@@ -229,6 +235,36 @@ export function admin(state = {
       return Object.assign({}, state, {
         submittedAtMsMax: moment(action.date).utc().add(1,'day').add(-1,'milliseconds').valueOf(),
         endDate: action.date,
+      });
+    }
+    case SET_MIN_VOTES_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        minVotesRange: action.value,
+      });
+    }
+    case SET_MAX_VOTES_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        maxVotesRange: action.value,
+      });
+    }
+    case SET_MIN_PROFIT_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        minProfitRange: action.value,
+      });
+    }
+    case SET_MAX_PROFIT_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        maxProfitRange: action.value,
+      });
+    }
+    case SET_MIN_IMPLEMENTATION_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        minImplementationRange: action.value,
+      });
+    }
+    case SET_MAX_IMPLEMENTATION_RANGE_ADMIN: {
+      return Object.assign({}, state, {
+        maxImplementationRange: action.value,
       });
     }
     default:

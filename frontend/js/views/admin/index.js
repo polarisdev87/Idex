@@ -11,7 +11,18 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
-import { fetchIdeasForBubbleGraph, setStartDate, setEndDate, toggleFilterFullPartialAdmin } from '../../actions/admin';
+import {
+  fetchIdeasForBubbleGraph,
+  setStartDate,
+  setEndDate,
+  toggleFilterFullPartialAdmin,
+  setMinVotesRange,
+  setMaxVotesRange,
+  setMinProfitRange,
+  setMaxProfitRange,
+  setMinImplementationRange,
+  setMaxImplementationRange
+} from '../../actions/admin';
 
 
 const deafultOption = {
@@ -73,12 +84,12 @@ class Admin extends Component {
       partialFullSwitch,
       submittedAtMsMin,
       submittedAtMsMax,
-      votesMin,
-      votesMax,
-      profitMin,
-      profitMax,
-      implementationTimeMsMin,
-      implementationTimeMsMax,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
       dispatch,
     } = this.props;
 
@@ -89,12 +100,12 @@ class Admin extends Component {
     dispatch(fetchIdeasForBubbleGraph(
       submittedAtMsMin,
       submittedAtMsMax,
-      votesMin,
-      votesMax,
-      profitMin,
-      profitMax,
-      implementationTimeMsMin,
-      implementationTimeMsMax,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
       tags,
       partialFullSwitch
     ));
@@ -145,10 +156,10 @@ class Admin extends Component {
     console.log(max);
 
     return {
- max,
+      max,
       min,
-      increment 
-};
+      increment,
+    };
   }
 
 
@@ -249,13 +260,58 @@ class Admin extends Component {
   }
 
 
+  setMinVotesRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinVotesRange(event.target.value));
+  }
+
+  setMaxVotesRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxVotesRange(event.target.value));
+  }
+
+  setMinProfitRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinProfitRange(event.target.value));
+  }
+
+  setMaxProfitRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxProfitRange(event.target.value));
+  }
+
+  setMinImplementationRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinImplementationRange(event.target.value));
+  }
+
+  setMaxImplementationRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxImplementationRange(event.target.value));
+  }
+
+
   render() {
-    const { ideasSummary, bubbleData, partialFullSwitch, startDate, endDate } = this.props;
+    const {
+      ideasSummary,
+      bubbleData,
+      partialFullSwitch,
+      startDate,
+      endDate,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
+    } = this.props;
 
 
     const defaultOption = this.prepareOptions(ideasSummary);
     console.log('admin/index/render()');
     console.log(bubbleData);
+    console.log(this.props);
+    console.log(minVotesRange);    
 
     return (
       <div className="container admin-container">
@@ -296,11 +352,11 @@ class Admin extends Component {
             <div className="section1">
               <div className="tag-section">
                 <TagSection
-                  partialFullSwitch= {partialFullSwitch}
+                  partialFullSwitch={partialFullSwitch}
                   tags={this.state.tags}
                   handleTagsChange={(tags) => this.handleTagsChange(tags)}
                   addTag={(tag) => this.addTag(tag)}
-                  onPartialFullToggle ={() => this.onPartialFullToggle()}
+                  onPartialFullToggle={() => this.onPartialFullToggle()}
                 />
               </div>
               <div className="date-section">
@@ -338,13 +394,19 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minVotesRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minVotesRange}
+                          onChange={(x) => { this.setMinVotesRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
                         To
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxVotesRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxVotesRange}
+                          onChange={(x) => { this.setMaxVotesRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -359,13 +421,19 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minProfitRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minProfitRange}
+                          onChange={(x) => { this.setMinProfitRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
                         To
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxProfitRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxProfitRange}
+                          onChange={(x) => { this.setMaxProfitRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -378,13 +446,19 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minImplRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minImplementationRange}
+                          onChange={(x) => { this.setMinImplementationRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
                         To
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxImplRange = el; }} />
+                        <input
+                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxImplementationRange}
+                          onChange={(x) => { this.setMaxImplementationRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -409,12 +483,12 @@ function mapStateToProps(state) {
     partialFullSwitch: state.admin.partialFullSwitch,
     submittedAtMsMin: state.admin.submittedAtMsMin,
     submittedAtMsMax: state.admin.submittedAtMsMax,
-    votesMin: state.admin.votesMin,
-    votesMax: state.admin.votesMax,
-    profitMin: state.admin.profitMin,
-    profitMax: state.admin.profitMax,
-    implementationTimeMsMin: state.admin.implementationTimeMsMin,
-    implementationTimeMsMax: state.admin.implementationTimeMsMax,
+    minVotesRange: state.admin.minVotesRange,
+    maxVotesRange: state.admin.maxVotesRange,
+    minProfitRange: state.admin.minProfitRange,
+    maxProfitRange: state.admin.maxProfitRange,
+    minImplementationRange: state.admin.minImplementationRange,
+    maxImplementationRange: state.admin.maxImplementationRange,
     tags: state.admin.tags,
     ideasSummary: state.admin.ideasSummary,
     bubbleData: state.admin.bubbleData,
