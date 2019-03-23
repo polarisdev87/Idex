@@ -1,4 +1,4 @@
-
+import chroma from 'chroma-js';
 
 import {
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_REQUEST,
@@ -12,7 +12,7 @@ import {
   SET_MIN_PROFIT_RANGE_ADMIN,
   SET_MAX_PROFIT_RANGE_ADMIN,
   SET_MIN_IMPLEMENTATION_RANGE_ADMIN,
-  SET_MAX_IMPLEMENTATION_RANGE_ADMIN,
+  SET_MAX_IMPLEMENTATION_RANGE_ADMIN
 } from '../actions/admin';
 
 const moment = require('moment');
@@ -92,21 +92,19 @@ const defaultConfig = {
   data: [],
 };
 
-function getColor(index) {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    if (i < 2) {
-      color += letters[((i * index) + 5) % 16];
-    } else if (i < 4) {
-      color += letters[((i * index) + 7) % 16];
-    } else {
-      color += letters[((i * index) + 9) % 16];
-    }
-  }
-  return color;
+
+function getColorList(tagsCount) {
+  const colorList = chroma.bezier(['yellow', 'red', 'black'])
+    .scale()
+    .colors(tagsCount);
+  console.log('colorList');
+  console.log(colorList);
+  return colorList;
 }
 
+function getColor(tag, tagColorMap) {
+    return tagColorMap.get(tag);
+}
 
 
 function getRadiusUnit(ideasSummary) {
@@ -123,7 +121,16 @@ function getRadiusUnit(ideasSummary) {
   return biggestBubble / maxSize;
 }
 
-
+function generateTagColorMap(items) {
+  let tagColorMapArray = items.map(item => item.firstTag);
+  const distinctTagColorMapArray = [...new Set(tagColorMapArray)];
+  const colorArray = getColorList(distinctTagColorMapArray.length);
+  let result = new Map();
+  for (let i=0 ; i<distinctTagColorMapArray.length; i++) {
+    result.set(distinctTagColorMapArray[i],colorArray[i]);
+  }
+  return result;  
+}
 
 function prepareGraph(ideasSummary, radiusUnit) {
   console.log('prepareGraph');
@@ -145,19 +152,26 @@ function prepareGraph(ideasSummary, radiusUnit) {
   };
 
 
+  let tagColorMap = generateTagColorMap(ideasSummary.items);
+  console.log(tagColorMap);
+
+
   for (const bubbleIdeaIndex in ideasSummary.items) {
     const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
     console.log('bubbleIdea');
     console.log(bubbleIdea);
+
+
+
     bubbleDataNew.datasets.push({
       ...defaultConfig,
       ...{
         data: [
           { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
         ],
-        backgroundColor: getColor(0),
-        borderColor: getColor(0),
-        pointBorderColor: getColor(0),
+        backgroundColor: getColor(bubbleIdea.firstTag,tagColorMap),
+        borderColor: getColor(bubbleIdea.firstTag,tagColorMap),
+        pointBorderColor: getColor(bubbleIdea.firstTag,tagColorMap),
         label: bubbleIdea.id,
       },
     });
@@ -186,7 +200,7 @@ export function admin(state = {
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
   submittedAtMsMin: moment().utc().valueOf(),
-  submittedAtMsMax: moment().utc().add(1,'day').add(-1,'milliseconds').valueOf(),
+  submittedAtMsMax: moment().utc().add(1, 'day').add(-1, 'milliseconds').valueOf(),
   tags: [],
   minVotesRange: 0,
   maxVotesRange: 999999,
@@ -233,7 +247,7 @@ export function admin(state = {
     }
     case SET_END_DATE_ADMIN: {
       return Object.assign({}, state, {
-        submittedAtMsMax: moment(action.date).utc().add(1,'day').add(-1,'milliseconds').valueOf(),
+        submittedAtMsMax: moment(action.date).utc().add(1, 'day').add(-1, 'milliseconds').valueOf(),
         endDate: action.date,
       });
     }
