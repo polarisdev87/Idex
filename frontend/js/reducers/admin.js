@@ -2,7 +2,7 @@ import {
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_REQUEST,
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS,
   GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_FAILURE,
-  TOGGLE_FILTER_FULL_PARTIAL_ADMIN 
+  TOGGLE_FILTER_FULL_PARTIAL_ADMIN
 } from '../actions/admin';
 
 
@@ -81,44 +81,43 @@ const defaultConfig = {
   data: [],
 };
 
-  function getColor(index) {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      if (i < 2) {
-        color += letters[((i * index) + 5) % 16];
-      } else if (i < 4) {
-        color += letters[((i * index) + 7) % 16];
-      } else {
-        color += letters[((i * index) + 9) % 16];
-      }
+function getColor(index) {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    if (i < 2) {
+      color += letters[((i * index) + 5) % 16];
+    } else if (i < 4) {
+      color += letters[((i * index) + 7) % 16];
+    } else {
+      color += letters[((i * index) + 9) % 16];
     }
-    return color;
-  };
+  }
+  return color;
+}
 
 
 
 function getRadiusUnit(ideasSummary) {
-    // define biggestBubble as 1/6 of width
-    const viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const biggestBubble = viewPortWidth / 16;
+  // define biggestBubble as 1/6 of width
+  const viewPortWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  const biggestBubble = viewPortWidth / 16;
 
-    let maxSize = 1;
-    for (const bubbleIdeaIndex in ideasSummary.items) {
-      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
-      maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
-    }
+  let maxSize = 1;
+  for (const bubbleIdeaIndex in ideasSummary.items) {
+    const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+    maxSize = Math.max(maxSize, bubbleIdea.votes + 1);
+  }
 
-    return biggestBubble / maxSize;
-  };
+  return biggestBubble / maxSize;
+}
 
 
 
 function prepareGraph(ideasSummary, radiusUnit) {
-
-    console.log("prepareGraph");
-    console.log(ideasSummary);
-    /* Build bubbleData from ideasSummary
+  console.log('prepareGraph');
+  console.log(ideasSummary);
+  /* Build bubbleData from ideasSummary
 
     x-axis : implementation Months
     y-axis : profit range
@@ -127,55 +126,51 @@ function prepareGraph(ideasSummary, radiusUnit) {
 
     */
 
-    let bubbleDataNew = {
-      labels: '',
-      datasets: [
+  const bubbleDataNew = {
+    labels: '',
+    datasets: [
 
-      ],
-    };
-
-    
-    for (const bubbleIdeaIndex in ideasSummary.items) {
-      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
-      console.log("bubbleIdea");
-      console.log(bubbleIdea);
-      bubbleDataNew.datasets.push({
-        ...defaultConfig,
-        ...{
-          data: [
-            { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
-          ],
-          backgroundColor: getColor(0),
-          borderColor: getColor(0),
-          pointBorderColor: getColor(0),
-          label: bubbleIdea.id,
-        },
-      });
-    }
-
-    console.log(bubbleDataNew);
+    ],
+  };
 
 
-    return bubbleDataNew;
+  for (const bubbleIdeaIndex in ideasSummary.items) {
+    const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+    console.log('bubbleIdea');
+    console.log(bubbleIdea);
+    bubbleDataNew.datasets.push({
+      ...defaultConfig,
+      ...{
+        data: [
+          { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
+        ],
+        backgroundColor: getColor(0),
+        borderColor: getColor(0),
+        pointBorderColor: getColor(0),
+        label: bubbleIdea.id,
+      },
+    });
+  }
 
+  console.log(bubbleDataNew);
+
+
+  return bubbleDataNew;
 }
-
-
-
 
 
 export function admin(state = {
   isFetchingIdeas: false,
   isFetchingComments: false,
   ideasSummary: {
-      dimensionNames: ["ttm","profit","votes","tag"],
-      items:[],
+    dimensionNames: ['ttm', 'profit', 'votes', 'tag'],
+    items: [],
   },
-  bubbleData : {
-      labels: '',
-      datasets: [
+  bubbleData: {
+    labels: '',
+    datasets: [
 
-      ],
+    ],
   },
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
@@ -189,32 +184,28 @@ export function admin(state = {
   implementationTimeMin: 0,
   implementationTimeMax: 999999,
 }, action) {
-
-    console.log("admin reducer");
-    console.log(action.type);
+  console.log('admin reducer');
+  console.log(action.type);
   switch (action.type) {
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_REQUEST:
       return Object.assign({}, state, {
         isFetchingIdeas: true,
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_SUCCESS:
-
-      const bubbleDataNew = prepareGraph(action.ideasSummary,getRadiusUnit(action.ideasSummary));
-
-
+      const bubbleDataNew = prepareGraph(action.ideasSummary, getRadiusUnit(action.ideasSummary));
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasSummary: action.ideasSummary,
         ideasErrorMessage: undefined,
-        bubbleData : bubbleDataNew,
+        bubbleData: bubbleDataNew,
       });
     case GET_SUMMARY_IDEAS_TTM_PROFIT_VOTES_FAILURE:
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasErrorMessage: action.message,
         ideasSummary: {
-            dimensionNames: ["ttm","profit","votes","tag"],
-            items:[],
+          dimensionNames: ['ttm', 'profit', 'votes', 'tag'],
+          items: [],
         },
       });
     case TOGGLE_FILTER_FULL_PARTIAL_ADMIN: {

@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
 import { fetchIdeasForBubbleGraph } from '../../actions/admin';
+import { toggleFilterFullPartialAdmin } from '../../actions/admin';
 
 
 const deafultOption = {
@@ -246,8 +247,15 @@ class Admin extends Component {
   }
 
 
+  onPartialFullToggle() {
+    const { dispatch } = this.props;
+    dispatch(toggleFilterFullPartialAdmin()); 
+  }
+
+
+
   render() {
-    const { ideasSummary, bubbleData } = this.props;
+    const { ideasSummary, bubbleData, partialFullSwitch } = this.props;
 
 
     const defaultOption = this.prepareOptions(ideasSummary);
@@ -292,7 +300,13 @@ class Admin extends Component {
           <div className="body">
             <div className="section1">
               <div className="tag-section">
-                <TagSection tags={this.state.tags} handleTagsChange={(tags) => this.handleTagsChange(tags)} addTag={(tag) => this.addTag(tag)} />
+                <TagSection
+                  partialFullSwitch = {partialFullSwitch} 
+                  tags={this.state.tags}
+                  handleTagsChange={(tags) => this.handleTagsChange(tags)} 
+                  addTag={(tag) => this.addTag(tag)}
+                  onPartialFullToggle = {() => this.onPartialFullToggle()}
+                />
               </div>
               <div className="date-section">
                 <div className="row row-item">

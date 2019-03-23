@@ -8,6 +8,7 @@ import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
+import { toggleFilterFullPartial } from '../../actions/ideas';
 
 const moment = require('moment');
 
@@ -211,8 +212,15 @@ class Header extends Component {
   }
 
 
+  onPartialFullToggle() {
+    const { dispatch } = this.props;
+    dispatch(toggleFilterFullPartial()); 
+  }
+
+
+
   render() {
-    const { addIdeaButtonClick } = this.props;
+    const { addIdeaButtonClick, partialFullSwitch } = this.props;
     const { stagesSelected, implementedFilterSelected } = this.state;
 
 
@@ -235,9 +243,11 @@ class Header extends Component {
           <div className="collapse-container">
             <div className="tag-section">
               <TagSection
+                partialFullSwitch = {partialFullSwitch}
                 tags={this.state.tags}
                 handleTagsChange={(tags) => this.handleTagsChange(tags)}
                 addTag={(tag) => this.addTag(tag)}
+                onPartialFullToggle = {() => this.onPartialFullToggle()}
               />
             </div>
 
@@ -367,6 +377,7 @@ class Header extends Component {
 
 function mapStateToProps(state) {
   return {
+    partialFullSwitch: state.ideas.partialFullSwitch,      
   };
 }
 

@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import TagsInput from 'react-tagsinput';
 import Toggle from 'react-bootstrap-toggle';
 import { connect } from 'react-redux';
-import { toggleFilterFullPartial } from '../../actions/ideas';
 
 type Props = {
   placeholder: '',
@@ -23,19 +22,13 @@ class TagSection extends Component {
     this.props.handleTagsChange(tags);
   }
 
-  onToggle(x) {
-    const { dispatch } = this.props;
-    dispatch(toggleFilterFullPartial()); 
-  }
-
-
   defaultRenderLayout(tagComponents, inputComponent, toggleActive) {
     return (
       <span>
         { tagComponents.length > 1 &&
           <span>
             <Toggle
-              onClick={(x) => { this.onToggle(x); }}
+              onClick={(x) => { this.props.onPartialFullToggle() }}
               on="Partial"
               off="Full"
               size="sm"
@@ -59,13 +52,16 @@ class TagSection extends Component {
 
 
   render() {
-    const { placeholder, type, className } = this.props;
+    const { placeholder, type, className, partialFullSwitch } = this.props;
     const { inputValue } = this.state;
     return (
       <div className="form-group tag-container">
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
-          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout={(a, b) => this.defaultRenderLayout(a, b, this.props.partialFullSwitch)} />
+          <TagsInput 
+            value={this.props.tags} 
+            onChange={::this.handleChange} 
+            renderLayout={(a, b) => this.defaultRenderLayout(a, b, partialFullSwitch)} />
         </div>
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>
@@ -103,12 +99,11 @@ class TagSection extends Component {
 
 function mapStateToProps(state) {
   return {
-      partialFullSwitch: state.ideas.partialFullSwitch,      
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return { dispatch };
+  return {  };
 }
 
 
