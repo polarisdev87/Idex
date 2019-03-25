@@ -23,6 +23,7 @@ import {
   setMinImplementationRange,
   setMaxImplementationRange
 } from '../../actions/admin';
+import AddIdeaModal from '../../components/modals/AddIdeaModal';
 
 
 const deafultOption = {
@@ -46,11 +47,91 @@ const deafultOption = {
 };
 
 class Admin extends Component {
-      props: props;
+  props: props;
+
+  constructor(props) {
+    super(props);
+    console.log("Admin.constructor(...)");
+    this.displayIdea = this.displayIdea.bind(this);
+    this.modalIdea=null;
+  }
 
   state = {
     tags: [],
+    isOpen: false,
   };
+
+
+  componentDidMount() {
+      console.log("componentDidMount");
+    const { dispatch } = this.props;
+    this.modalIdea = null;
+    this.type = 'view'; // 'add', 'edit' not being used
+  }
+
+
+  handleIdea(idea) {
+      console.log("handleIdea");
+    const { dispatch } = this.props;
+    const errorMessage = this.validateIdea(idea);
+    console.log('error message ===> ', errorMessage);
+    this.modalIdea = null;
+    this.setState({ isOpen: false });
+  }
+
+  closeModal() {
+    this.setState({ isOpen: false });
+  }
+
+  validateIdea(idea) {
+    let errorMessage = '';
+    if (idea.title.length === 0) {
+      errorMessage += 'Title must be required.\n';
+    }
+
+    if (idea.description.length === 0) {
+      errorMessage += 'Description must be required.\n';
+    }
+
+    if (idea.stage.length === 0) {
+      errorMessage += 'Stage must be required.\n';
+    }
+
+    if (idea.expectedCostInCents.length === 0) {
+      errorMessage += 'ExpectedCostInCents must be required.\n';
+    }
+
+    if (idea.expectedTtm.length === 0) {
+      errorMessage += 'ExpectedTtm must be required.\n';
+    }
+
+    if (idea.expectedProfit.length === 0) {
+      errorMessage += 'ExpectedProfitInCents must be required.\n';
+    }
+
+    if (idea.tags.length === 0) {
+      errorMessage += 'Tags must be required.\n';
+    }
+
+    if (errorMessage.endsWith('\n')) {
+      errorMessage = errorMessage.substr(0, errorMessage.length - 1);
+    }
+
+    return errorMessage;
+  }
+
+
+  viewIdeaClickHandler(idea) {
+      console.log("viewIdeaClickHandler");
+      console.log(idea);
+    this.modalIdea = idea;
+    console.log(this.modalIdea);
+    this.type = 'view';
+    console.log('view type ===>', this.type);
+    this.setState({
+      isOpen: true,
+    });
+  }
 
 
   /* Make changes when tags elements change
@@ -136,8 +217,6 @@ class Admin extends Component {
       result = 10;
     }
     const increment = result * Math.pow(10, selectedPower);
-    console.log('increment');
-    console.log(increment);
 
     // make min and max value be multiple of increment
 
@@ -151,9 +230,6 @@ class Admin extends Component {
     if (min % increment) {
       min = (Math.floor(min / increment)) * increment;
     }
-    console.log('min and max');
-    console.log(min);
-    console.log(max);
 
     return {
       max,
@@ -164,7 +240,6 @@ class Admin extends Component {
 
 
   calculateMagnitude(range) {
-    console.log('calculateMagnitude');
     let maxLimit = range.max;
     const minLimit = range.min;
 
@@ -185,16 +260,11 @@ class Admin extends Component {
     baseMin *= Math.pow(10, selectedPower); // restore original magnitude
     baseMax *= Math.pow(10, selectedPower); // restore original magnitude
 
-    console.log(range);
-    console.log(baseMin);
-    console.log(baseMax);
-
     const result  = this.calculateIncrement(baseMin, baseMax, 5);
     return result;
   }
 
   prepareOptions(ideasSummary) {
-    console.log('prepareOptions');
     let maxX = 0;
     let maxY = 0;
     let minX = 99999999;
@@ -248,8 +318,8 @@ class Admin extends Component {
           },
         }],
       },
+      onClick: this.displayIdea,
     };
-
     return defaultOption;
   }
 
@@ -290,6 +360,40 @@ class Admin extends Component {
     dispatch(setMaxImplementationRange(event.target.value));
   }
 
+  /**
+   * on this method this is chart
+   */
+
+  displayIdea(clickEvent, chartElement) {
+    console.log('displayIdea');
+    console.log(this);
+    console.log(chartElement);
+    const chartGraph = chartElement[0]._chart;
+    console.log(chartGraph);
+
+    const { ideasSummary } = this.props;
+    const element = chartGraph.getElementAtEvent(clickEvent);
+
+    // If you click on at least 1 element ...
+    if (element.length > 0) {
+      // Logs it
+      console.log(element[0]);
+
+      // Here we get the data linked to the clicked bubble ...
+      const datasetLabel = chartGraph.config.data.datasets[element[0]._datasetIndex].label;
+      // data gives you `x`, `y` and `r` values
+      const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
+      console.log(datasetLabel);
+      console.log(data);
+
+
+      const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+      console.log("to call viewIdeaClickHandler");
+      console.log(idea);
+      this.viewIdeaClickHandler(idea);
+    }
+  }
+
 
   render() {
     const {
@@ -306,12 +410,11 @@ class Admin extends Component {
       maxImplementationRange,
     } = this.props;
 
+    const { isOpen } = this.state;
 
     const defaultOption = this.prepareOptions(ideasSummary);
     console.log('admin/index/render()');
-    console.log(bubbleData);
-    console.log(this.props);
-    console.log(minVotesRange);    
+    console.log(this.modalIdea);
 
     return (
       <div className="container admin-container">
@@ -469,6 +572,13 @@ class Admin extends Component {
               <Bubble
                 data={bubbleData}
                 options={defaultOption}
+              />
+            </div>
+            <div>
+              <AddIdeaModal
+                isOpen={isOpen} idea={this.modalIdea} type={this.type}
+                handleIdea={(idea, type) => this.handleIdea(idea, type)}
+                close={() => this.closeModal()}
               />
             </div>
           </div>

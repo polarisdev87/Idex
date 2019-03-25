@@ -32,7 +32,7 @@ class Ideas extends Component {
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
-    if (type === 'eidt') {
+    if (type === 'edit') {
       if (errorMessage.length > 0) {
         dispatch(handleUpdateIdeaError(errorMessage));
         alert(errorMessage);

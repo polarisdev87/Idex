@@ -41,6 +41,8 @@ class AddIdeaModal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps");
+    console.log(nextProps);
     const { idea, type } = nextProps;
     console.log('idea ===  ===>', idea);
     if (type === 'view' || type === 'edit') {
