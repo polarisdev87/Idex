@@ -49,9 +49,14 @@ class AddIdeaModal extends Component {
     console.log('idea ===  ===>', idea);
     if (type === 'view' || type === 'edit') {
       if (idea !== undefined && idea !== null) {
+        let mainTag = -1;
+        if (typeof idea.tags != 'undefined') {
+          mainTag = idea.tags.indexOf(idea.category);
+        }
         this.setState({
           stage: idea.stage,
           tags: idea.tags,
+          mainTag,
           isEditMode: true,
         });
         setTimeout(() => {
@@ -90,12 +95,12 @@ class AddIdeaModal extends Component {
   }
 
   handleIdea(type) {
-      console.log("AddIdeaModal -> handleIdea(type)");
-      console.log(type);
+    console.log('AddIdeaModal -> handleIdea(type)');
+    console.log(type);
     const { tags, stage, mainTag } = this.state;
     let category = null;
     if (mainTag != -1) {
-        category = tags[mainTag];
+      category = tags[mainTag];
     }
     const idea = {
       title: this.title.value.trim(),
@@ -165,7 +170,7 @@ class AddIdeaModal extends Component {
         key={key} {...other}
         onClick ={(ev) => classThis.setTagAsMain(ev, key)}
       >
-        {getTagDisplayValue(tag)}
+       {getTagDisplayValue(tag)}
         {!disabled &&
         <a className={classNameRemove} onClick={(e) => classThis.onRemoveTag(key, classThis, onRemove)} />
         }
@@ -284,7 +289,7 @@ class AddIdeaModal extends Component {
             </div>
 
             <div className="button-container">
-              <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type)} >
+             <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type)} >
                 {renderButtonTitle()}
               </button>
             </div>
