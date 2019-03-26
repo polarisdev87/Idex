@@ -28,7 +28,7 @@ class TagSection extends Component {
         { tagComponents.length > 1 &&
           <span>
             <Toggle
-              onClick={(x) => { this.props.onPartialFullToggle() }}
+              onClick={(x) => { this.props.onPartialFullToggle(); }}
               on="Partial"
               off="Full"
               size="sm"
@@ -52,16 +52,19 @@ class TagSection extends Component {
 
 
   render() {
-    const { placeholder, type, className, partialFullSwitch } = this.props;
+    const {
+      placeholder, type, className, partialFullSwitch,
+    } = this.props;
     const { inputValue } = this.state;
     return (
       <div className="form-group tag-container">
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
-          <TagsInput 
-            value={this.props.tags} 
-            onChange={::this.handleChange} 
-            renderLayout={(a, b) => this.defaultRenderLayout(a, b, partialFullSwitch)} />
+          <TagsInput
+            value={this.props.tags}
+            onChange={::this.handleChange}
+            renderLayout={(a, b) => this.defaultRenderLayout(a, b, partialFullSwitch)}
+          />
         </div>
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>
@@ -103,10 +106,9 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return {  };
+  return { };
 }
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(TagSection);
-
 

@@ -156,7 +156,7 @@ class Ideas extends Component {
               filter, stages, submittedAtMsMin, submittedAtMsMax,
               votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
               implementationTimeMsMax, tags, partialFullSwitch,
-))}
+            ))}
             numIdeas= {numIdeas}
           />
           {renderIdeaItems}

@@ -10,25 +10,6 @@ class AddIdeaModal extends Component {
     this.handleSubmitPressed = this.handleSubmitPressed.bind(this);
   }
 
-  render() {
-    return (
-      <div className='add-idea-modal'>
-        <p>Modal text!</p>
-        <label>Title</label>
-        <input type="text" ref="title"></input>
-        <label>Description</label>
-        <input type="text" ref="description"></input>
-        <label>Expected Cost in Cents</label>
-        <input type="text" ref="ec"></input>
-        <label>Expected Time to Market</label>
-        <input type="text" ref="ettm"></input>
-        <label>Tags</label>
-        <input type="text" ref="tags"></input>
-        <button onClick={this.handleSubmitPressed}>Submit</button>
-        <button onClick={this.handleCloseModal}>Cancel</button>
-     </div>
-    )
-  }
 
   handleSubmitPressed() {
 
@@ -44,6 +25,27 @@ class AddIdeaModal extends Component {
       }
     )
   }
+
+  render() {
+    return (
+      <div className="add-idea-modal">
+        <p>Modal text!</p>
+        <label>Title</label>
+        <input type="text" ref="title"></input>
+        <label>Description</label>
+        <input type="text" ref="description"></input>
+        <label>Expected Cost in Cents</label>
+        <input type="text" ref="ec"></input>
+        <label>Expected Time to Market</label>
+        <input type="text" ref="ettm"></input>
+        <label>Tags</label>
+        <input type="text" ref="tags"></input>
+        <button onClick={this.handleSubmitPressed}>Submit</button>
+        <button onClick={this.handleCloseModal}>Cancel</button>
+      </div>
+    );
+  }
+
 
 }
 

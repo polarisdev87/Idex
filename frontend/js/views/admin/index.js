@@ -11,6 +11,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
+
 import {
   fetchIdeasForBubbleGraph,
   setStartDate,
@@ -51,9 +52,8 @@ class Admin extends Component {
 
   constructor(props) {
     super(props);
-    console.log("Admin.constructor(...)");
     this.displayIdea = this.displayIdea.bind(this);
-    this.modalIdea=null;
+    this.modalIdea = null;
   }
 
   state = {
@@ -63,7 +63,6 @@ class Admin extends Component {
 
 
   componentDidMount() {
-      console.log("componentDidMount");
     const { dispatch } = this.props;
     this.modalIdea = null;
     this.type = 'view'; // 'add', 'edit' not being used
@@ -71,7 +70,6 @@ class Admin extends Component {
 
 
   handleIdea(idea) {
-      console.log("handleIdea");
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
@@ -122,10 +120,7 @@ class Admin extends Component {
 
 
   viewIdeaClickHandler(idea) {
-      console.log("viewIdeaClickHandler");
-      console.log(idea);
     this.modalIdea = idea;
-    console.log(this.modalIdea);
     this.type = 'view';
     console.log('view type ===>', this.type);
     this.setState({
@@ -194,7 +189,6 @@ class Admin extends Component {
 
 
   calculateIncrement(minValue, maxValue, intervals) {
-    console.log('calculateIncrement');
     const toConvert = (maxValue - minValue) / intervals;
 
 
@@ -288,11 +282,6 @@ class Admin extends Component {
     minY -= maxHeight / 4;
     maxY += maxHeight / 4;
 
-    console.log('minX, maxX, minY, maxY');
-    console.log(minX);
-    console.log(maxX);
-    console.log(minY);
-    console.log(maxY);
 
     // define magnitude (1, 2, 5, 10, 100, 1000, ...)
     const widthRange = this.calculateMagnitude({ min: minX, max: maxX });
@@ -365,11 +354,7 @@ class Admin extends Component {
    */
 
   displayIdea(clickEvent, chartElement) {
-    console.log('displayIdea');
-    console.log(this);
-    console.log(chartElement);
     const chartGraph = chartElement[0]._chart;
-    console.log(chartGraph);
 
     const { ideasSummary } = this.props;
     const element = chartGraph.getElementAtEvent(clickEvent);
@@ -377,19 +362,14 @@ class Admin extends Component {
     // If you click on at least 1 element ...
     if (element.length > 0) {
       // Logs it
-      console.log(element[0]);
 
       // Here we get the data linked to the clicked bubble ...
       const datasetLabel = chartGraph.config.data.datasets[element[0]._datasetIndex].label;
       // data gives you `x`, `y` and `r` values
       const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
-      console.log(datasetLabel);
-      console.log(data);
 
 
       const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
-      console.log("to call viewIdeaClickHandler");
-      console.log(idea);
       this.viewIdeaClickHandler(idea);
     }
   }
@@ -413,8 +393,6 @@ class Admin extends Component {
     const { isOpen } = this.state;
 
     const defaultOption = this.prepareOptions(ideasSummary);
-    console.log('admin/index/render()');
-    console.log(this.modalIdea);
 
     return (
       <div className="container admin-container">
