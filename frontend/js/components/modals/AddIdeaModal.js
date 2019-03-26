@@ -58,6 +58,7 @@ class AddIdeaModal extends Component {
           tags: idea.tags,
           mainTag,
           isEditMode: true,
+          id: idea.id,
         });
         setTimeout(() => {
           if (this.title) {
@@ -73,9 +74,11 @@ class AddIdeaModal extends Component {
         }, 500);
       } else {
         this.setState({
-          tags: [],
-          isEditMode: false,
           stage: 'Launched',
+          tags: [],
+          mainTag: -1,
+          isEditMode: false,
+          id: null,
         });
       }
     }
@@ -97,12 +100,14 @@ class AddIdeaModal extends Component {
   handleIdea(type) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
-    const { tags, stage, mainTag } = this.state;
+    const { id, tags, stage, mainTag } = this.state;
     let category = null;
     if (mainTag != -1) {
       category = tags[mainTag];
     }
+    console.log(category);
     const idea = {
+      id,  
       title: this.title.value.trim(),
       description: this.description.value.trim(),
       stage,

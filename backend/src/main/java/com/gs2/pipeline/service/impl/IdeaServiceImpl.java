@@ -363,10 +363,16 @@ public class IdeaServiceImpl implements IdeaService {
     private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags) {
 
         updateTags(existing.getTags(), tags);
+        
+        Tag category = null;
+        if (updatedIdeaDto.getCategory()!=null) {
+        	category =tagRepository.findByNameIgnoreCase(updatedIdeaDto.getCategory()); 
+        }        
 
         existing.setTitle(updatedIdeaDto.getTitle());
         existing.setDescription(updatedIdeaDto.getDescription());
-
+        existing.setCategory(category);
+        
         // Only admins can change stage
         for(Authority authority : updatedBy.getAuthorities()) {
             if(authority.getName().equals(AuthorityName.ROLE_ADMIN)) {
