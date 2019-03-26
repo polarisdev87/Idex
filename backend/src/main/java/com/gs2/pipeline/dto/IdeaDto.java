@@ -28,6 +28,10 @@ public class IdeaDto {
     private Long expectedTtm;
     private Long actualTtm;
     private List<String> tags;
+    /**
+     * main tag
+     */
+    private String category;
     private Long votes;
     private Long expectedProfitInCents;
     private Long actualProfitInCents;
@@ -53,11 +57,12 @@ public class IdeaDto {
         this.actualProfitInCents = idea.getActualProfitInCents();
         // TODO: Make sure an order to make the first tag the first in the list. 
         this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        this.category = idea.getCategory()!=null ? idea.getCategory().getName():null;
         this.votes = idea.getVotes();
         this.comments = getCommentDtos(idea.getComments(), idea);
     }
 
-    public Idea toDao(Set<Tag> tags, Account submittedBy) {
+    public Idea toDao(Set<Tag> tags, Tag category, Account submittedBy) {
         Idea idea = new Idea();
 
         idea.setId(id);
@@ -72,6 +77,7 @@ public class IdeaDto {
         idea.setExpectedTtm(expectedTtm);
         idea.setActualTtm(actualTtm);
         idea.setTags(tags);
+        idea.setCategory(category);
         idea.setVotes(votes);
         idea.setExpectedProfitInCents(expectedProfitInCents);
         idea.setActualProfitInCents(actualProfitInCents);
@@ -244,4 +250,14 @@ public class IdeaDto {
     public void setComments(List<CommentDto> comments) {
         this.comments = comments;
     }
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+    
+    
 }

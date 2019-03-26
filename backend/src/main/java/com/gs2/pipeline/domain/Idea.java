@@ -4,6 +4,7 @@ import com.gs2.pipeline.dto.IdeaDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Set;
@@ -69,6 +70,11 @@ public class Idea {
             joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private Set<Tag> tags;
+    
+    
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private Tag category;
 
     @Column(name = "votes")
     private Long votes;
@@ -207,4 +213,15 @@ public class Idea {
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
+
+	public Tag getCategory() {
+		return category;
+	}
+
+	public void setCategory(Tag category) {
+		this.category = category;
+	}
+    
+    
+    
 }

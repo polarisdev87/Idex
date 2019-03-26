@@ -342,8 +342,12 @@ public class IdeaServiceImpl implements IdeaService {
             tag.setUses(tag.getUses() + 1);
         }
         tagRepository.save(tags);
+        Tag category = null;
+        if (ideaDto.getCategory()!=null) {
+        	category =tagRepository.findByNameIgnoreCase(ideaDto.getCategory()); 
+        }
 
-        Idea idea = ideaDto.toDao(tags, insertedBy);
+        Idea idea = ideaDto.toDao(tags, category, insertedBy);
 
         Date currentTime = new Date();
         idea.setSubmittedAt(currentTime);

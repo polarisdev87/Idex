@@ -92,18 +92,22 @@ class AddIdeaModal extends Component {
   handleIdea(type) {
       console.log("AddIdeaModal -> handleIdea(type)");
       console.log(type);
-    const { tags, stage } = this.state;
+    const { tags, stage, mainTag } = this.state;
+    let category = null;
+    if (mainTag != -1) {
+        category = tags[mainTag];
+    }
     const idea = {
       title: this.title.value.trim(),
       description: this.description.value.trim(),
       stage,
       expectedCostInCents: this.expectedCostInCents.value.trim(),
       expectedTtm: this.expectedTtm.value.trim(),
-      expectedProfitInCents: this.expectedProfit.value.trim(),
+      expectedProfitInCents: this.expectedProfitInCents.value.trim(),
       tags,
-      actualCostInCents: this.actualCostInCents.value.trim(),
+      category,
       actualTtm: this.actualTtm.value.trim(),
-      actualProfitInCents: this.actualProfit.value.trim(),
+      actualProfitInCents: this.actualProfitInCents.value.trim(),
     };
     this.props.handleIdea(idea, type);
   }

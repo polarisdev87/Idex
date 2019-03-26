@@ -24,6 +24,8 @@ type Props = {
     expectedTtm: number,
     actualTtm: number,
     tags: [],
+    category: string,
+    mainTag: number,
     comments: [],
     votes: number,
   },
@@ -92,6 +94,10 @@ class IdeaItem extends Component {
       </div>
     );
     const showCommentError = typeof this.props.commentsErrorMessage !== 'undefined';
+    console.log("idea.category");
+    console.log(idea.category);
+    console.log(idea.tags);
+
     return (
       <div className="idea-item-container shadow">
         <div className="body-container" onClick={() => view()} >
@@ -108,8 +114,9 @@ class IdeaItem extends Component {
             <div className="label-sm-gray card-tag-label">Tags: </div>
             <div className="tag-wrapper">
               {
-                idea.tags.map((tag, index) => (
-                  <div key={index.toString()} className="label-sm-base card-tag">{tag}</div>
+                idea.tags.map((tag, index) => ((tag === idea.category)  
+                  ? (<div key={index.toString()} className="label-sm-base card-tag main-tag">{tag}</div>) 
+                  : (<div key={index.toString()} className="label-sm-base card-tag">{tag}</div>)
                 ))
               }
             </div>
