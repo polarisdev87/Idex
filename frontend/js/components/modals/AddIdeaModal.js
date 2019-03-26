@@ -62,6 +62,8 @@ class AddIdeaModal extends Component {
             this.actualCostInCents.value = idea.actualCostInCents;
             this.expectedTtm.value = idea.expectedTtm;
             this.actualTtm.value = idea.actualTtm;
+            this.expectedProfitInCents.value = idea.expectedProfitInCents;
+            this.actualProfitInCents.value = idea.actualProfitInCents;
           }
         }, 500);
       } else {
@@ -88,6 +90,8 @@ class AddIdeaModal extends Component {
   }
 
   handleIdea(type) {
+      console.log("AddIdeaModal -> handleIdea(type)");
+      console.log(type);
     const { tags, stage } = this.state;
     const idea = {
       title: this.title.value.trim(),
@@ -95,11 +99,11 @@ class AddIdeaModal extends Component {
       stage,
       expectedCostInCents: this.expectedCostInCents.value.trim(),
       expectedTtm: this.expectedTtm.value.trim(),
-      expectedProfit: this.expectedProfit.value.trim(),
+      expectedProfitInCents: this.expectedProfit.value.trim(),
       tags,
       actualCostInCents: this.actualCostInCents.value.trim(),
       actualTtm: this.actualTtm.value.trim(),
-      actualProfit: this.actualProfit.value.trim(),
+      actualProfitInCents: this.actualProfit.value.trim(),
     };
     this.props.handleIdea(idea, type);
   }
@@ -147,8 +151,6 @@ class AddIdeaModal extends Component {
       tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other
     } = props;
 
-    console.log('renderTagWithMainFlag');
-    console.log(other);
     if (key == classThis.state.mainTag) {
       if (other.className != null) {
         other.className += ' main-tag';
@@ -257,13 +259,13 @@ class AddIdeaModal extends Component {
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                   <label className="label">Expected Profit:</label>
                   <div className="input-container">
-                    <input ref={el => { this.expectedProfit = el; }} className="form-control" type="text" />
+                    <input ref={el => { this.expectedProfitInCents = el; }} className="form-control" type="text" />
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                   <label className="label">Actual Profit (Optional):</label>
                   <div className="input-container">
-                    <input ref={el => { this.actualProfit = el; }} className="form-control" type="text" />
+                    <input ref={el => { this.actualProfitInCents = el; }} className="form-control" type="text" />
                   </div>
                 </div>
               </div>

@@ -29,6 +29,7 @@ class Ideas extends Component {
   }
 
   handleIdea(idea, type) {
+      console.log("handleIdea");
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
@@ -77,8 +78,12 @@ class Ideas extends Component {
       errorMessage += 'ExpectedTtm must be required.\n';
     }
 
-    if (idea.expectedProfit.length === 0) {
+    if (idea.expectedProfitInCents.length === 0) {
       errorMessage += 'ExpectedProfitInCents must be required.\n';
+    }
+
+    if (idea.actualProfitInCents.length === 0) {
+      errorMessage += 'ActualProfitInCents must be required.\n';
     }
 
     if (idea.tags.length === 0) {

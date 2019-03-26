@@ -103,7 +103,7 @@ class Admin extends Component {
       errorMessage += 'ExpectedTtm must be required.\n';
     }
 
-    if (idea.expectedProfit.length === 0) {
+    if (idea.expectedProfitInCents.length === 0) {
       errorMessage += 'ExpectedProfitInCents must be required.\n';
     }
 
