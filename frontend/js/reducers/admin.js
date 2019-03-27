@@ -122,7 +122,7 @@ function getRadiusUnit(ideasSummary) {
 }
 
 function generateTagColorMap(items) {
-  let tagColorMapArray = items.map(item => item.firstTag);
+  let tagColorMapArray = items.map(item => item.category);
   const distinctTagColorMapArray = [...new Set(tagColorMapArray)];
   const colorArray = getColorList(distinctTagColorMapArray.length+1);
   let result = new Map();
@@ -141,7 +141,7 @@ function prepareGraph(ideasSummary, radiusUnit) {
     x-axis : implementation Months
     y-axis : profit range
     size : votes range
-    color : first tag
+    color : category (main tag)
 
     */
 
@@ -170,9 +170,9 @@ function prepareGraph(ideasSummary, radiusUnit) {
         data: [
           { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
         ],
-        backgroundColor: getColor(bubbleIdea.firstTag,tagColorMap),
-        borderColor: getColor(bubbleIdea.firstTag,tagColorMap),
-        pointBorderColor: getColor(bubbleIdea.firstTag,tagColorMap),
+        backgroundColor: getColor(bubbleIdea.category,tagColorMap),
+        borderColor: getColor(bubbleIdea.category,tagColorMap),
+        pointBorderColor: getColor(bubbleIdea.category,tagColorMap),
         label: bubbleIdea.id,
       },
     });

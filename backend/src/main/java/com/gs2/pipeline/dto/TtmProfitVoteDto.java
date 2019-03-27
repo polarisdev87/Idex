@@ -14,7 +14,8 @@ public class TtmProfitVoteDto {
 	Long expectedTtm;
 	Long expectedProfitInCents;
 	Long votes;
-	String firstTag;
+	String category;
+	String title;
 	/**
 	 * idea id
 	 */
@@ -29,11 +30,12 @@ public class TtmProfitVoteDto {
 		result.expectedProfitInCents = ideaDto.getExpectedProfitInCents();
 		result.votes = ideaDto.getVotes();
 		if (ideaDto.getTags()!=null && ideaDto.getTags().size()>0) {
-			result.firstTag = ideaDto.getTags().get(0);
+			result.category = ideaDto.getCategory();
 		}
 		result.ideas = new ArrayList<IdeaDto>();
 		result.ideas.add(ideaDto);
 		result.id = ideaDto.getId();
+		result.title = ideaDto.getTitle();
 		return result;
 	}
 
@@ -68,13 +70,13 @@ public class TtmProfitVoteDto {
 	}
 
 
-	public String getFirstTag() {
-		return firstTag;
+	public String getCategory() {
+		return category;
 	}
 
 
-	public void setFirstTag(String firstTag) {
-		this.firstTag = firstTag;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 
@@ -95,6 +97,16 @@ public class TtmProfitVoteDto {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+
+	public String getTitle() {
+		return title;
+	}
+
+
+	public void setTitle(String title) {
+		this.title = title;
 	} 
 	
 	
