@@ -66,12 +66,12 @@ class Admin extends Component {
     const { dispatch } = this.props;
     this.modalIdea = null;
     this.type = 'view'; // 'add', 'edit' not being used
+    this.applyFilters();
   }
 
 
   handleIdea(idea) {
     const { dispatch } = this.props;
-    const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
     this.modalIdea = null;
     this.setState({ isOpen: false });
@@ -79,43 +79,6 @@ class Admin extends Component {
 
   closeModal() {
     this.setState({ isOpen: false });
-  }
-
-  validateIdea(idea) {
-    let errorMessage = '';
-    if (idea.title.length === 0) {
-      errorMessage += 'Title must be required.\n';
-    }
-
-    if (idea.description.length === 0) {
-      errorMessage += 'Description must be required.\n';
-    }
-
-    if (idea.stage.length === 0) {
-      errorMessage += 'Stage must be required.\n';
-    }
-
-    if (idea.expectedCostInCents.length === 0) {
-      errorMessage += 'ExpectedCostInCents must be required.\n';
-    }
-
-    if (idea.expectedTtm.length === 0) {
-      errorMessage += 'ExpectedTtm must be required.\n';
-    }
-
-    if (idea.expectedProfitInCents.length === 0) {
-      errorMessage += 'ExpectedProfitInCents must be required.\n';
-    }
-
-    if (idea.tags.length === 0) {
-      errorMessage += 'Tags must be required.\n';
-    }
-
-    if (errorMessage.endsWith('\n')) {
-      errorMessage = errorMessage.substr(0, errorMessage.length - 1);
-    }
-
-    return errorMessage;
   }
 
 
