@@ -123,10 +123,12 @@ function updateIdeaError(message) {
   };
 }
 
-function updateIdeaSuccess(users) {
+function updateIdeaSuccess(idea) {
+    console.log("updateIdeaSuccess");
+    console.log(idea);
   return {
     type: UPDATE_IDEA_SUCCESS,
-    users,
+    idea,
   };
 }
 

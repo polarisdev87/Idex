@@ -60,25 +60,17 @@ class IdeaItem extends Component {
     console.log(idea.comments);
 
 
-    console.log(moment([2007, 0, 29]).fromNow());
-    console.log(moment([2019, 2, 1]).fromNow());
-    console.log(moment([2019, 2, 19]).fromNow());
-    console.log(moment([2019, 2, 19, 15, 20]).fromNow());
-    console.log(moment([2019, 2, 19, 20, 52]).fromNow());
-    console.log(idea.comments);
-    console.log(idea.comments[0] ? new Date(idea.comments[0].submittedAt) : '');
 
 
-    const commentsMark = (idea.comments !== undefined) ?
+    const commentsMark = (typeof idea.comments !== 'undefined' && idea.comments!= null ) &&
       idea.comments.map((comment, index) => (
-        <Comment 
-            key={index.toString()} 
+        <Comment
+            key={index.toString()}
             index={index} 
             comment={comment} 
             shortDateTime = {moment(comment.submittedAt).fromNow()} 
             fullDateTime = {(new Date(comment.submittedAt)).toString()} />
-      )) :
-      null;
+      ));
 
     const addCommentMark = (
       <div className="row">
@@ -129,7 +121,9 @@ class IdeaItem extends Component {
         </div>
         <div className="footer-container">
           <div className="footer-item label-sm-gray">{idea.votes.toString()} Votes</div>
-          <div className="footer-item label-sm-gray">{ (idea.comments === undefined) ? '' : idea.comments.length.toString()} Comments</div>
+          <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
+            '' :
+                idea.comments.length.toString()} Comments</div>
           <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
           <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
           <div className="footer-item bottom-item label-sm-gray">
