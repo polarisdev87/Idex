@@ -173,6 +173,10 @@ class Admin extends Component {
       tags,
     } = this.state;
 
+    console.log("applyFilters");
+    console.log(submittedAtMsMin);
+    console.log(submittedAtMsMax);
+
     dispatch(fetchIdeasForBubbleGraph(
       submittedAtMsMin,
       submittedAtMsMax,

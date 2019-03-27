@@ -151,11 +151,11 @@ class AddIdeaModal extends Component {
     let currentMainTag = classThis.state.mainTag;
     onRemoveFunction(key);
     if (key <= currentMainTag) {
-        currentMainTag--;
+      currentMainTag--;
         if (currentMainTag == -1 && classThis.state.tags.length>1) {
             currentMainTag =0;
-        }
-        classThis.setState({ mainTag: currentMainTag });
+      }
+      classThis.setState({ mainTag: currentMainTag });
     }
     this.isRemoving = true;
   }
@@ -175,7 +175,7 @@ class AddIdeaModal extends Component {
         key={key} {...other}
         onClick ={(ev) => classThis.setTagAsMain(ev, key)}
       >
-       {getTagDisplayValue(tag)}
+        {getTagDisplayValue(tag)}
         {!disabled &&
         <a className={classNameRemove} onClick={(e) => classThis.onRemoveTag(key, classThis, onRemove)} />
         }

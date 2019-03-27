@@ -196,8 +196,8 @@ export function admin(state = {
   },
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
-  submittedAtMsMin: moment().utc().valueOf(),
-  submittedAtMsMax: moment().utc().add(1, 'day').add(-1, 'milliseconds').valueOf(),
+  submittedAtMsMin: moment().utc().set({hour:0,minute:0,second:0,millisecond:0}).valueOf(),
+  submittedAtMsMax: moment().utc().set({hour:0,minute:0,second:0,millisecond:0}).add(1, 'day').add(-1, 'milliseconds').valueOf(),
   tags: [],
   minVotesRange: 0,
   maxVotesRange: 999999,
@@ -238,13 +238,13 @@ export function admin(state = {
     }
     case SET_START_DATE_ADMIN: {
       return Object.assign({}, state, {
-        submittedAtMsMin: moment(action.date).utc().valueOf(),
+        submittedAtMsMin: moment(action.date).utc().set({hour:0,minute:0,second:0,millisecond:0}).valueOf(),
         startDate: action.date,
       });
     }
     case SET_END_DATE_ADMIN: {
       return Object.assign({}, state, {
-        submittedAtMsMax: moment(action.date).utc().add(1, 'day').add(-1, 'milliseconds').valueOf(),
+        submittedAtMsMax: moment(action.date).utc().set({hour:0,minute:0,second:0,millisecond:0}).add(1, 'day').add(-1, 'milliseconds').valueOf(),
         endDate: action.date,
       });
     }
