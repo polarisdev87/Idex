@@ -10,6 +10,7 @@ import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
 import { toggleFilterFullPartial } from '../../actions/ideas';
 
+
 const moment = require('moment');
 
 type Props = {

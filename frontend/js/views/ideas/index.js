@@ -8,7 +8,6 @@ import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
 
-
 type Props = {
   dispatch: any;
   ideas: any;
@@ -29,7 +28,7 @@ class Ideas extends Component {
   }
 
   handleIdea(idea, type) {
-      console.log("handleIdea");
+    console.log("handleIdea");
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);

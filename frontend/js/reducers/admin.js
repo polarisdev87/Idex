@@ -12,63 +12,14 @@ import {
   SET_MIN_PROFIT_RANGE_ADMIN,
   SET_MAX_PROFIT_RANGE_ADMIN,
   SET_MIN_IMPLEMENTATION_RANGE_ADMIN,
-  SET_MAX_IMPLEMENTATION_RANGE_ADMIN
+  SET_MAX_IMPLEMENTATION_RANGE_ADMIN,
+  GET_POPULAR_TAGS_REQUEST,
+  GET_POPULAR_TAGS_SUCCESS,
+  GET_POPULAR_TAGS_FAILURE
 } from '../actions/admin';
 
 const moment = require('moment');
 
-/*
-    bubbleData: {
-      labels: '',
-      datasets: [
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 10, y: 20, r: 15 },
-            ],
-            backgroundColor: this.getColor(0),
-            borderColor: this.getColor(0),
-            pointBorderColor: this.getColor(0),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 55, y: 70, r: 30 },
-            ],
-            backgroundColor: this.getColor(1),
-            borderColor: this.getColor(1),
-            pointBorderColor: this.getColor(1),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 30, y: 50, r: 60 },
-            ],
-            backgroundColor: this.getColor(2),
-            borderColor: this.getColor(2),
-            pointBorderColor: this.getColor(2),
-          },
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 20, y: 80, r: 40 },
-            ],
-            backgroundColor: this.getColor(3),
-            borderColor: this.getColor(3),
-            pointBorderColor: this.getColor(3),
-          },
-        },
-      ],
-    },
-
-*/
 
 const defaultConfig = {
   label: '',
@@ -121,15 +72,15 @@ function getRadiusUnit(ideasSummary) {
 }
 
 function generateTagColorMap(items) {
-  let tagColorMapArray = items.map(item => item.category);
+  const tagColorMapArray = items.map(item => item.category);
   const distinctTagColorMapArray = [...new Set(tagColorMapArray)];
-  const colorArray = getColorList(distinctTagColorMapArray.length+1);
-  let result = new Map();
-  for (let i=0 ; i<distinctTagColorMapArray.length; i++) {
-    result.set(distinctTagColorMapArray[i],colorArray[i]);
+  const colorArray = getColorList(distinctTagColorMapArray.length + 1);
+  const result = new Map();
+  for (let i = 0; i < distinctTagColorMapArray.length; i++) {
+    result.set(distinctTagColorMapArray[i], colorArray[i]);
   }
-  result.set(null,colorArray[colorArray.length-1]);
-  return result;  
+  result.set(null, colorArray[colorArray.length - 1]);
+  return result;
 }
 
 function prepareGraph(ideasSummary, radiusUnit) {
@@ -152,9 +103,7 @@ function prepareGraph(ideasSummary, radiusUnit) {
   };
 
 
-  let tagColorMap = generateTagColorMap(ideasSummary.items);
-  console.log(tagColorMap);
-
+  const tagColorMap = generateTagColorMap(ideasSummary.items);
 
   for (const bubbleIdeaIndex in ideasSummary.items) {
     const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
@@ -166,17 +115,13 @@ function prepareGraph(ideasSummary, radiusUnit) {
         data: [
           { x: bubbleIdea.expectedTtm, y: bubbleIdea.expectedProfitInCents, r: (bubbleIdea.votes + 1) * radiusUnit },
         ],
-        backgroundColor: getColor(bubbleIdea.category,tagColorMap),
-        borderColor: getColor(bubbleIdea.category,tagColorMap),
-        pointBorderColor: getColor(bubbleIdea.category,tagColorMap),
+        backgroundColor: getColor(bubbleIdea.category, tagColorMap),
+        borderColor: getColor(bubbleIdea.category, tagColorMap),
+        pointBorderColor: getColor(bubbleIdea.category, tagColorMap),
         label: bubbleIdea.id,
       },
     });
   }
-
-  console.log(bubbleDataNew);
-
-
   return bubbleDataNew;
 }
 
@@ -196,8 +141,13 @@ export function admin(state = {
   },
   ideasErrorMessage: undefined,
   partialFullSwitch: true,
-  submittedAtMsMin: moment().utc().set({hour:0,minute:0,second:0,millisecond:0}).valueOf(),
-  submittedAtMsMax: moment().utc().set({hour:0,minute:0,second:0,millisecond:0}).add(1, 'day').add(-1, 'milliseconds').valueOf(),
+  submittedAtMsMin: moment().utc().set({
+    hour: 0, minute: 0, second: 0, millisecond: 0,
+  }).valueOf(),
+  submittedAtMsMax: moment().utc().set({
+    hour: 0, minute: 0, second: 0, millisecond: 0,
+  }).add(1, 'day').add(-1, 'milliseconds')
+    .valueOf(),
   tags: [],
   minVotesRange: 0,
   maxVotesRange: 999999,
@@ -207,6 +157,9 @@ export function admin(state = {
   maxImplementationRange: 999999,
   startDate: moment(),
   endDate: moment(),
+  popularTags: [],
+  isFetchingpPopularTags: false,
+  popularTagsErrorMessage: undefined,
 }, action) {
   console.log('admin reducer');
   console.log(action.type);
@@ -238,13 +191,18 @@ export function admin(state = {
     }
     case SET_START_DATE_ADMIN: {
       return Object.assign({}, state, {
-        submittedAtMsMin: moment(action.date).utc().set({hour:0,minute:0,second:0,millisecond:0}).valueOf(),
+        submittedAtMsMin: moment(action.date).utc().set({
+          hour: 0, minute: 0, second: 0, millisecond: 0,
+        }).valueOf(),
         startDate: action.date,
       });
     }
     case SET_END_DATE_ADMIN: {
       return Object.assign({}, state, {
-        submittedAtMsMax: moment(action.date).utc().set({hour:0,minute:0,second:0,millisecond:0}).add(1, 'day').add(-1, 'milliseconds').valueOf(),
+        submittedAtMsMax: moment(action.date).utc().set({
+          hour: 0, minute: 0, second: 0, millisecond: 0,
+        }).add(1, 'day').add(-1, 'milliseconds')
+          .valueOf(),
         endDate: action.date,
       });
     }
@@ -278,6 +236,22 @@ export function admin(state = {
         maxImplementationRange: action.value,
       });
     }
+    case GET_POPULAR_TAGS_REQUEST:
+      return Object.assign({}, state, {
+        isFetchingpPopularTags: true,
+      });
+    case GET_POPULAR_TAGS_SUCCESS:
+      return Object.assign({}, state, {
+        isFetchingpPopularTags: false,
+        popularTags: action.popularTags,
+        popularTagsErrorMessage: undefined,
+      });
+    case GET_POPULAR_TAGS_FAILURE:
+      return Object.assign({}, state, {
+        isFetchingpPopularTags: false,
+        popularTagsErrorMessage: action.message,
+        popularTags: [],
+      });
     default:
       return state;
   }

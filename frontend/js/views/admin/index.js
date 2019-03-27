@@ -22,44 +22,17 @@ import {
   setMinProfitRange,
   setMaxProfitRange,
   setMinImplementationRange,
-  setMaxImplementationRange
+  setMaxImplementationRange,
 } from '../../actions/admin';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 
 
-const deafultOption = {
-  legend: { display: false },
-  scales: {
-    yAxes: [{
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 20,
-      },
-    }],
-    xAxes: [{
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 20,
-      },
-    }],
-  },
-};
-
 class Admin extends Component {
-  props: props;
-
   constructor(props) {
     super(props);
     this.displayIdea = this.displayIdea.bind(this);
     this.modalIdea = null;
   }
-
-  state = {
-    tags: [],
-    isOpen: false,
-  };
 
 
   componentDidMount() {
@@ -68,6 +41,13 @@ class Admin extends Component {
     this.type = 'view'; // 'add', 'edit' not being used
     this.applyFilters();
   }
+
+    props: props;
+
+  state = {
+    tags: [],
+    isOpen: false,
+  };
 
 
   handleIdea(idea) {
@@ -118,6 +98,7 @@ class Admin extends Component {
     dispatch(setEndDate(date));
   }
 
+
   applyFilters() {
     const {
       partialFullSwitch,
@@ -160,7 +141,7 @@ class Admin extends Component {
 
 
     const selectedPower = Math.round(Math.log10(toConvert));
-    const standarized = toConvert / Math.pow(10, selectedPower);
+    const standarized = toConvert / (10 ** selectedPower);
     let result = 0;
     if (standarized <= 0.1) {
       result = 0.1;

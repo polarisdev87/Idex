@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import TagsInput from 'react-tagsinput';
 import Toggle from 'react-bootstrap-toggle';
 import { connect } from 'react-redux';
-
+import { getPopularTags } from '../../actions/admin';
 type Props = {
   placeholder: '',
   type: 'text',
@@ -11,7 +11,12 @@ type Props = {
 };
 
 class TagSection extends Component {
-  props: Props;
+
+  componentDidMount() {
+    this.getPopularTagsHandle();
+  }
+
+    props: Props;
 
   state = {
     inputValue: '',
@@ -50,11 +55,21 @@ class TagSection extends Component {
     }
   }
 
+  getPopularTagsHandle() {
+    const {
+      dispatch,
+    } = this.props;
+
+    dispatch(getPopularTags());
+  }
+
 
   render() {
     const {
-      placeholder, type, className, partialFullSwitch,
+      placeholder, type, className, partialFullSwitch, popularTags,
     } = this.props;
+    console.log("TagSection.js");
+    console.log(popularTags);
     const { inputValue } = this.state;
     return (
       <div className="form-group tag-container">
@@ -69,15 +84,7 @@ class TagSection extends Component {
         <div className="top-tag-container">
           <div className="label-sm-base trending-label">Top Trending Tags:</div>
           <div className="top-tag-wrapper">
-            <div className="top-tag">
-              asia
-            </div>
-            <div className="top-tag">
-              cloud
-            </div>
-            <div className="top-tag">
-              web
-            </div>
+            {popularTags && popularTags.map((topTag) => <div className="top-tag" key={topTag.name}>{topTag.name}</div>)}
           </div>
           {this.props.tags.length > 0 &&
           <div />
@@ -102,11 +109,12 @@ class TagSection extends Component {
 
 function mapStateToProps(state) {
   return {
+    popularTags: state.admin.popularTags,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return { };
+  return { dispatch };
 }
 
 

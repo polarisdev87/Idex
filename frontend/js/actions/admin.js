@@ -177,3 +177,77 @@ export function setMaxImplementationRange(value) {
 
 
 
+
+export const GET_POPULAR_TAGS_REQUEST = 'GET_POPULAR_TAGS_REQUEST';
+export const GET_POPULAR_TAGS_SUCCESS = 'GET_POPULAR_TAGS_SUCCESS';
+export const GET_POPULAR_TAGS_FAILURE = 'GET_POPULAR_TAGS_FAILURE';
+
+function getPopularTagsRequest() {
+  return {
+    type: GET_POPULAR_TAGS_REQUEST,
+  };
+}
+
+function getPopularTagsError(message) {
+  return {
+    type: GET_POPULAR_TAGS_FAILURE,
+    message,
+  };
+}
+
+function getPopularTagsSuccess(popularTags) {
+  return {
+    type: GET_POPULAR_TAGS_SUCCESS,
+    popularTags,
+  };
+}
+
+
+export function getPopularTags() {
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+
+  let config = {
+    method: 'GET',
+  };
+
+  const query = {
+  };
+
+  if (token) {
+    config = {
+      headers: { Authorization: `${token}` },
+    };
+  } else {
+    throw 'No token saved!';
+  }
+
+  console.log('actions/admin/getPopularTags');
+  return dispatch => {
+    console.log('actions/admin.js executing getPopularTags');
+    dispatch(getPopularTagsRequest());
+
+    const url = `${API_BASE_URI}/ideas/tags`;
+    console.log('actions/admin.js -> ');
+    console.log(url);
+    return fetch(url, config)
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
+        if (!response.ok) {
+          dispatch(getPopularTagsError(`Failed to get popular tags ${body.error}`));
+          return Promise.reject(body.error);
+        }
+        console.log('admin.js.getPopularTags(...) is ok');
+        console.log(query);
+        console.log(queryString);
+        console.log(body);
+
+        dispatch(getPopularTagsSuccess(body));
+        return true;
+      }).catch(err => {
+        dispatch(getSummaryIdeasTTMProfitVotesError(`Failed to get popular tags. ${err}`));
+        console.log('Error: ', err);
+      });
+  };
+}
+
+
