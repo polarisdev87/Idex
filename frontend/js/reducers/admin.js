@@ -92,7 +92,6 @@ const defaultConfig = {
   data: [],
 };
 
-
 function getColorList(tagsCount) {
   const colorList = chroma.bezier(['#ffd54f', '#aed581'])
     .scale()
@@ -103,7 +102,7 @@ function getColorList(tagsCount) {
 }
 
 function getColor(tag, tagColorMap) {
-    return tagColorMap.get(tag);
+  return tagColorMap.get(tag);
 }
 
 
@@ -161,9 +160,6 @@ function prepareGraph(ideasSummary, radiusUnit) {
     const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
     console.log('bubbleIdea');
     console.log(bubbleIdea);
-
-
-
     bubbleDataNew.datasets.push({
       ...defaultConfig,
       ...{

@@ -259,35 +259,37 @@ class Admin extends Component {
   }
 
   prepareOptions(ideasSummary) {
-    let maxX = 0;
-    let maxY = 0;
-    let minX = 99999999;
-    let minY = 99999999;
-    // find min and max of x and y
-    for (const bubbleIdeaIndex in ideasSummary.items) {
-      const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
-      maxX = Math.max(maxX, bubbleIdea.expectedTtm);
-      maxY = Math.max(maxY, bubbleIdea.expectedProfitInCents);
-      minX = Math.min(minX, bubbleIdea.expectedTtm);
-      minY = Math.min(minY, bubbleIdea.expectedProfitInCents);
+    let widthRange = {min:0, max:100, increment:20};
+    let heightRange = {min:0, max:100, increment:20};
+    if (ideasSummary.items.length > 0) {
+      let maxX = 0;
+      let maxY = 0;
+      let minX = 99999999;
+      let minY = 99999999;
+      // find min and max of x and y
+      for (const bubbleIdeaIndex in ideasSummary.items) {
+        const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+        maxX = Math.max(maxX, bubbleIdea.expectedTtm);
+        maxY = Math.max(maxY, bubbleIdea.expectedProfitInCents);
+        minX = Math.min(minX, bubbleIdea.expectedTtm);
+        minY = Math.min(minY, bubbleIdea.expectedProfitInCents);
+      }
+      const maxWidth = maxX - minX;
+      const maxHeight = maxY - minY;
+
+      minX -= maxWidth / 4;
+      maxX += maxWidth / 4;
+
+      minY -= maxHeight / 4;
+      maxY += maxHeight / 4;
+
+
+      // define magnitude (1, 2, 5, 10, 100, 1000, ...)
+      widthRange = this.calculateMagnitude({ min: minX, max: maxX });
+
+      heightRange = this.calculateMagnitude({ min: minY, max: maxY });
+
     }
-
-    const maxWidth = maxX - minX;
-    const maxHeight = maxY - minY;
-
-
-    minX -= maxWidth / 4;
-    maxX += maxWidth / 4;
-
-    minY -= maxHeight / 4;
-    maxY += maxHeight / 4;
-
-
-    // define magnitude (1, 2, 5, 10, 100, 1000, ...)
-    const widthRange = this.calculateMagnitude({ min: minX, max: maxX });
-
-    const heightRange = this.calculateMagnitude({ min: minY, max: maxY });
-
 
     const defaultOption = {
       legend: { display: false },
