@@ -1,4 +1,4 @@
-import { GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE, TOGGLE_FILTER_FULL_PARTIAL, UPDATE_IDEA_SUCCESS } from '../actions/ideas';
+import { GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE, TOGGLE_FILTER_FULL_PARTIAL, UPDATE_IDEA_SUCCESS, ADD_IDEA_SUCCESS } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE } from '../actions/comments';
 
 export function ideas(state = {
@@ -8,6 +8,7 @@ export function ideas(state = {
   ideasErrorMessage: undefined,
   commentsErrorMessage: undefined,
   partialFullSwitch: true,
+
 }, action) {
   switch (action.type) {
     case GET_IDEAS_REQUEST:
@@ -66,6 +67,17 @@ export function ideas(state = {
           ...state.ideasArr.slice(index + 1),
         ];
       }
+      return Object.assign({}, state, {
+        isFetchingIdeas: false,
+        ideasArr: newIdeas,
+        ideasErrorMessage: undefined,
+      });
+    }
+    case ADD_IDEA_SUCCESS: {
+      const newIdeas = [
+        action.idea,
+        ...state.ideasArr,
+      ];
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasArr: newIdeas,

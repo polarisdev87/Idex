@@ -297,6 +297,8 @@ export function addIdea(idea) {
           dispatch(addIdeaError(`Failed to add idea. ${body.error}`));
           return Promise.reject('Failed to add idea');
         }
+        console.log("addIdea(...) -> body");
+        console.log(body);
         dispatch(addIdeaSuccess(body));
         return true;
       }).catch(err => {
