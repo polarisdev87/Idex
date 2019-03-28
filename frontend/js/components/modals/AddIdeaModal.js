@@ -112,6 +112,7 @@ class AddIdeaModal extends Component {
       description: this.description.value.trim(),
       stage,
       expectedCostInCents: this.expectedCostInCents.value.trim(),
+      actualCostInCents: this.actualCostInCents.value.trim(),
       expectedTtm: this.expectedTtm.value.trim(),
       expectedProfitInCents: this.expectedProfitInCents.value.trim(),
       tags,
