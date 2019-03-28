@@ -347,22 +347,6 @@ class Admin extends Component {
     return (
       <div className="container admin-container">
         {/* header - boxes */ }
-        <div className="info-container">
-          <div className="row">
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={0} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={1} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={2} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={3} ideaNum={121} />
-            </div>
-          </div>
-        </div>
         <div className="main-container shadow">
           {/* header - filter */ }
           <div className="header">

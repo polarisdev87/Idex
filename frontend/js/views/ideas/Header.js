@@ -169,10 +169,23 @@ class Header extends Component {
     const submittedAtMsMax = null;
     if (filterText.startsWith('Top')) {
       submittedAtMsMin = this.getMomentFromLabel(filterText);
+      mainFilter = 'Top';
     } else {
       mainFilter = 'Newest';
     }
-    this.props.fetchIdeas(mainFilter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin, profitMax, implementationTimeMin, implementationTimeMax, tags);
+    this.props.fetchIdeas(
+      mainFilter,
+      stages,
+      submittedAtMsMin,
+      submittedAtMsMax,
+      votesMin,
+      votesMax,
+      profitMin,
+      profitMax,
+      implementationTimeMin,
+      implementationTimeMax,
+      tags
+    );
   }
 
   clearFilters() {
@@ -183,18 +196,10 @@ class Header extends Component {
     if (filterText !== 'Newest') {
       this.setState({
         filterText: `Top - ${filterText}`,
-        stagesSelected: this.state.stagesSelected,
       });
     } else {
       this.setState({ filterText });
     }
-  }
-
-
-  setFilterImplementedText(filterText) {
-    this.setState({
-      filterImplementedText: `${filterText}`,
-    });
   }
 
 
@@ -208,16 +213,14 @@ class Header extends Component {
 
     this.setState({
       stagesSelected,
-      filterText: this.state.filterText,
     });
   }
 
 
   onPartialFullToggle() {
     const { dispatch } = this.props;
-    dispatch(toggleFilterFullPartial()); 
+    dispatch(toggleFilterFullPartial());
   }
-
 
 
   render() {
@@ -244,11 +247,11 @@ class Header extends Component {
           <div className="collapse-container">
             <div className="tag-section">
               <TagSection
-                partialFullSwitch = {partialFullSwitch}
+                partialFullSwitch= {partialFullSwitch}
                 tags={this.state.tags}
                 handleTagsChange={(tags) => this.handleTagsChange(tags)}
                 addTag={(tag) => this.addTag(tag)}
-                onPartialFullToggle = {() => this.onPartialFullToggle()}
+                onPartialFullToggle= {() => this.onPartialFullToggle()}
               />
             </div>
 
@@ -378,7 +381,7 @@ class Header extends Component {
 
 function mapStateToProps(state) {
   return {
-    partialFullSwitch: state.ideas.partialFullSwitch,      
+    partialFullSwitch: state.ideas.partialFullSwitch,
   };
 }
 

@@ -53,6 +53,7 @@ export function fetchIdeas(
 ) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
 
+
   let config = {
     method: 'GET',
   };
@@ -80,6 +81,8 @@ export function fetchIdeas(
     throw 'No token saved!';
   }
 
+  console.log("actions/fetchIdeas");
+  console.log(filter);
   return dispatch => {
     dispatch(getIdeasRequest());
 
@@ -255,10 +258,10 @@ function addIdeaError(message) {
   };
 }
 
-function addIdeaSuccess(ideas) {
+function addIdeaSuccess(idea) {
   return {
     type: ADD_IDEA_SUCCESS,
-    ideas,
+    idea,
   };
 }
 

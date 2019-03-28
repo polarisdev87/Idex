@@ -121,7 +121,7 @@ class Ideas extends Component {
   }
 
   render() {
-    console.log('index.js');
+    console.log('index.js.render()');
     console.log(this.props);
     const { isOpen } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
@@ -178,7 +178,6 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
-    filters: state.filters,
   };
 }
 
