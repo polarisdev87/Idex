@@ -8,7 +8,7 @@ export function ideas(state = {
   ideasErrorMessage: undefined,
   commentsErrorMessage: undefined,
   partialFullSwitch: true,
-  anonymousMode : false,
+  anonymousMode: false,
 
 }, action) {
   switch (action.type) {
@@ -86,8 +86,19 @@ export function ideas(state = {
       });
     }
     case TOGGLE_ANONYMOUS: {
+      let newIdeas = state.ideasArr;
+      const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+      if (index !== -1) {
+        const oldAnonymousMode = state.ideasArr[index].anonymousMode;
+        const toggledIdea = Object.assign({}, state.ideasArr[index], { anonymousMode: !oldAnonymousMode });
+        newIdeas = [
+          ...state.ideasArr.slice(0, index),
+          toggledIdea,
+          ...state.ideasArr.slice(index + 1),
+        ];
+      }
       return Object.assign({}, state, {
-        anonymousMode: !state.anonymousMode,
+        ideasArr: newIdeas,
       });
     }
     default:

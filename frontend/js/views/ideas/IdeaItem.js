@@ -50,8 +50,8 @@ class IdeaItem extends Component {
   }
 
     handleToggleAnonymous = e => {
-      const { dispatch } = this.props;
-      dispatch(toggleAnonymous());
+      const { dispatch,idea } = this.props;
+      dispatch(toggleAnonymous(idea.id));
     }
 
 
@@ -81,7 +81,7 @@ class IdeaItem extends Component {
         <div className="row">
           <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
             <div className="avatar-container">
-              <span onClick={this.handleToggleAnonymous} className={anonymousMode ? 'identity-icon-anonymous' : 'identity-icon-identified'} />
+              <span onClick={this.handleToggleAnonymous} className={idea.anonymousMode ? 'identity-icon-anonymous' : 'identity-icon-identified'} />
             </div>
           </div>
           <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
@@ -92,6 +92,7 @@ class IdeaItem extends Component {
           </div>
         </div>
       );
+
       const showCommentError = typeof this.props.commentsErrorMessage !== 'undefined';
       console.log('idea.category');
       console.log(idea.category);

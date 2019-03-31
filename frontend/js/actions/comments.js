@@ -95,9 +95,10 @@ export function addComment(comment) {
 
 export const TOGGLE_ANONYMOUS = 'TOGGLE_ANONYMOUS';
 
-export function toggleAnonymous() {
+export function toggleAnonymous(ideaId) {
   return {
     type: TOGGLE_ANONYMOUS,
+    ideaId,
   };
 }
 
