@@ -2,12 +2,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Alert, } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import * as moment from 'moment';
 import StageMark from '../../components/StageMark';
 import Comment from './Comment';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
-import { addComment } from '../../actions/comments';
+import { addComment, toggleAnonymous } from '../../actions/comments';
 
 
 type Props = {
@@ -49,105 +49,114 @@ class IdeaItem extends Component {
     }
   }
 
-  render() {
-    const { idea, edit, view } = this.props;
-    const commentBoxId = `comment-container-${idea.id}`;
-    const commentBoxHref = `#comment-container-${idea.id}`;
-    console.log('IdeaItem.js');
-    console.log(idea);
-
-    console.log('comments');
-    console.log(idea.comments);
+    handleToggleAnonymous = e => {
+      const { dispatch } = this.props;
+      dispatch(toggleAnonymous());
+    }
 
 
+    render() {
+      const { idea, edit, view, anonymousMode } = this.props;
+      const commentBoxId = `comment-container-${idea.id}`;
+      const commentBoxHref = `#comment-container-${idea.id}`;
+      console.log('IdeaItem.js');
+      console.log(idea);
+
+      console.log('comments');
+      console.log(idea.comments);
 
 
-    const commentsMark = (typeof idea.comments !== 'undefined' && idea.comments!= null ) &&
+      const commentsMark = (typeof idea.comments !== 'undefined' && idea.comments != null) &&
       idea.comments.map((comment, index) => (
         <Comment
-            key={index.toString()}
-            index={index} 
-            comment={comment} 
-            shortDateTime = {moment(comment.submittedAt).fromNow()} 
-            fullDateTime = {(new Date(comment.submittedAt)).toString()} />
+          key={index.toString()}
+          index={index}
+          comment={comment}
+          shortDateTime={moment(comment.submittedAt).fromNow()}
+          fullDateTime={(new Date(comment.submittedAt)).toString()}
+        />
       ));
 
-    const addCommentMark = (
-      <div className="row">
-        <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
-          <div className="avatar-container"><img src="" alt="" /></div>
-        </div>
-        <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
-          <input
-            type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
-            onKeyPress={this.handleKeyPress}
-          />
-        </div>
-      </div>
-    );
-    const showCommentError = typeof this.props.commentsErrorMessage !== 'undefined';
-    console.log("idea.category");
-    console.log(idea.category);
-    console.log(idea.tags);
-
-    return (
-      <div className="idea-item-container shadow">
-        <div className="body-container" onClick={() => view()} >
-          <div className="label-sm-gray m-b-space">
-            {idea.stage}
-          </div>
-          <div className="label-lg-base m-b-space">
-            {idea.title}
-          </div>
-          <div className="label-sm-gray">
-            {idea.description}
-          </div>
-          <div className="tag-container">
-            <div className="label-sm-gray card-tag-label">Tags: </div>
-            <div className="tag-wrapper">
-              {
-                idea.tags.map((tag, index) => ((tag === idea.category)  
-                  ? (<div key={index.toString()} className="label-sm-base card-tag main-tag">{tag}</div>) 
-                  : (<div key={index.toString()} className="label-sm-base card-tag">{tag}</div>)
-                ))
-              }
+      const addCommentMark = (
+        <div className="row">
+          <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <div className="avatar-container">
+              <span onClick={this.handleToggleAnonymous} className={anonymousMode ? 'identity-icon-anonymous' : 'identity-icon-identified'} />
             </div>
           </div>
-          <StageMark className="stage-mark-container" stage={idea.stage} />
-          <div className="right-buttons-container">
-            <CircleIconButton type="already_like" />
-            <CircleIconButton type="edit" onClick={() => edit()} />
+          <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
+            <input
+              type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
+              onKeyPress={this.handleKeyPress}
+            />
           </div>
         </div>
-        <div className="footer-container">
-          <div className="footer-item label-sm-gray">{idea.votes.toString()} Votes</div>
-          <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
-            '' :
-                idea.comments.length.toString()} Comments</div>
-          <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
-          <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
-          <div className="footer-item bottom-item label-sm-gray">
-            <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>Add Comment</button>
-          </div>
-        </div>
+      );
+      const showCommentError = typeof this.props.commentsErrorMessage !== 'undefined';
+      console.log('idea.category');
+      console.log(idea.category);
+      console.log(idea.tags);
 
-        <div id={commentBoxId} className="collapse">
-          <div className="comment-wrapper">
-            {showCommentError &&
+      return (
+        <div className="idea-item-container shadow">
+          <div className="body-container" onClick={() => view()} >
+            <div className="label-sm-gray m-b-space">
+              {idea.stage}
+            </div>
+            <div className="label-lg-base m-b-space">
+              {idea.title}
+            </div>
+            <div className="label-sm-gray">
+              {idea.description}
+            </div>
+            <div className="tag-container">
+              <div className="label-sm-gray card-tag-label">Tags: </div>
+              <div className="tag-wrapper">
+                {
+                  idea.tags.map((tag, index) => ((tag === idea.category)
+                    ? (<div key={index.toString()} className="label-sm-base card-tag main-tag">{tag}</div>)
+                    : (<div key={index.toString()} className="label-sm-base card-tag">{tag}</div>)
+                  ))
+                }
+              </div>
+            </div>
+            <StageMark className="stage-mark-container" stage={idea.stage} />
+            <div className="right-buttons-container">
+              <CircleIconButton type="already_like" />
+              <CircleIconButton type="edit" onClick={() => edit()} />
+            </div>
+          </div>
+          <div className="footer-container">
+            <div className="footer-item label-sm-gray">{idea.votes.toString()} Votes</div>
+            <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
+              '' :
+              idea.comments.length.toString()} Comments
+          </div>
+            <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
+            <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
+            <div className="footer-item bottom-item label-sm-gray">
+              <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>Add Comment</button>
+            </div>
+          </div>
+
+          <div id={commentBoxId} className="collapse">
+            <div className="comment-wrapper">
+              {showCommentError &&
             <Alert bsStyle="danger" >{this.props.commentsErrorMessage}</Alert> }
-            { commentsMark }
-            { addCommentMark }
+              { commentsMark }
+              { addCommentMark }
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 }
 
 
 function mapStateToProps(state) {
   return {
     commentsErrorMessage: state.ideas.commentsErrorMessage,
+    anonymousMode: state.ideas.anonymousMode,
   };
 }
 

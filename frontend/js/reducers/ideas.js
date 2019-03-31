@@ -1,5 +1,5 @@
 import { GET_IDEAS_REQUEST, GET_IDEAS_SUCCESS, GET_IDEAS_FAILURE, TOGGLE_FILTER_FULL_PARTIAL, UPDATE_IDEA_SUCCESS, ADD_IDEA_SUCCESS } from '../actions/ideas';
-import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE } from '../actions/comments';
+import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 
 export function ideas(state = {
   isFetchingIdeas: false,
@@ -8,6 +8,7 @@ export function ideas(state = {
   ideasErrorMessage: undefined,
   commentsErrorMessage: undefined,
   partialFullSwitch: true,
+  anonymousMode : false,
 
 }, action) {
   switch (action.type) {
@@ -82,6 +83,11 @@ export function ideas(state = {
         isFetchingIdeas: false,
         ideasArr: newIdeas,
         ideasErrorMessage: undefined,
+      });
+    }
+    case TOGGLE_ANONYMOUS: {
+      return Object.assign({}, state, {
+        anonymousMode: !state.anonymousMode,
       });
     }
     default:

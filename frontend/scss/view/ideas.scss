@@ -311,6 +311,21 @@
         text-transform: capitalize;
         display: flex;
         align-items: center;
+        .identity-icon-anonymous {
+            background: url(../assets/images/incognito-50x50-small.png) no-repeat;
+            background-size:contain;
+            width: 100%;
+            height: 2em;
+            background-position: center;
+        }
+        .identity-icon-identified {
+            background: url(../assets/images/baseline_person_black_36dp.png) no-repeat;
+            background-size:contain;
+            width: 100%;
+            height: 2em;
+            background-position: center;
+        }
+
         img {
           width: 100%;
           height: 100%;
