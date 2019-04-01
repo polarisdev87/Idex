@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Modal from 'react-modal';
-import CommonButton from '../buttons/CommonButton';
 import TagsInput from 'react-tagsinput';
-
+import Files from 'react-files'
+import CommonButton from '../buttons/CommonButton';
 
 const modalStyle = {
   overlay: {
@@ -32,15 +32,6 @@ type Props = {
 }
 
 class AddIdeaModal extends Component {
-    isRemoving= false;
-
-  state = {
-    tags: [],
-    isEditMode: false,
-    stage: 'Launched',
-    mainTag: -1,
-  }
-
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps');
     console.log(nextProps);
@@ -50,7 +41,7 @@ class AddIdeaModal extends Component {
     if (type === 'view' || type === 'edit') {
       if (idea !== undefined && idea !== null) {
         let mainTag = -1;
-        if (typeof idea.tags != 'undefined') {
+        if (typeof idea.tags !== 'undefined') {
           mainTag = idea.tags.indexOf(idea.category);
         }
         this.setState({
@@ -91,6 +82,15 @@ class AddIdeaModal extends Component {
 
   props: Props;
 
+  isRemoving= false;
+
+  state = {
+    tags: [],
+    isEditMode: false,
+    stage: 'Launched',
+    mainTag: -1,
+    files: [],
+  }
 
 
   afterOpenModal() {
@@ -104,14 +104,16 @@ class AddIdeaModal extends Component {
   handleIdea(type, anonymousMode) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
-    const { id, tags, stage, mainTag } = this.state;
+    const {
+ id, tags, stage, mainTag 
+} = this.state;
     let category = null;
     if (mainTag != -1) {
       category = tags[mainTag];
     }
     console.log(category);
     const idea = {
-      id,  
+      id,
       title: this.title.value.trim(),
       description: this.description.value.trim(),
       stage,
@@ -129,10 +131,10 @@ class AddIdeaModal extends Component {
   }
 
   handleChange(tags) {
-      let mainTag = this.state.mainTag;
-      if (tags.length == 1 ) {
-        mainTag = 0;
-      }
+    let mainTag = this.state.mainTag;
+    if (tags.length == 1) {
+      mainTag = 0;
+    }
     this.setState({ tags, mainTag });
   }
 
@@ -141,10 +143,10 @@ class AddIdeaModal extends Component {
     console.log('setTagAsMain');
     console.log(key);
     if (this.isRemoving) {
-        console.log("isRemoving");
+      console.log('isRemoving');
       this.isRemoving = false;
     } else {
-        console.log("NOT isRemoving");
+      console.log('NOT isRemoving');
       this.setState({ mainTag: key });
     }
   }
@@ -158,8 +160,8 @@ class AddIdeaModal extends Component {
     onRemoveFunction(key);
     if (key <= currentMainTag) {
       currentMainTag--;
-        if (currentMainTag == -1 && classThis.state.tags.length>1) {
-            currentMainTag =0;
+      if (currentMainTag == -1 && classThis.state.tags.length > 1) {
+        currentMainTag = 0;
       }
       classThis.setState({ mainTag: currentMainTag });
     }
@@ -179,7 +181,7 @@ class AddIdeaModal extends Component {
     return (
       <span
         key={key} {...other}
-        onClick ={(ev) => classThis.setTagAsMain(ev, key)}
+        onClick={(ev) => classThis.setTagAsMain(ev, key)}
       >
         {getTagDisplayValue(tag)}
         {!disabled &&
@@ -188,6 +190,29 @@ class AddIdeaModal extends Component {
       </span>
     );
   }
+
+
+  onFilesChange = (files) => {
+    this.setState({
+      files,
+    }, () => {
+      console.log(this.state.files);
+    });
+  }
+
+  onFilesError = (error, file) => {
+    console.log('error code ' + error.code + ': ' + error.message);
+  }
+
+  filesRemoveOne = (file) => {
+    this.refs.files.removeFile(file)
+  }
+
+  filesRemoveAll = () => {
+    this.refs.files.removeFiles()
+  }
+
+
 
   render() {
     const {
@@ -294,17 +319,66 @@ class AddIdeaModal extends Component {
             </div>
 
             <div className="form-group">
-              <label className="label">Tags {type != 'view' && <span> (Click on tag to set as main)</span>}</label>
+              <label className="label">Tags {type !== 'view' && <span> (Click on tag to set as main)</span>}</label>
               <div className="input-container">
                 {/* <input ref={el => { this.tags = el; }} className="form-control" type="text" /> */}
-                <TagsInput value={this.state.tags} onChange={::this.handleChange} renderTag= {(parProps) => this.renderTagWithMainFlag(parProps, this)} />
+                <TagsInput value={this.state.tags} onChange={::this.handleChange} renderTag={(parProps) => this.renderTagWithMainFlag(parProps, this)} />
               </div>
             </div>
 
+            <div className="form-group">
+              <div className="files">
+                <Files
+                  className="files-dropzone-list"
+                  onChange={this.onFilesChange}
+                  onError={this.onFilesError}
+                  style={{ height: '100px' }}
+                  accepts={['image/png', '.pdf', 'audio/*']}
+                  multiple
+                  maxFiles={3}
+                  maxFileSize={10000000}
+                  minFileSize={0}
+                  clickable
+                >
+                 Drop files here or click to upload
+                </Files>
+
+        <button onClick={this.filesRemoveAll}>Remove All Files</button>
+        <button onClick={this.filesUpload}>Upload</button>
+        {
+          this.state.files.length > 0
+          ? <div className='files-list'>
+            <ul>{this.state.files.map((file) =>
+              <li className='files-list-item' key={file.id}>
+                <div className='files-list-item-preview'>
+                  {file.preview.type === 'image'
+                  ? <img className='files-list-item-preview-image' src={file.preview.url} />
+                  : <div className='files-list-item-preview-extension'>{file.extension}</div>}
+                </div>
+                <div className='files-list-item-content'>
+                  <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div>
+                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
+                </div>
+                <div
+                  id={file.id}
+                  className='files-list-item-remove'
+                  onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                />
+              </li>
+            )}</ul>
+          </div>
+          : null
+        }
+
+
+              </div>
+            </div>
+
+
             <div className="button-container">
-             <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type, idea == null ? false  : idea.anonymousMode)} >
+              <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type, idea == null ? false : idea.anonymousMode)} >
                 {renderButtonTitle()}
-              </button>
+             </button>
             </div>
             {
               (type === 'view') ?
