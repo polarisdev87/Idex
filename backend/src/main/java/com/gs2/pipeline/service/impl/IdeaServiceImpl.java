@@ -260,7 +260,7 @@ public class IdeaServiceImpl implements IdeaService {
             throw new IdeaNotFoundException("Unable to find idea with id: " + commentDto.getIdeaId());
         }
 
-        Comment comment = new Comment(commentDto.getText(), idea, requester);
+        Comment comment = new Comment(commentDto.getText(), commentDto.getAnonymous(),  idea, requester);
 
         commentRepository.save(comment);
 

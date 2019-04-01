@@ -31,6 +31,11 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
 
+    
+    @Column(name = "anonymous")
+    private Boolean anonymous;
+    
+    
     @ManyToOne
     @JoinColumn(name = "submitted_by", nullable = false)
     private Account submittedBy;
@@ -38,12 +43,13 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(String text, Idea idea, Account submittedBy) {
+    public Comment(String text, Boolean anonymous, Idea idea, Account submittedBy) {
 
         this.idea = idea;
         this.submittedBy = submittedBy;
         this.submittedAt = new Date();
         this.text = text;
+        this.anonymous = anonymous;
     }
 
     public Long getId() {
@@ -86,4 +92,14 @@ public class Comment {
         this.submittedBy = submittedBy;
     }
 
+	public Boolean getAnonymous() {
+		return anonymous;
+	}
+
+	public void setAnonymous(Boolean anonymous) {
+		this.anonymous = anonymous;
+	}
+
+    
+    
 }

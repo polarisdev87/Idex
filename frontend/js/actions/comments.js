@@ -28,10 +28,11 @@ function addCommentError(message) {
  *
  *
  */
-function addCommentSuccess(idea) {
+function addCommentSuccess(idea, anonymousMode) {
+  const newIdea = Object.assign({},idea,{anonymousMode});
   return {
     type: ADD_COMMENT_SUCCESS,
-    idea,
+    idea:newIdea,
   };
 }
 
@@ -73,6 +74,7 @@ export function addComment(comment) {
   } else {
     throw 'No token saved!';
   }
+  const anonymousMode = comment.anonymous;
   return dispatch => {
     dispatch(addCommentRequest());
     return fetch(`${API_BASE_URI}/ideas/comment`, config)
@@ -85,7 +87,7 @@ export function addComment(comment) {
         }
         // body is the returned idea from backend
         console.log('after !response.ok');
-        dispatch(addCommentSuccess(body));
+        dispatch(addCommentSuccess(body,anonymousMode));
         return true;
       }).catch(err => {
         dispatch(addCommentError(`${err}`));

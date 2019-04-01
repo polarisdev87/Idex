@@ -39,11 +39,15 @@ class IdeaItem extends Component {
   handleKeyPress = e => {
     if (e.key === 'Enter') {
       const { dispatch, idea } = this.props;
+      console.log("IdeaItem.handleKeyPress");
+      console.log(idea);
+
       dispatch(addComment({
         ideaId: idea.id,
         text: e.target.value,
         sumittedBy: '',
         submittedAt: '',
+        anonymous: idea.anonymousMode,
       }));
       this.commentInput.value = '';
     }

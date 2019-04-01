@@ -21,9 +21,12 @@ function getIdeasError(message) {
 }
 
 function getIdeasSuccess(ideas) {
+
+  const newIdeas = ideas.map((idea) => { idea.anonymousMode = false; return idea; });
+
   return {
     type: GET_IDEAS_SUCCESS,
-    ideas,
+    ideas: newIdeas,
   };
 }
 

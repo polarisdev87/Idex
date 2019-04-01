@@ -16,12 +16,15 @@ export function ideas(state = {
       return Object.assign({}, state, {
         isFetchingIdeas: true,
       });
-    case GET_IDEAS_SUCCESS:
+    case GET_IDEAS_SUCCESS: {
+      console.log("reducer action.ideas");  
+      console.log(action.ideas);
       return Object.assign({}, state, {
         isFetchingIdeas: false,
         ideasArr: action.ideas,
         ideasErrorMessage: undefined,
       });
+    }
     case GET_IDEAS_FAILURE:
       return Object.assign({}, state, {
         isFetchingIdeas: false,

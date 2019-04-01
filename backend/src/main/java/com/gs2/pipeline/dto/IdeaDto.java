@@ -115,7 +115,13 @@ public class IdeaDto {
 
         for(Comment comment: comments) {
         	Account authorComment=comment.getSubmittedBy();
-            commentDtos.add(new CommentDto(comment, idea.getId(), getSubmittedBy(authorComment), new AccountDto(authorComment,true), comment.getSubmittedAt().getTime()));
+            commentDtos.add(
+            		new CommentDto(
+            				comment, 
+            				idea.getId(), 
+            				getSubmittedBy(authorComment), 
+            				new AccountDto(authorComment,true,comment.getAnonymous()), 
+            				comment.getSubmittedAt().getTime()));
         }
         
         Collections.sort(commentDtos);

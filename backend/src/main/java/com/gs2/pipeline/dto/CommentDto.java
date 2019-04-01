@@ -10,6 +10,7 @@ public class CommentDto implements Comparable<CommentDto>  {
     private String text;
     private String submittedBy;
     private Long submittedAt;
+    private Boolean anonymous;
     /**
      * submittedBy could be deduced from account
      */
@@ -25,6 +26,7 @@ public class CommentDto implements Comparable<CommentDto>  {
         this.submittedBy = submittedBy;
         this.submittedAt = submittedAt;
         this.account = account;
+        this.anonymous = comment.getAnonymous();
         
     }
 
@@ -69,6 +71,16 @@ public class CommentDto implements Comparable<CommentDto>  {
 
 	public void setAccount(AccountDto account) {
 		this.account = account;
+	}
+	
+	
+
+	public Boolean getAnonymous() {
+		return anonymous;
+	}
+
+	public void setAnonymous(Boolean anonymous) {
+		this.anonymous = anonymous;
 	}
 
 	@Override
