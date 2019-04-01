@@ -1,5 +1,6 @@
 package com.gs2.pipeline.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
 import com.gs2.pipeline.domain.Idea;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@JsonIgnoreProperties(value = { "anonymousMode" })
 public class IdeaDto {
 
     private static final String SUBMITTED_BY_FORMAT = "%s <%s %s>";
@@ -61,6 +63,8 @@ public class IdeaDto {
         this.votes = idea.getVotes();
         this.comments = getCommentDtos(idea.getComments(), idea);
     }
+    
+    
 
     public Idea toDao(Set<Tag> tags, Tag category, Account submittedBy) {
         Idea idea = new Idea();
@@ -129,6 +133,13 @@ public class IdeaDto {
         return commentDtos;
     }
 
+    
+    
+	public void updateComments(Idea idea) {
+		this.comments = getCommentDtos(idea.getComments(), idea);
+	}
+    
+    
     public String getTitle() {
         return title;
     }
@@ -264,6 +275,7 @@ public class IdeaDto {
 	public void setCategory(String category) {
 		this.category = category;
 	}
+
     
     
 }

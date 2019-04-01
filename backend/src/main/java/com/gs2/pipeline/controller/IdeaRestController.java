@@ -8,6 +8,7 @@ import com.gs2.pipeline.service.AccountService;
 import com.gs2.pipeline.service.IdeaDistributionTtmProfitVoteService;
 import com.gs2.pipeline.service.IdeaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 

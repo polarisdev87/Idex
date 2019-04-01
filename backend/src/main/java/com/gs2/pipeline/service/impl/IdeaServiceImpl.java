@@ -397,7 +397,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         // Don't let votes change here. That should be done via call to vote endpoint
         updatedIdeaDto.setVotes(existing.getVotes());
-
+        updatedIdeaDto.updateComments(existing);
         return updatedIdeaDto;
     }
 

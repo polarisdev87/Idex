@@ -21,7 +21,6 @@ function getIdeasError(message) {
 }
 
 function getIdeasSuccess(ideas) {
-
   const newIdeas = ideas.map((idea) => { idea.anonymousMode = false; return idea; });
 
   return {
@@ -84,7 +83,7 @@ export function fetchIdeas(
     throw 'No token saved!';
   }
 
-  console.log("actions/fetchIdeas");
+  console.log('actions/fetchIdeas');
   console.log(filter);
   return dispatch => {
     dispatch(getIdeasRequest());
@@ -129,12 +128,16 @@ function updateIdeaError(message) {
   };
 }
 
-function updateIdeaSuccess(idea) {
-    console.log("updateIdeaSuccess");
-    console.log(idea);
+function updateIdeaSuccess(idea, anonymousMode) {
+  console.log('updateIdeaSuccess');
+  console.log(idea);
+  console.log(anonymousMode);
+  const newIdea = Object.assign({}, idea, { anonymousMode });
+  console.log(newIdea);
+
   return {
     type: UPDATE_IDEA_SUCCESS,
-    idea,
+    idea: newIdea,
   };
 }
 
@@ -145,6 +148,8 @@ export function handleUpdateIdeaError(message) {
 }
 
 export function updateIdea(idea) {
+  console.log('updateIdea(idea) initial');
+  console.log(idea);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
@@ -160,9 +165,10 @@ export function updateIdea(idea) {
   } else {
     throw 'No token saved!';
   }
-
   return dispatch => {
     dispatch(updateIdeaRequest());
+    console.log('updateIdea(idea)');
+    console.log(idea);
     return fetch(`${API_BASE_URI}/ideas`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
@@ -170,7 +176,7 @@ export function updateIdea(idea) {
           dispatch(updateIdeaError(`Failed to update idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
         }
-        dispatch(updateIdeaSuccess(body));
+        dispatch(updateIdeaSuccess(body, idea.anonymousMode));
         return true;
       }).catch(err => {
         dispatch(updateIdeaError(`Failed to update user. ${err}`));
@@ -227,12 +233,12 @@ export function deleteIdeas(ideaIds) {
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(deleteUsersError(`Failed to delete idea. ${body.error}`));
+          dispatch(deleteIdeasError(`Failed to delete idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
         }
-        dispatch(deleteUsersSuccess(body));
+        dispatch(deleteIdeasSuccess(body));
       }).catch(err => {
-        dispatch(deleteUsersError(`Failed to delete idea. ${err}`));
+        dispatch(deleteIdeasError(`Failed to delete idea. ${err}`));
         console.log('Error: ', err);
       });
   };
@@ -261,10 +267,11 @@ function addIdeaError(message) {
   };
 }
 
-function addIdeaSuccess(idea) {
+function addIdeaSuccess(idea, anonymousMode) {
+  const newIdea = Object.assign({}, idea, { anonymousMode });
   return {
     type: ADD_IDEA_SUCCESS,
-    idea,
+    idea: newIdea,
   };
 }
 
@@ -300,9 +307,9 @@ export function addIdea(idea) {
           dispatch(addIdeaError(`Failed to add idea. ${body.error}`));
           return Promise.reject('Failed to add idea');
         }
-        console.log("addIdea(...) -> body");
+        console.log('addIdea(...) -> body');
         console.log(body);
-        dispatch(addIdeaSuccess(body));
+        dispatch(addIdeaSuccess(body, idea.anonymousMode));
         return true;
       }).catch(err => {
         dispatch(addIdeaError(`Failed to add idea. ${err}`));
@@ -320,12 +327,4 @@ export function toggleFilterFullPartial() {
     type: TOGGLE_FILTER_FULL_PARTIAL,
   };
 }
-
-
-
-
-
-
-
-
 

@@ -29,6 +29,7 @@ class Ideas extends Component {
 
   handleIdea(idea, type) {
     console.log("handleIdea");
+    console.log(idea);
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);

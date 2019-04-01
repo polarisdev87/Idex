@@ -32,7 +32,6 @@ type Props = {
 }
 
 class AddIdeaModal extends Component {
-  props: Props;
     isRemoving= false;
 
   state = {
@@ -47,6 +46,7 @@ class AddIdeaModal extends Component {
     console.log(nextProps);
     const { idea, type } = nextProps;
     console.log('idea ===  ===>', idea);
+    this.idea = idea;
     if (type === 'view' || type === 'edit') {
       if (idea !== undefined && idea !== null) {
         let mainTag = -1;
@@ -89,6 +89,10 @@ class AddIdeaModal extends Component {
     // }
   }
 
+  props: Props;
+
+
+
   afterOpenModal() {
     console.log('after open Modal');
   }
@@ -97,7 +101,7 @@ class AddIdeaModal extends Component {
     console.log('close open Modal');
   }
 
-  handleIdea(type) {
+  handleIdea(type, anonymousMode) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
     const { id, tags, stage, mainTag } = this.state;
@@ -119,6 +123,7 @@ class AddIdeaModal extends Component {
       category,
       actualTtm: this.actualTtm.value.trim(),
       actualProfitInCents: this.actualProfitInCents.value.trim(),
+      anonymousMode,
     };
     this.props.handleIdea(idea, type);
   }
@@ -189,6 +194,7 @@ class AddIdeaModal extends Component {
       isOpen, idea, close, type,
     } = this.props;
     console.log('type ===>', type);
+    console.log(idea);
     const { isEditMode } = this.state;
     const renderTitle = () => {
       if (type === 'view') {
@@ -206,6 +212,7 @@ class AddIdeaModal extends Component {
       }
       return <span>Add Idea</span>;
     };
+
     return (
       <Modal
         isOpen={isOpen}
@@ -295,7 +302,7 @@ class AddIdeaModal extends Component {
             </div>
 
             <div className="button-container">
-             <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type)} >
+             <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type, idea == null ? false  : idea.anonymousMode)} >
                 {renderButtonTitle()}
               </button>
             </div>

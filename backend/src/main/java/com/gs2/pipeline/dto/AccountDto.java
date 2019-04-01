@@ -29,20 +29,21 @@ public class AccountDto {
      *     a type of dto to be returned avoiding to violate privacy of user
      */
     public AccountDto(Account account,boolean onlySummary, boolean anonymous) {
-        this.displayName =  account.getFirstName()+" "+ account.getLastName().substring(0,1)+".";
-    	if (!onlySummary) {
-            this.username = account.getUsername();
-            this.firstName = account.getFirstName();
-            this.lastName = account.getLastName();
-            this.id = account.getId();
-            this.email = account.getEmail();
-            this.enabled = account.getEnabled();
-            this.authorities = account.getAuthorities();
+		if (anonymous) {
+    		this.displayName = "Anonymous"; 
     	} else {
-    		if (anonymous) {
-        		this.displayName = "Anonymous";
-    		}
-    	} 
+   	        this.displayName =  account.getFirstName()+" "+ account.getLastName().substring(0,1)+".";
+   	    	if (!onlySummary) {
+   	            this.displayName =  account.getFirstName()+" "+ account.getLastName().substring(0,1)+".";
+   	            this.username = account.getUsername();
+   	            this.firstName = account.getFirstName();
+   	            this.lastName = account.getLastName();
+   	            this.id = account.getId();
+   	            this.email = account.getEmail();
+   	            this.enabled = account.getEnabled();
+   	            this.authorities = account.getAuthorities();
+   	    	} 
+    	}
     }
 
     public AccountDto(Account account) {
