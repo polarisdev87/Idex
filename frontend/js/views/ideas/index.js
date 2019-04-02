@@ -30,7 +30,7 @@ class Ideas extends Component {
   handleIdea(idea, type) {
     console.log("handleIdea");
     console.log(idea);
-    const { dispatch } = this.props;
+    const { dispatch, files  } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
     if (type === 'edit') {
@@ -39,7 +39,7 @@ class Ideas extends Component {
         alert(errorMessage);
         return;
       }
-      dispatch(updateIdea(idea));
+      dispatch(updateIdea(idea , files));
     } else if (type === 'add') {
       if (errorMessage.length > 0) {
         dispatch(handleAddIdeaError(errorMessage));
@@ -179,6 +179,7 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
+    files: state.ideas.files,
   };
 }
 

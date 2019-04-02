@@ -147,20 +147,29 @@ export function handleUpdateIdeaError(message) {
   };
 }
 
-export function updateIdea(idea) {
+export function updateIdea(idea, files) {
   console.log('updateIdea(idea) initial');
   console.log(idea);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
   if (token) {
+    const jsFiles = files.map((file) => ({
+      lastModified: file.lastModified,
+      lastModifiedDate : file.lastModifiedDate,
+      name : file.name,
+      size : file.size,
+      type : file.type,
+    }));
+
+    const newIdea = Object.assign({},idea,{files:jsFiles})
     config = {
       headers: {
         Authorization: `${token}`,
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify(idea),
+      body: JSON.stringify(newIdea),
     };
   } else {
     throw 'No token saved!';

@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
-import Files from 'react-files'
+import Files from 'react-files';
 import CommonButton from '../buttons/CommonButton';
+import { changeFiles } from '../../actions/files';
 
 const modalStyle = {
   overlay: {
@@ -32,6 +33,7 @@ type Props = {
 }
 
 class AddIdeaModal extends Component {
+
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps');
     console.log(nextProps);
@@ -105,8 +107,8 @@ class AddIdeaModal extends Component {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
     const {
- id, tags, stage, mainTag 
-} = this.state;
+      id, tags, stage, mainTag,
+    } = this.state;
     let category = null;
     if (mainTag != -1) {
       category = tags[mainTag];
@@ -191,6 +193,7 @@ class AddIdeaModal extends Component {
     );
   }
 
+/*
 
   onFilesChange = (files) => {
     this.setState({
@@ -199,24 +202,32 @@ class AddIdeaModal extends Component {
       console.log(this.state.files);
     });
   }
+*/
 
+
+  onFilesChange = (files) => {
+    const { dispatch } = this.props;
+    dispatch(changeFiles(files));
+  }
   onFilesError = (error, file) => {
-    console.log('error code ' + error.code + ': ' + error.message);
+    console.log(`error code ${error.code }: ${ error.message}`);
   }
 
   filesRemoveOne = (file) => {
-    this.refs.files.removeFile(file)
+    this.refs.files.removeFile(file);
   }
 
   filesRemoveAll = () => {
-    this.refs.files.removeFiles()
+    this.refs.files.removeFiles();
   }
 
 
-
   render() {
+
+    console.log("AddIdeaModal.render()");
+    console.log(this.props);
     const {
-      isOpen, idea, close, type,
+      isOpen, idea, close, type, files,
     } = this.props;
     console.log('type ===>', type);
     console.log(idea);
@@ -329,6 +340,7 @@ class AddIdeaModal extends Component {
             <div className="form-group">
               <div className="files">
                 <Files
+                  ref="files"
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
@@ -343,32 +355,32 @@ class AddIdeaModal extends Component {
                  Drop files here or click to upload
                 </Files>
 
-        <button onClick={this.filesRemoveAll}>Remove All Files</button>
-        <button onClick={this.filesUpload}>Upload</button>
-        {
-          this.state.files.length > 0
-          ? <div className='files-list'>
-            <ul>{this.state.files.map((file) =>
-              <li className='files-list-item' key={file.id}>
-                <div className='files-list-item-preview'>
-                  {file.preview.type === 'image'
-                  ? <img className='files-list-item-preview-image' src={file.preview.url} />
-                  : <div className='files-list-item-preview-extension'>{file.extension}</div>}
-                </div>
-                <div className='files-list-item-content'>
-                  <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div>
-                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
-                </div>
-                <div
-                  id={file.id}
-                  className='files-list-item-remove'
+                <button onClick={this.filesRemoveAll}>Remove All Files</button>
+                <button onClick={this.filesUpload}>Upload</button>
+                {
+                  files.length > 0
+                    ? <div className="files-list">
+                      <ul>{files.map((file) =>
+                        (<li className="files-list-item" key={file.id}>
+                          <div className="files-list-item-preview">
+                            {file.preview.type === 'image'
+                              ? <img className="files-list-item-preview-image" src={file.preview.url} />
+                              : <div className="files-list-item-preview-extension">{file.extension}</div>}
+                          </div>
+                          <div className="files-list-item-content">
+                            <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
+                            <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
+                          </div>
+                          <div
+                            id={file.id}
+                            className="files-list-item-remove"
                   onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
-                />
-              </li>
-            )}</ul>
-          </div>
-          : null
-        }
+                          />
+                        </li>))}
+                      </ul>
+                    </div>
+                    : null
+                }
 
 
               </div>
@@ -378,7 +390,7 @@ class AddIdeaModal extends Component {
             <div className="button-container">
               <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type, idea == null ? false : idea.anonymousMode)} >
                 {renderButtonTitle()}
-             </button>
+              </button>
             </div>
             {
               (type === 'view') ?
@@ -394,8 +406,10 @@ class AddIdeaModal extends Component {
 }
 
 function mapStateToProps(state) {
+    console.log("AddIdeaModal.mapStateToProps...");
+    console.log(state);
   return {
-
+    files:state.ideas.files,
   };
 }
 
