@@ -52,8 +52,10 @@ public class IdeaRestController {
         GetIdeasDto getIdeasDto =
                 new GetIdeasDto(filter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin,
                                     profitMax, implementationTimeMsMin, implementationTimeMsMax, tags, partialFullSwitch);
-
-        return ideaService.getIdeas(getIdeasDto);
+        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requester = accountService.findByUsername(requestingUser.getUsername());
+        
+        return ideaService.getIdeas(getIdeasDto,requester);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

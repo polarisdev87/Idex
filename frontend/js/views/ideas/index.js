@@ -97,6 +97,12 @@ class Ideas extends Component {
     return errorMessage;
   }
 
+  //TODO: implement vote
+  voteIdeaClickHandler(idea) {
+      alert("voting - to be implemented");
+  }
+
+
   addIdeaButtonClickHandler() {
     this.setState({ isOpen: true });
     this.modalIdea = null;
@@ -142,6 +148,7 @@ class Ideas extends Component {
         <IdeaItem
           key={item.id.toString()}
           idea={item}
+          vote={() => this.voteIdeaClickHandler(item)}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
         />

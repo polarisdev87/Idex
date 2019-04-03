@@ -28,7 +28,9 @@ type Props = {
     mainTag: number,
     comments: [],
     votes: number,
+    userSession: any,
   },
+  vote: () => {},
   edit: () => {},
   view: () => {},
 }
@@ -36,10 +38,10 @@ type Props = {
 class IdeaItem extends Component {
   props: Props;
 
-  handleKeyPress = e => {
+  handleAddCommentKeyPress = e => {
     if (e.key === 'Enter') {
       const { dispatch, idea } = this.props;
-      console.log("IdeaItem.handleKeyPress");
+      console.log("IdeaItem.handleAddCommentKeyPress");
       console.log(idea);
 
       dispatch(addComment({
@@ -59,8 +61,9 @@ class IdeaItem extends Component {
     }
 
 
+
     render() {
-      const { idea, edit, view, anonymousMode } = this.props;
+      const { idea, edit, view, vote,  anonymousMode } = this.props;
       const commentBoxId = `comment-container-${idea.id}`;
       const commentBoxHref = `#comment-container-${idea.id}`;
       console.log('IdeaItem.js');
@@ -91,7 +94,7 @@ class IdeaItem extends Component {
           <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
             <input
               type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
-              onKeyPress={this.handleKeyPress}
+              onKeyPress={this.handleAddCommentKeyPress}
             />
           </div>
         </div>
@@ -127,7 +130,7 @@ class IdeaItem extends Component {
             </div>
             <StageMark className="stage-mark-container" stage={idea.stage} />
             <div className="right-buttons-container">
-              <CircleIconButton type="already_like" />
+              <CircleIconButton type={idea.userSession.liked?"already_like":"like"} onClick={() => vote()} />
               <CircleIconButton type="edit" onClick={() => edit()} />
             </div>
           </div>
@@ -136,7 +139,7 @@ class IdeaItem extends Component {
             <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
               '' :
               idea.comments.length.toString()} Comments
-          </div>
+            </div>
             <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
             <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
             <div className="footer-item bottom-item label-sm-gray">

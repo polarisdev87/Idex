@@ -178,8 +178,8 @@ public class Idea {
         this.tags = tags;
     }
 
-    public IdeaDto toDto() {
-        return new IdeaDto(this);
+    public IdeaDto toDto(Boolean liked) {
+        return new IdeaDto(this,liked);
     }
 
     public void setVotes(Long votes) {

@@ -55,7 +55,7 @@ public class IdeaServiceImpl implements IdeaService {
      * 
      */
     @Override
-    public List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto) {
+    public List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto, Account requester) {
 
         Collection<Idea> ideas;
 
@@ -127,7 +127,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         return ideas
                 .stream()
-                .map(Idea::toDto)
+                .map(idea -> idea.toDto(getVote((Idea) idea,requester)!=null))
                 .collect(Collectors.toList());
     }
 
@@ -178,7 +178,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         return ideas
                 .stream()
-                .map(Idea::toDto)
+                .map(idea -> idea.toDto(null))
                 .collect(Collectors.toList());
     }
 
@@ -202,13 +202,20 @@ public class IdeaServiceImpl implements IdeaService {
     }
 
 
+    
+    
+    private Vote getVote(Idea idea, Account submittedBy) {
+        return voteRepository.findByIdeaAndSubmittedBy(idea, submittedBy);
+    }
+    
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException {
 
         Idea idea = getIdeaFromVoteDto(voteDto);
 
-        Vote existing = voteRepository.findByIdeaAndSubmittedBy(idea, submittedBy);
+        Vote existing = getVote(idea, submittedBy);
 
         if(existing == null) {
             saveNewVote(submittedBy, idea);
@@ -220,7 +227,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         ideaRepository.save(idea);
 
-        return idea.toDto();
+        return idea.toDto(existing!=null);
     }
 
     @Override
@@ -266,7 +273,8 @@ public class IdeaServiceImpl implements IdeaService {
 
         idea.getComments().add(comment);
 
-        return idea.toDto();
+        
+        return idea.toDto(getVote(idea,requester)!=null);
     }
 
 
@@ -356,7 +364,7 @@ public class IdeaServiceImpl implements IdeaService {
         idea.setVotes(0L);
         idea.setComments(new HashSet<>());
 
-        return ideaRepository.save(idea).toDto();
+        return ideaRepository.save(idea).toDto(false);
     }
 
     
@@ -398,6 +406,10 @@ public class IdeaServiceImpl implements IdeaService {
         // Don't let votes change here. That should be done via call to vote endpoint
         updatedIdeaDto.setVotes(existing.getVotes());
         updatedIdeaDto.updateComments(existing);
+        updatedIdeaDto.setUserSession(new UserSessionIdeaDto());
+        updatedIdeaDto.getUserSession().setLiked(getVote(existing,updatedBy)!=null);
+        
+        
         return updatedIdeaDto;
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IdeaService {
 
-    List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto);
+    List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto, Account requester);
     List<IdeaDto> getIdeasSummary(GetIdeasDto getIdeasDto);
     IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy);
     IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException;

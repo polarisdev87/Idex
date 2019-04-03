@@ -39,13 +39,15 @@ public class IdeaDto {
     private Long expectedProfitInCents;
     private Long actualProfitInCents;
     private List<CommentDto> comments;
-    AttachmentDto[] files;
+    List<AttachmentDto> files;
+    UserSessionIdeaDto userSession;
+    
 
     public IdeaDto() {
 
     }
 
-    public IdeaDto(Idea idea) {
+    public IdeaDto(Idea idea, Boolean liked) {
         this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
@@ -64,6 +66,8 @@ public class IdeaDto {
         this.category = idea.getCategory()!=null ? idea.getCategory().getName():null;
         this.votes = idea.getVotes();
         this.comments = getCommentDtos(idea.getComments(), idea);
+        this.userSession = new UserSessionIdeaDto(idea);
+        this.getUserSession().setLiked(liked);
     }
     
     
@@ -278,12 +282,20 @@ public class IdeaDto {
 		this.category = category;
 	}
 
-	public AttachmentDto[] getFiles() {
+	public List<AttachmentDto> getFiles() {
 		return files;
 	}
 
-	public void setFiles(AttachmentDto[] files) {
+	public void setFiles(List<AttachmentDto> files) {
 		this.files = files;
+	}
+
+	public UserSessionIdeaDto getUserSession() {
+		return userSession;
+	}
+
+	public void setUserSession(UserSessionIdeaDto userSession) {
+		this.userSession = userSession;
 	}
 
 	
