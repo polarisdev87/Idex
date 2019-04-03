@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class IdeaRestController {
                                   @RequestParam(value = "implementationTimeMsMin", required = false) Long implementationTimeMsMin,
                                   @RequestParam(value = "implementationTimeMsMax", required = false) Long implementationTimeMsMax,
                                   @RequestParam(value = "tags", required = false) Set<String> tags,
-                                  @RequestParam(value = "partialFullSwitch", required = false) Boolean partialFullSwitch ) {
+                                  @RequestParam(value = "partialFullSwitch", required = false) Boolean partialFullSwitch) {
 
         GetIdeasDto getIdeasDto =
                 new GetIdeasDto(filter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin,
@@ -63,6 +64,34 @@ public class IdeaRestController {
 
         return ideaService.upsert(ideaDto, requester);
     }
+    
+    
+    @RequestMapping(value = "/attach", method = RequestMethod.POST)
+    public UploadFileResponseDto uploadFile(
+    			@RequestParam(value = "ideaId", required = true) String filter,
+    			@RequestParam(value = "key", required = true) String key,
+    			@RequestParam("file") MultipartFile file) {
+    	System.out.println(file);
+    	
+    	/*
+        String fileName = fileStorageService.storeFile(file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+		*/ 
+    	
+        String fileDownloadUri = "";
+		return new UploadFileResponseDto(file.getName(), fileDownloadUri ,
+                file.getContentType(), file.getSize());
+    }
+
+    
+    
+    
+    
+    
 
     @RequestMapping(value = "/vote", method = RequestMethod.POST)
     public IdeaDto vote(@RequestBody VoteDto voteDto) throws IdeaNotFoundException {

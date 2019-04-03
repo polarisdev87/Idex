@@ -162,7 +162,7 @@ class AddIdeaModal extends Component {
     onRemoveFunction(key);
     if (key <= currentMainTag) {
       currentMainTag--;
-      if (currentMainTag == -1 && classThis.state.tags.length > 1) {
+      if (currentMainTag === -1 && classThis.state.tags.length > 1) {
         currentMainTag = 0;
       }
       classThis.setState({ mainTag: currentMainTag });
@@ -193,22 +193,15 @@ class AddIdeaModal extends Component {
     );
   }
 
-/*
 
   onFilesChange = (files) => {
-    this.setState({
-      files,
-    }, () => {
-      console.log(this.state.files);
-    });
+    console.log("onFilesChange");
+    console.log(this.props);
+    console.log(files);
+    const { dispatch,idea } = this.props;
+    dispatch(changeFiles(dispatch, idea.id, this.props.files, files));
   }
-*/
 
-
-  onFilesChange = (files) => {
-    const { dispatch } = this.props;
-    dispatch(changeFiles(files));
-  }
   onFilesError = (error, file) => {
     console.log(`error code ${error.code }: ${ error.message}`);
   }
@@ -345,7 +338,7 @@ class AddIdeaModal extends Component {
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
                   style={{ height: '100px' }}
-                  accepts={['image/png', '.pdf', 'audio/*']}
+                  accepts={['image/png', '.pdf', 'audio/*','.txt']}
                   multiple
                   maxFiles={3}
                   maxFileSize={10000000}
@@ -355,8 +348,6 @@ class AddIdeaModal extends Component {
                  Drop files here or click to upload
                 </Files>
 
-                <button onClick={this.filesRemoveAll}>Remove All Files</button>
-                <button onClick={this.filesUpload}>Upload</button>
                 {
                   files.length > 0
                     ? <div className="files-list">

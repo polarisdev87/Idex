@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @JsonIgnoreProperties(value = { "anonymousMode" })
 public class IdeaDto {
 
@@ -38,6 +39,7 @@ public class IdeaDto {
     private Long expectedProfitInCents;
     private Long actualProfitInCents;
     private List<CommentDto> comments;
+    AttachmentDto[] files;
 
     public IdeaDto() {
 
@@ -276,6 +278,15 @@ public class IdeaDto {
 		this.category = category;
 	}
 
+	public AttachmentDto[] getFiles() {
+		return files;
+	}
+
+	public void setFiles(AttachmentDto[] files) {
+		this.files = files;
+	}
+
+	
     
     
 }

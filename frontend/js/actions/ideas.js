@@ -195,6 +195,7 @@ export function updateIdea(idea, files) {
 }
 
 
+
 export const DELETE_IDEAS_REQUEST = 'DELETE_IDEAS_REQUEST';
 export const DELETE_IDEAS_SUCCESS = 'DELETE_IDEAS_SUCCESS';
 export const DELETE_IDEAS_FAILURE = 'DELETE_IDEAS_FAILURE';
