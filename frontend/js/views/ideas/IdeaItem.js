@@ -8,6 +8,7 @@ import StageMark from '../../components/StageMark';
 import Comment from './Comment';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment, toggleAnonymous } from '../../actions/comments';
+import { toggleVote } from '../../actions/ideas';
 
 
 type Props = {
@@ -60,10 +61,15 @@ class IdeaItem extends Component {
       dispatch(toggleAnonymous(idea.id));
     }
 
+    handleToggleVote = e => {
+        console.log("handleToggleVote");
+      const { dispatch,idea } = this.props;
+      dispatch(toggleVote(idea.id));
+    }
 
 
     render() {
-      const { idea, edit, view, vote,  anonymousMode } = this.props;
+      const { idea, edit, view, vote, liked, votes } = this.props;
       const commentBoxId = `comment-container-${idea.id}`;
       const commentBoxHref = `#comment-container-${idea.id}`;
       console.log('IdeaItem.js');
@@ -130,12 +136,12 @@ class IdeaItem extends Component {
             </div>
             <StageMark className="stage-mark-container" stage={idea.stage} />
             <div className="right-buttons-container">
-              <CircleIconButton type={idea.userSession.liked?"already_like":"like"} onClick={() => vote()} />
+              <CircleIconButton type={liked?"already_like":"like"} onClick={(e) => this.handleToggleVote(e)} />
               <CircleIconButton type="edit" onClick={() => edit()} />
             </div>
           </div>
           <div className="footer-container">
-            <div className="footer-item label-sm-gray">{idea.votes.toString()} Votes</div>
+            <div className="footer-item label-sm-gray">{votes.toString()} Votes</div>
             <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
               '' :
               idea.comments.length.toString()} Comments
@@ -164,7 +170,7 @@ class IdeaItem extends Component {
 function mapStateToProps(state) {
   return {
     commentsErrorMessage: state.ideas.commentsErrorMessage,
-    anonymousMode: state.ideas.anonymousMode,
+    
   };
 }
 

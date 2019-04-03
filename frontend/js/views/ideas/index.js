@@ -134,20 +134,22 @@ class Ideas extends Component {
     console.log('this.modalIdea ===>', this.modalIdea);
     const {
       ideas: {
-        ideasArr,
         ideasErrorMessage, 
         isFetchingIdeas, 
         commentsErrorMessage, 
         isFetchingComments, 
         partialFullSwitch,
-        } 
+      },
+      ideasArr,   
     } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
         <IdeaItem
-          key={item.id.toString()}
+          key={item.id}
           idea={item}
+          liked={item.userSession.liked}
+          votes = {item.votes}
           vote={() => this.voteIdeaClickHandler(item)}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
@@ -187,6 +189,7 @@ function mapStateToProps(state) {
   return {
     ideas: state.ideas,
     files: state.ideas.files,
+    ideasArr: state.ideas.ideasArr,
   };
 }
 

@@ -185,6 +185,7 @@ export function updateIdea(idea, files) {
           dispatch(updateIdeaError(`Failed to update idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
         }
+        // TODO: Take anonymousMode from userSession property
         dispatch(updateIdeaSuccess(body, idea.anonymousMode));
         return true;
       }).catch(err => {
@@ -335,6 +336,75 @@ export const TOGGLE_FILTER_FULL_PARTIAL = 'TOGGLE_FILTER_FULL_PARTIAL';
 export function toggleFilterFullPartial() {
   return {
     type: TOGGLE_FILTER_FULL_PARTIAL,
+  };
+}
+
+
+
+export const TOGGLE_VOTE = 'TOGGLE_VOTE';
+
+
+export function toggleVote(ideaId) {
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  let config = {};
+
+  if (token) {
+    config = {
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ideaId}),
+    };
+  } else {
+    throw 'No token saved!';
+  }
+
+  return dispatch => {
+    dispatch(toggleVoteRequest());
+    return fetch(`${API_BASE_URI}/ideas/vote`, config)
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
+        if (!response.ok) {
+          dispatch(toggleVoteError(`Failed to toggle vote. ${body.error}`));
+          return Promise.reject('Failed to toggle vote');
+        }
+        dispatch(toggleVoteSuccess(body));
+        return true;
+      }).catch(err => {
+        dispatch(toggleVoteError(`Failed to toggle vote. ${err}`));
+        console.log('Error: ', err);
+      });
+  };
+}
+
+
+
+export const TOGGLE_VOTE_REQUEST = 'TOGGLE_VOTE_REQUEST';
+export const TOGGLE_VOTE_SUCCESS = 'TOGGLE_VOTE_SUCCESS';
+export const TOGGLE_VOTE_FAILURE = 'TOGGLE_VOTE_FAILURE';
+
+function toggleVoteRequest() {
+  return {
+    type: TOGGLE_VOTE_REQUEST,
+  };
+}
+
+function toggleVoteError(message) {
+  return {
+    type: TOGGLE_VOTE_FAILURE,
+    message,
+  };
+}
+
+function toggleVoteSuccess(idea) {
+  const newIdea = Object.assign({}, idea, { anonymousMode:false });
+  console.log(newIdea);
+
+  return {
+    type: TOGGLE_VOTE_SUCCESS,
+    idea: newIdea,
   };
 }
 

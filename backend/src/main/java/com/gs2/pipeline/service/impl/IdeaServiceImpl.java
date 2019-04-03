@@ -226,8 +226,9 @@ public class IdeaServiceImpl implements IdeaService {
         }
 
         ideaRepository.save(idea);
+        boolean VotedAfterChange = existing == null;
 
-        return idea.toDto(existing!=null);
+        return idea.toDto(VotedAfterChange);
     }
 
     @Override
