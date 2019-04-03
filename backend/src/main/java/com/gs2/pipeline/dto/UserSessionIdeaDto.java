@@ -7,6 +7,7 @@ import com.gs2.pipeline.domain.Idea;
 public class UserSessionIdeaDto {
 	Boolean liked;
 	Boolean anonymousComment;
+	Boolean editable;
     List<AttachmentDto> filesToAdd;
     List<AttachmentDto> filesToRemove;
 	
@@ -51,6 +52,16 @@ public class UserSessionIdeaDto {
 	public void setFilesToRemove(List<AttachmentDto> filesToRemove) {
 		this.filesToRemove = filesToRemove;
 	}
+
+	public Boolean getEditable() {
+		return editable;
+	}
+
+	public void setEditable(Boolean editable) {
+		this.editable = editable;
+	}
+	
+	
 
 	
 	

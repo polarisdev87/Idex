@@ -86,9 +86,11 @@ class Ideas extends Component {
       errorMessage += 'ActualProfitInCents must be required.\n';
     }
 
+    /*
     if (idea.tags.length === 0) {
       errorMessage += 'Tags must be required.\n';
     }
+    */
 
     if (errorMessage.endsWith('\n')) {
       errorMessage = errorMessage.substr(0, errorMessage.length - 1);
@@ -96,12 +98,6 @@ class Ideas extends Component {
 
     return errorMessage;
   }
-
-  //TODO: implement vote
-  voteIdeaClickHandler(idea) {
-      alert("voting - to be implemented");
-  }
-
 
   addIdeaButtonClickHandler() {
     this.setState({ isOpen: true });
@@ -150,7 +146,7 @@ class Ideas extends Component {
           idea={item}
           liked={item.userSession.liked}
           votes = {item.votes}
-          vote={() => this.voteIdeaClickHandler(item)}
+          editable = {item.userSession.editable}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
         />

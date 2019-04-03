@@ -69,7 +69,7 @@ class IdeaItem extends Component {
 
 
     render() {
-      const { idea, edit, view, vote, liked, votes } = this.props;
+      const { idea, edit, view, vote, liked, votes, editable } = this.props;
       const commentBoxId = `comment-container-${idea.id}`;
       const commentBoxHref = `#comment-container-${idea.id}`;
       console.log('IdeaItem.js');
@@ -137,7 +137,7 @@ class IdeaItem extends Component {
             <StageMark className="stage-mark-container" stage={idea.stage} />
             <div className="right-buttons-container">
               <CircleIconButton type={liked?"already_like":"like"} onClick={(e) => this.handleToggleVote(e)} />
-              <CircleIconButton type="edit" onClick={() => edit()} />
+              {editable && <CircleIconButton type="edit" onClick={() => edit()} />} 
             </div>
           </div>
           <div className="footer-container">

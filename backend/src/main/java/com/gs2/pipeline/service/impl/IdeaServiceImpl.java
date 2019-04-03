@@ -125,10 +125,13 @@ public class IdeaServiceImpl implements IdeaService {
             }
         }
 
-        return ideas
-                .stream()
-                .map(idea -> idea.toDto(getVote((Idea) idea,requester)!=null))
-                .collect(Collectors.toList());
+        return ideas.stream().map(
+        		idea -> 
+        		idea.toDto(
+        				getVote((Idea) idea,requester )!=null,
+        				requester))
+        .collect(Collectors.toList());
+
     }
 
     /**
@@ -178,7 +181,7 @@ public class IdeaServiceImpl implements IdeaService {
 
         return ideas
                 .stream()
-                .map(idea -> idea.toDto(null))
+                .map(idea -> idea.toDto(null,null))
                 .collect(Collectors.toList());
     }
 
@@ -228,7 +231,7 @@ public class IdeaServiceImpl implements IdeaService {
         ideaRepository.save(idea);
         boolean VotedAfterChange = existing == null;
 
-        return idea.toDto(VotedAfterChange);
+        return idea.toDto(VotedAfterChange, submittedBy);
     }
 
     @Override
@@ -275,7 +278,7 @@ public class IdeaServiceImpl implements IdeaService {
         idea.getComments().add(comment);
 
         
-        return idea.toDto(getVote(idea,requester)!=null);
+        return idea.toDto(getVote(idea,requester)!=null,requester);
     }
 
 
@@ -365,7 +368,7 @@ public class IdeaServiceImpl implements IdeaService {
         idea.setVotes(0L);
         idea.setComments(new HashSet<>());
 
-        return ideaRepository.save(idea).toDto(false);
+        return ideaRepository.save(idea).toDto(false,insertedBy);
     }
 
     
@@ -409,8 +412,7 @@ public class IdeaServiceImpl implements IdeaService {
         updatedIdeaDto.updateComments(existing);
         updatedIdeaDto.setUserSession(new UserSessionIdeaDto());
         updatedIdeaDto.getUserSession().setLiked(getVote(existing,updatedBy)!=null);
-        
-        
+        updatedIdeaDto.getUserSession().setEditable(existing.isEditable(updatedBy));
         return updatedIdeaDto;
     }
 

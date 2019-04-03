@@ -178,8 +178,8 @@ public class Idea {
         this.tags = tags;
     }
 
-    public IdeaDto toDto(Boolean liked) {
-        return new IdeaDto(this,liked);
+    public IdeaDto toDto(Boolean liked, Account requester) {
+        return new IdeaDto(this,liked,this.isEditable(requester));
     }
 
     public void setVotes(Long votes) {
@@ -220,6 +220,23 @@ public class Idea {
 
 	public void setCategory(Tag category) {
 		this.category = category;
+	}
+	
+	/**
+	 * requester is allowed to edit Idea
+	 * 
+	 * @param requester
+	 * @return
+	 */
+	public Boolean isEditable(Account requester) {
+		Boolean returnValue = false;
+		if (requester!=null) {
+			returnValue = requester.equals(this.getSubmittedBy());
+			if (!returnValue) {
+				returnValue=requester.hasAuthority(AuthorityName.ROLE_ADMIN);
+			}
+		}
+		return returnValue;
 	}
     
     

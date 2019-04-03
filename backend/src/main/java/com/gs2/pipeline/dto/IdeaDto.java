@@ -47,7 +47,14 @@ public class IdeaDto {
 
     }
 
-    public IdeaDto(Idea idea, Boolean liked) {
+    /**
+     * 
+     * @param idea
+     * @param liked
+     * @param editable
+     * 		idea can be edited
+     */
+    public IdeaDto(Idea idea, Boolean liked, Boolean editable) {
         this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
@@ -68,6 +75,7 @@ public class IdeaDto {
         this.comments = getCommentDtos(idea.getComments(), idea);
         this.userSession = new UserSessionIdeaDto(idea);
         this.getUserSession().setLiked(liked);
+        this.getUserSession().setEditable(editable);
     }
     
     
