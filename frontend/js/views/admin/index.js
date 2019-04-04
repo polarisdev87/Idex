@@ -52,7 +52,6 @@ class Admin extends Component {
 
   handleIdea(idea) {
     const { dispatch } = this.props;
-    console.log('error message ===> ', errorMessage);
     this.modalIdea = null;
     this.setState({ isOpen: false });
   }
