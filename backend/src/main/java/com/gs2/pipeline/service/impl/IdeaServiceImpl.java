@@ -385,7 +385,12 @@ public class IdeaServiceImpl implements IdeaService {
     
     private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags) {
 
-        updateTags(existing.getTags(), tags);
+        TagsToUpdate tagTasks = updateTags(existing.getTags(), tags);
+        tagRepository.save(tagTasks.getTagsToSave());
+
+        
+        
+        
         
         Tag category = null;
         if (updatedIdeaDto.getCategory()!=null) {
@@ -417,7 +422,8 @@ public class IdeaServiceImpl implements IdeaService {
         existing.setUpdatedAt(new Date());
 
         ideaRepository.save(existing);
-
+        tagRepository.delete(tagTasks.getTagsToDelete());
+        
         // Don't let votes change here. That should be done via call to vote endpoint
         updatedIdeaDto.setVotes(existing.getVotes());
         updatedIdeaDto.updateComments(existing);
@@ -433,7 +439,7 @@ public class IdeaServiceImpl implements IdeaService {
      * not when inserting a new one.
      *
      */
-    private void updateTags(Set<Tag> existingTags, Set<Tag> updatedTags) {
+    private TagsToUpdate updateTags(Set<Tag> existingTags, Set<Tag> updatedTags) {
 
         // Add any new tag uses
         Set<Tag> tagsToSave = new HashSet<>();
@@ -459,7 +465,39 @@ public class IdeaServiceImpl implements IdeaService {
             }
         }
 
-        tagRepository.delete(tagsToDelete);
-        tagRepository.save(tagsToSave);
+        return new TagsToUpdate(tagsToSave,tagsToDelete);
     }
+    
+    
+    private class TagsToUpdate {
+    	Set<Tag> tagsToSave;
+    	Set<Tag> tagsToDelete;
+		
+    	public TagsToUpdate(Set<Tag> tagsToSave, Set<Tag> tagsToDelete) {
+			super();
+			this.tagsToSave = tagsToSave;
+			this.tagsToDelete = tagsToDelete;
+		}
+
+		public Set<Tag> getTagsToSave() {
+			return tagsToSave;
+		}
+
+		public void setTagsToSave(Set<Tag> tagsToSave) {
+			this.tagsToSave = tagsToSave;
+		}
+
+		public Set<Tag> getTagsToDelete() {
+			return tagsToDelete;
+		}
+
+		public void setTagsToDelete(Set<Tag> tagsToDelete) {
+			this.tagsToDelete = tagsToDelete;
+		}
+    	
+    	
+    	
+    	
+    }
+    
 }
