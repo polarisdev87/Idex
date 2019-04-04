@@ -187,8 +187,10 @@ public class IdeaServiceImpl implements IdeaService {
 
 
 
-    
-    
+    /**
+     * Insert or updates an idea
+     * To update the idea the user should be authorized
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) {
@@ -200,8 +202,17 @@ public class IdeaServiceImpl implements IdeaService {
         if(ideaDto.getId() != null) {
             existing = ideaRepository.findOne(ideaDto.getId());
         }
-
-        return existing != null ? update(existing, ideaDto, upsertedBy, tags) : insert(ideaDto, upsertedBy, tags);
+        
+        if (existing != null) {
+        	if (existing.isEditable(upsertedBy)) {
+            	return update(existing, ideaDto, upsertedBy, tags);
+        	} else {
+        		// Not authorized user
+        		return null;
+        	}
+        } else {
+        	return insert(ideaDto, upsertedBy, tags);
+        }
     }
 
 

@@ -21,9 +21,7 @@ type Props = {
     submittedAt: Date,
     updatedAt: Date,
     expectedCostInCents: number,
-    actualCostInCents: number,
     expectedTtm: number,
-    actualTtm: number,
     tags: [],
     category: string,
     mainTag: number,
@@ -146,8 +144,8 @@ class IdeaItem extends Component {
               '' :
               idea.comments.length.toString()} Comments
             </div>
-            <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}~{idea.actualCostInCents}</div>
-            <div className="footer-item label-sm-gray">Time: {idea.expectedTtm}~{idea.actualTtm} Months</div>
+            <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}</div>
+            <div className="footer-item label-sm-gray">Time: {idea.expectedTtm} Months</div>
             <div className="footer-item bottom-item label-sm-gray">
               <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>Add Comment</button>
             </div>

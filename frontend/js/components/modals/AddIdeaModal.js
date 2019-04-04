@@ -58,11 +58,8 @@ class AddIdeaModal extends Component {
             this.title.value = idea.title;
             this.description.value = idea.description;
             this.expectedCostInCents.value = idea.expectedCostInCents;
-            this.actualCostInCents.value = idea.actualCostInCents;
             this.expectedTtm.value = idea.expectedTtm;
-            this.actualTtm.value = idea.actualTtm;
             this.expectedProfitInCents.value = idea.expectedProfitInCents;
-            this.actualProfitInCents.value = idea.actualProfitInCents;
           }
         }, 500);
       } else {
@@ -120,13 +117,10 @@ class AddIdeaModal extends Component {
       description: this.description.value.trim(),
       stage,
       expectedCostInCents: this.expectedCostInCents.value.trim(),
-      actualCostInCents: this.actualCostInCents.value.trim(),
       expectedTtm: this.expectedTtm.value.trim(),
       expectedProfitInCents: this.expectedProfitInCents.value.trim(),
       tags,
       category,
-      actualTtm: this.actualTtm.value.trim(),
-      actualProfitInCents: this.actualProfitInCents.value.trim(),
       anonymousMode,
     };
     this.props.handleIdea(idea, type);
@@ -279,12 +273,6 @@ class AddIdeaModal extends Component {
                     <input ref={el => { this.expectedTtm = el; }} className="form-control" type="text" />
                   </div>
                 </div>
-                <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Actual Time to Market (Optional):</label>
-                  <div className="input-container">
-                    <input ref={el => { this.actualTtm = el; }} className="form-control" type="text" />
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -296,12 +284,6 @@ class AddIdeaModal extends Component {
                     <input ref={el => { this.expectedCostInCents = el; }} className="form-control" type="text" />
                   </div>
                 </div>
-                <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Actual Cost to Implement (Optional):</label>
-                  <div className="input-container">
-                    <input ref={el => { this.actualCostInCents = el; }} className="form-control" type="text" />
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -311,12 +293,6 @@ class AddIdeaModal extends Component {
                   <label className="label">Expected Profit:</label>
                   <div className="input-container">
                     <input ref={el => { this.expectedProfitInCents = el; }} className="form-control" type="text" />
-                  </div>
-                </div>
-                <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Actual Profit (Optional):</label>
-                  <div className="input-container">
-                    <input ref={el => { this.actualProfitInCents = el; }} className="form-control" type="text" />
                   </div>
                 </div>
               </div>

@@ -82,16 +82,6 @@ class Ideas extends Component {
       errorMessage += 'ExpectedProfitInCents must be required.\n';
     }
 
-    if (idea.actualProfitInCents.length === 0) {
-      errorMessage += 'ActualProfitInCents must be required.\n';
-    }
-
-    /*
-    if (idea.tags.length === 0) {
-      errorMessage += 'Tags must be required.\n';
-    }
-    */
-
     if (errorMessage.endsWith('\n')) {
       errorMessage = errorMessage.substr(0, errorMessage.length - 1);
     }
