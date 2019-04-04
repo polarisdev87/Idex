@@ -130,7 +130,6 @@ public class IdeaDto {
     private List<CommentDto> getCommentDtos(Set<Comment> comments, Idea idea) {
 
         List<CommentDto> commentDtos = new ArrayList<>(comments.size());
-
         for(Comment comment: comments) {
         	Account authorComment=comment.getSubmittedBy();
             commentDtos.add(
@@ -139,7 +138,8 @@ public class IdeaDto {
             				idea.getId(), 
             				getSubmittedBy(authorComment), 
             				new AccountDto(authorComment,true,comment.getAnonymous()), 
-            				comment.getSubmittedAt().getTime()));
+            				comment.getSubmittedAt().getTime(),
+            				!comment.getAnonymous() && idea.getSubmittedBy().equals(authorComment)));
         }
         
         Collections.sort(commentDtos);

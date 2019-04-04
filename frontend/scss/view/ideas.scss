@@ -302,6 +302,15 @@
           }
         }
       }
+      .author .avatar-container {
+        background-color: $color-blue-white;
+      }
+      .author .label-base-base {
+        background-color: $color-blue-white;
+      }
+      .author .date {
+        background-color: $color-blue-white;
+      }
       .avatar-container {
         min-width: 8rem;
         min-height: 4rem;

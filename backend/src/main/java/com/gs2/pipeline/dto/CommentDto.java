@@ -1,8 +1,6 @@
 package com.gs2.pipeline.dto;
 
-import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
-import com.gs2.pipeline.domain.Idea;
 
 public class CommentDto implements Comparable<CommentDto>  {
 
@@ -11,6 +9,8 @@ public class CommentDto implements Comparable<CommentDto>  {
     private String submittedBy;
     private Long submittedAt;
     private Boolean anonymous;
+    private Boolean authorComment;
+    
     /**
      * submittedBy could be deduced from account
      */
@@ -19,7 +19,7 @@ public class CommentDto implements Comparable<CommentDto>  {
     public CommentDto() {
     }
 
-    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt) {
+    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt, Boolean authorComment) {
 
         this.ideaId = ideaId;
         this.text = comment.getText();
@@ -27,6 +27,7 @@ public class CommentDto implements Comparable<CommentDto>  {
         this.submittedAt = submittedAt;
         this.account = account;
         this.anonymous = comment.getAnonymous();
+        this.authorComment = authorComment;
         
     }
 
@@ -61,9 +62,6 @@ public class CommentDto implements Comparable<CommentDto>  {
     public void setSubmittedAt(Long submittedAt) {
         this.submittedAt = submittedAt;
     }
-
-    
-    
     
 	public AccountDto getAccount() {
 		return account;
@@ -72,8 +70,6 @@ public class CommentDto implements Comparable<CommentDto>  {
 	public void setAccount(AccountDto account) {
 		this.account = account;
 	}
-	
-	
 
 	public Boolean getAnonymous() {
 		return anonymous;
@@ -83,11 +79,17 @@ public class CommentDto implements Comparable<CommentDto>  {
 		this.anonymous = anonymous;
 	}
 
+	public Boolean getAuthorComment() {
+		return authorComment;
+	}
+
+	public void setAuthorComment(Boolean authorComment) {
+		this.authorComment = authorComment;
+	}
+	
 	@Override
 	public int compareTo(CommentDto comment) {
 		return this.getSubmittedAt().compareTo(comment.getSubmittedAt());
 	}
-	
-	
-    
+
 }

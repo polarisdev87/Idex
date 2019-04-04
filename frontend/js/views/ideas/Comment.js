@@ -1,19 +1,23 @@
 import React, { Component } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import cx from 'classnames';
+
 
 type Props = {
   comment: any,
   index: any,
 }
 
-
 class Comment extends Component {
     props: Props;
 
     render() {
       const { index, comment, fullDateTime, shortDateTime } = this.props;
+
+
+
       return (
-        <div key={index.toString()} className="row">
+        <div key={index.toString()} className={cx("row", {"author":comment.authorComment})}>
           <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2">
             <div className="avatar-container">
               <span> {comment.account.displayName}</span></div>
