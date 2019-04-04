@@ -91,14 +91,14 @@ public class IdeaDto {
         idea.setSubmittedBy(submittedBy);
         idea.setUpdatedAt(updatedAt);
         idea.setExpectedCostInCents(expectedCostInCents);
-        idea.setActualCostInCents(actualCostInCents);
+//        idea.setActualCostInCents(actualCostInCents);
         idea.setExpectedTtm(expectedTtm);
-        idea.setActualTtm(actualTtm);
+//        idea.setActualTtm(actualTtm);
         idea.setTags(tags);
         idea.setCategory(category);
         idea.setVotes(votes);
         idea.setExpectedProfitInCents(expectedProfitInCents);
-        idea.setActualProfitInCents(actualProfitInCents);
+//        idea.setActualProfitInCents(actualProfitInCents);
 
         return idea;
     }

@@ -406,13 +406,13 @@ public class IdeaServiceImpl implements IdeaService {
         existing.setTags(tags);
 
         existing.setExpectedCostInCents(updatedIdeaDto.getExpectedCostInCents());
-        existing.setActualCostInCents(updatedIdeaDto.getActualCostInCents());
+//         existing.setActualCostInCents(updatedIdeaDto.getActualCostInCents());
 
         existing.setExpectedProfitInCents(updatedIdeaDto.getExpectedProfitInCents());
-        existing.setActualProfitInCents(updatedIdeaDto.getActualProfitInCents());
+//        existing.setActualProfitInCents(updatedIdeaDto.getActualProfitInCents());
 
         existing.setExpectedTtm(updatedIdeaDto.getExpectedTtm());
-        existing.setActualTtm(updatedIdeaDto.getActualTtm());
+//         existing.setActualTtm(updatedIdeaDto.getActualTtm());
 
         existing.setUpdatedAt(new Date());
 
