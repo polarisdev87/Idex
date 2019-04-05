@@ -163,6 +163,8 @@ export function updateIdea(idea, files) {
     }));
 
     const newIdea = Object.assign({},idea,{files:jsFiles})
+    console.log("idea to post");
+    console.log(newIdea);
     config = {
       headers: {
         Authorization: `${token}`,

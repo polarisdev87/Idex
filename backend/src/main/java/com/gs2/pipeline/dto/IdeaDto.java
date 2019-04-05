@@ -39,6 +39,9 @@ public class IdeaDto {
     private Long expectedProfitInCents;
     private Long actualProfitInCents;
     private List<CommentDto> comments;
+    /**
+     * Information about the files has been uploaded during the session and those associated to the idea
+     */
     List<AttachmentDto> files;
     UserSessionIdeaDto userSession;
     

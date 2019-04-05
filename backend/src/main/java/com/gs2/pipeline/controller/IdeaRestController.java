@@ -56,7 +56,7 @@ public class IdeaRestController {
         
         return ideaService.getIdeas(getIdeasDto,requester);
     }
-
+    
     @RequestMapping(value = "", method = RequestMethod.POST)
     public IdeaDto upsert(@RequestBody IdeaDto ideaDto) {
 

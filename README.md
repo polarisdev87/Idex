@@ -15,3 +15,12 @@
 2. `npm install`  (node version => 7.8.0 )
 3. `npm start`
 4. In your browser got to `localhost:4000`
+
+## test users
+The users and passwords are initially
+
+admin: admin
+manager: admin
+user: password
+
+

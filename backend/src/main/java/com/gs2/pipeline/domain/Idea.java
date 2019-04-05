@@ -4,7 +4,6 @@ import com.gs2.pipeline.dto.IdeaDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Set;
@@ -70,6 +69,14 @@ public class Idea {
             joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private Set<Tag> tags;
+    
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "file_relation",
+            joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "file_id", referencedColumnName = "id")})
+    private Set<File> files;
     
     
     @ManyToOne
@@ -222,6 +229,16 @@ public class Idea {
 		this.category = category;
 	}
 	
+	
+	
+	public Set<File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<File> files) {
+		this.files = files;
+	}
+
 	/**
 	 * requester is allowed to edit Idea
 	 * 

@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class AttachmentDto {
 	
-	
+	Long id;
     Date lastModified;
     Date lastModifiedDate;
     String name;
@@ -15,6 +15,7 @@ public class AttachmentDto {
     public AttachmentDto() {
 
     }
+    
     
     
 	public Date getLastModified() {
@@ -46,6 +47,18 @@ public class AttachmentDto {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public void setId(Long id) {
+		this.id = id;
 	}
     
     
