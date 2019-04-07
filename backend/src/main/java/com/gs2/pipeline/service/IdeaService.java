@@ -1,6 +1,7 @@
 package com.gs2.pipeline.service;
 
 import com.gs2.pipeline.domain.Account;
+import com.gs2.pipeline.domain.helper.FileCache;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 
@@ -16,6 +17,7 @@ public interface IdeaService {
     List<TagDto> getPopularTags();
     IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;
     Long upload(AttachmentDto fileDto, Account uploadedBy);
-	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, Long> mapFilesId);
+	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, FileCache> mapFilesId);
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
+	FileDto upload(Long fileId,byte[] bytes);
 }

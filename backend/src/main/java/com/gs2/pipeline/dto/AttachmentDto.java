@@ -7,11 +7,18 @@ public class AttachmentDto {
 	Long id;
     Date lastModified;
     Date lastModifiedDate;
-    String name;
     String originalFileName;
     Long size;
     String type;
     Long ideaId;
+    /**
+     * initial uploading time
+     */
+    Date start;
+    /**
+     * Final uploading time
+     */
+    Date end;
     /**
      * client temporal file id
      */
@@ -21,10 +28,9 @@ public class AttachmentDto {
 
     }
     
-    public AttachmentDto(Long ideaId, String fileId,String name, String originalFileName, Long size) {
+    public AttachmentDto(Long ideaId, String fileId, String originalFileName, Long size) {
     	this.ideaId = ideaId;
     	this.fileId = fileId;
-    	this.name=name;
     	this.originalFileName = originalFileName;
     	this.size=size;
     }
@@ -40,12 +46,6 @@ public class AttachmentDto {
 	}
 	public void setLastModifiedDate(Date lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public Long getSize() {
 		return size;
@@ -101,6 +101,23 @@ public class AttachmentDto {
 	public String getIdeaFileId() {
     	return Long.toString(this.getIdeaId())+":"+this.getFileId();
 	}
+
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
+	}
     
+	
 
 }

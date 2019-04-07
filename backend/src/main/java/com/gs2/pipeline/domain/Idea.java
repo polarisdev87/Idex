@@ -73,7 +73,7 @@ public class Idea {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "file_relation",
+            name = "idea_file",
             joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "file_id", referencedColumnName = "id")})
     private Set<File> files;

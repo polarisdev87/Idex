@@ -7,11 +7,13 @@ import com.gs2.pipeline.exception.IdeaNotFoundException;
 import com.gs2.pipeline.service.AccountService;
 import com.gs2.pipeline.service.IdeaDistributionTtmProfitVoteService;
 import com.gs2.pipeline.service.IdeaService;
+import com.gs2.pipeline.domain.helper.FileCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class IdeaRestController {
      * time in seconds to wait for uploading files after finish editing
      */
     private static final int UPLOAD_SESSION_TIMEOUT = 600;
+    private static final int UPLOAD_RETRY_INTERVAL_IN_MS = 500;
 
     private static final String MAP_FILES_UPLOAD_NAME = "filesMap";
     
@@ -78,7 +81,7 @@ public class IdeaRestController {
         // set attachment ids
         List<AttachmentDto> files = ideaDto.getFiles();
         
-        Map<String,Long> mapFilesId = (Map<String,Long>) session.getAttribute(MAP_FILES_UPLOAD_NAME);
+        Map<String,FileCache> mapFilesId = (Map<String,FileCache>) session.getAttribute(MAP_FILES_UPLOAD_NAME);
         long startTime = System.nanoTime();
         boolean uploadedFilesReady = false;
         boolean uploadedFilesCancelled = false;
@@ -91,7 +94,7 @@ public class IdeaRestController {
             		uploadedFilesCancelled=true;
             	} else {
 					try {
-							Thread.sleep(1000);
+							Thread.sleep(UPLOAD_RETRY_INTERVAL_IN_MS);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -107,6 +110,19 @@ public class IdeaRestController {
     }
     
     
+    /**
+     * Upload individual file
+     * 
+     * Uploads the file in filesystem (S3)
+     * Updates session map 
+     * Add entry to File table
+     * 
+     * @param session
+     * @param ideaId
+     * @param fileId
+     * @param file
+     * @return
+     */
     @RequestMapping(value = "/attach", method = RequestMethod.POST)
     public UploadFileResponseDto uploadFile(HttpSession session,
     			@RequestParam(value = "ideaId", required = true) Long ideaId,
@@ -114,19 +130,18 @@ public class IdeaRestController {
     			@RequestParam("file") MultipartFile file) {
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
-    	System.out.println(requester);
-    	Map<String,Long> fileIdMaps;
+    	Map<String,FileCache> fileIdMaps;
     	String ideaFileIdKey = Long.toString(ideaId)+":"+fileId;
     	if (session.getAttribute(MAP_FILES_UPLOAD_NAME)==null) {
-    		fileIdMaps=new HashMap<String,Long>();
+    		fileIdMaps=new HashMap<String,FileCache>();
     		session.setAttribute(MAP_FILES_UPLOAD_NAME, fileIdMaps);
     	} else {
-    		fileIdMaps=(Map<String, Long>) session.getAttribute(ideaFileIdKey);
+    		fileIdMaps=(Map<String, FileCache>) session.getAttribute(ideaFileIdKey);
     	}
     	
     	Long filePersistentId = 
-    			ideaService.upload(new AttachmentDto(ideaId, fileId,file.getName(),file.getOriginalFilename(),file.getSize()), requester);
-    	fileIdMaps.put(ideaFileIdKey,filePersistentId);
+    			ideaService.upload(new AttachmentDto(ideaId, fileId,file.getOriginalFilename(),file.getSize()), requester);
+    	fileIdMaps.put(ideaFileIdKey,new FileCache(filePersistentId));
     	// TODO: Think about what to return 
     	
     	
@@ -138,7 +153,18 @@ public class IdeaRestController {
                 .path(fileName)
                 .toUriString();
 		*/
+    	// UPLOADING FILE
     	
+    	if (!file.isEmpty()) {
+    		try {
+				FileDto savedFileEntry= ideaService.upload(filePersistentId,file.getBytes());
+				FileCache sessionFile = fileIdMaps.get(ideaFileIdKey);
+				sessionFile.setUploaded(savedFileEntry.getEnd());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     	
     	
         String fileDownloadUri = "";
@@ -190,6 +216,5 @@ public class IdeaRestController {
 
         return ideaDistributionTtmProfitVoteService.getIdeasSummaryTTMProfitVotes(getIdeasDto);
     }
-
     
 }

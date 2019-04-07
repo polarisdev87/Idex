@@ -1,5 +1,7 @@
 package com.gs2.pipeline.domain;
 
+import java.util.Date;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -7,6 +9,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "file")
 public class File {
+	
+	public File() {
+		this.start = new Date();
+	}
 
     @Id
     @Column(name = "id")
@@ -30,6 +36,20 @@ public class File {
     @Column(name = "size", unique = false)
     @NotNull
     private Long size;
+    
+    
+    /**
+     * Initial upload time
+     */
+    @Column(name = "start", unique = false)
+    @NotNull
+    private Date start;
+
+    /**
+     * Final upload time
+     */
+    @Column(name = "uploaded_at", unique = false)
+    private Date uploadedAt;
     
     
     public Long getId() {
@@ -70,6 +90,26 @@ public class File {
 
 	public void setSize(Long size) {
 		this.size = size;
+	}
+	
+	
+	
+
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+
+	public Date getUploadedAt() {
+		return uploadedAt;
+	}
+
+	public void setUploadedAt(Date uploadedAt) {
+		this.uploadedAt = uploadedAt;
 	}
 
 	@Override
@@ -126,6 +166,7 @@ public class File {
 		return "File [id=" + id + ", name=" + name + ", sha=" + sha + ", storeUrl=" + storeUrl + ", size=" + size + "]";
 	}
 
+	
 
 
 }

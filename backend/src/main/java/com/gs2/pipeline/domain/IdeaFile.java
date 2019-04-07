@@ -55,5 +55,46 @@ public class IdeaFile {
     @Column(name = "submitted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Idea getIdea() {
+		return idea;
+	}
+
+	public void setIdea(Idea idea) {
+		this.idea = idea;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public Account getSubmittedBy() {
+		return submittedBy;
+	}
+
+	public void setSubmittedBy(Account submittedBy) {
+		this.submittedBy = submittedBy;
+	}
+
+	public Date getSubmittedAt() {
+		return submittedAt;
+	}
+
+	public void setSubmittedAt(Date submittedAt) {
+		this.submittedAt = submittedAt;
+	}
+    
     
 }

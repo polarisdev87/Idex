@@ -1,6 +1,7 @@
 package com.gs2.pipeline.service.impl;
 
 import com.gs2.pipeline.domain.*;
+import com.gs2.pipeline.domain.helper.FileCache;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 import com.gs2.pipeline.repository.CommentRepository;
@@ -14,7 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +30,8 @@ import javax.management.RuntimeErrorException;
 public class IdeaServiceImpl implements IdeaService {
 
 	private static final String TOP_FILTER = "Top";
+
+	private static final String UPLOADED_FOLDER = "/files/upload/";
 
 	private final IdeaRepository ideaRepository;
 	private final TagRepository tagRepository;
@@ -282,6 +290,12 @@ public class IdeaServiceImpl implements IdeaService {
 		return idea;
 	}
 
+	
+	/**
+	 * 
+	 * @param filesDto
+	 * @return
+	 */
 	private Set<File> upsertInitialFiles(List<AttachmentDto> filesDto) {
 		if (filesDto!=null) {
 			Set<File> files = new HashSet<>(filesDto.size());
@@ -471,22 +485,50 @@ public class IdeaServiceImpl implements IdeaService {
 	@Override
 	public Long upload(AttachmentDto fileDto, Account uploadedBy) {
 		File file = new File();
-		file.setName(fileDto.getName());
+		file.setName(fileDto.getOriginalFileName());
 		file.setSize(fileDto.getSize());
 		File persistedFile = this.fileRepository.save(file);
 		return persistedFile.getId();
 	}
+	
+	
+	public FileDto upload(Long fileId,byte[] bytes) {
+        File file = fileRepository.getOne(fileId);
+        Path path = Paths.get(UPLOADED_FOLDER + file.getName());
+    	/*
+        try {
+			Files.write(path, bytes);
+			TODO: Write to File on S3
+			TODO: Genearate md5 to save in table
+			*/
+        	try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			file.setUploadedAt(new Date());
+			file = fileRepository.save(file);
+			/*
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		*/
+        return new FileDto(file.getId(),file.getUploadedAt());
+	}
 
 	@Override
-	public List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, Long> mapFilesId) {
+	public List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> filesDto, Map<String, FileCache> mapFilesId) {
 		List<AttachmentDto> result = new ArrayList<AttachmentDto>() ;
-		if (files!=null) {
-			for (AttachmentDto file:files) {
-				if (file.getId()!=null) {
-					file.setId(mapFilesId.get(file.getIdeaFileId()));
+		if (filesDto!=null) {
+			for (AttachmentDto fileDto:filesDto) {
+				if (fileDto.getId()!=null) {
+					fileDto.setId(mapFilesId.get(fileDto.getIdeaFileId()).getId());
+					fileDto.setEnd(mapFilesId.get(fileDto.getIdeaFileId()).getUploaded());
 				}
 			}
-			result = files;
+			result = filesDto;
 		}
 		return result;
 	}
@@ -497,6 +539,7 @@ public class IdeaServiceImpl implements IdeaService {
 		for (AttachmentDto file:files) {
 			//TODO: Change to Checking finished DateTime
 			allReady = allReady && file.getId()!=null;
+			allReady = allReady && file.getEnd()!=null;
 		}
 		return allReady;
 	}
