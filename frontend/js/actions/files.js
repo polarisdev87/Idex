@@ -21,14 +21,14 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   // upload file
 
   const filesToAdd = getFilesToAdd(oldFiles, files);
-  const filesToRemove = getFilesToAdd(oldFiles, files);
+  const filesToRemove = getFilesToRemove(oldFiles, files);
 
   console.log('filesToAdd');
   console.log(filesToAdd);
   console.log('filesToRemove');
   console.log(filesToRemove);
 
-  filesToAdd.forEach((file) => dispatch(uploadFile(ideaId, 'file', file)));
+  filesToAdd.forEach((file) => dispatch(uploadFile(ideaId,file)));
   if (filesToRemove.length > 0) {
     dispatch(removeFiles(ideaId, filesToRemove));
   }
@@ -40,15 +40,16 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
 }
 
 
-export function uploadFile(ideaId, key, file) {
+export function uploadFile(ideaId, file) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
   if (token) {
     const formData = new FormData();
-    formData.append(key, new Blob([file], { type: file.type }), file.name || 'file');
+    formData.append('file', new Blob([file], { type: file.type }), file.name || 'file');
     formData.append('ideaId', ideaId);
-    formData.append('key',file.name);
+    formData.append('fileId',file.id);
+    formData.append('name',file.name);
     config = {
       headers: {
         Authorization: `${token}`,
@@ -60,10 +61,9 @@ export function uploadFile(ideaId, key, file) {
     throw 'No token saved!';
   }
   return dispatch => {
-    dispatch(uploadFileRequest(ideaId, key, file));
+    dispatch(uploadFileRequest(ideaId, file));
     console.log('uploadFileRequest(...)');
     console.log(ideaId);
-    console.log(key);
     console.log(file);
     return fetch(`${API_BASE_URI}/ideas/attach`, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -72,7 +72,7 @@ export function uploadFile(ideaId, key, file) {
           dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to upload file');
         }
-        dispatch(uploadFileSuccess(body, ideaId, key));
+        dispatch(uploadFileSuccess(body, ideaId, file));
         return true;
       }).catch(err => {
         dispatch(uploadFileError(`Failed to upload file. ${err}`));
@@ -129,13 +129,16 @@ export function removeFiles(ideaId, files) {
   };
 }
 
+
 export const UPLOAD_FILE_REQUEST = 'UPLOAD_FILE_REQUEST';
 export const UPLOAD_FILE_SUCCESS = 'UPLOAD_FILE_SUCCESS';
 export const UPLOAD_FILE_FAILURE = 'UPLOAD_FILE_FAILURE';
 
-function uploadFileRequest() {
+function uploadFileRequest(ideaId,file) {
   return {
     type: UPLOAD_FILE_REQUEST,
+    ideaId,
+    file,
   };
 }
 
@@ -146,16 +149,16 @@ function uploadFileError(message) {
   };
 }
 
-function uploadFileSuccess(ideaId, key, file) {
+function uploadFileSuccess(body, ideaId, file) {
   console.log('uploadFileSuccess');
+  console.log(body);
   console.log(ideaId);
-  console.log(key);
   console.log(file);
 
   return {
     type: UPLOAD_FILE_SUCCESS,
     ideaId,
-    key,
+    body,
     file,
   };
 }
@@ -171,7 +174,7 @@ function removeFilesRequest(removeFilesList) {
   };
 }
 
-function remveFilesError(message) {
+function removeFilesError(message) {
   return {
     type: REMOVE_FILES_FAILURE,
     message,

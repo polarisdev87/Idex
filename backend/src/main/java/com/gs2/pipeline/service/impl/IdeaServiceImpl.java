@@ -283,22 +283,23 @@ public class IdeaServiceImpl implements IdeaService {
 	}
 
 	private Set<File> upsertInitialFiles(List<AttachmentDto> filesDto) {
+		if (filesDto!=null) {
+			Set<File> files = new HashSet<>(filesDto.size());
+			for (AttachmentDto fileDto : filesDto) {
 
-		Set<File> files = new HashSet<>(filesDto.size());
+				File file = fileRepository.findOne(fileDto.getId());
 
-		for (AttachmentDto fileDto : filesDto) {
+				if (file == null) {
+					// TODO: error ... it should be added the
+					throw new RuntimeErrorException(null, "not uploaded file");
+				}
 
-			File file = fileRepository.findOne(fileDto.getId());
-
-			if (file == null) {
-				// TODO: error ... it should be added the
-				throw new RuntimeErrorException(null, "not uploaded file");
+				files.add(file);
 			}
-
-			files.add(file);
+			return files;
+		} else {
+			return new HashSet<File>();
 		}
-
-		return files;
 	}
 
 	private Set<Tag> upsertInitialTagsFromStrings(List<String> tagNames) {
@@ -456,18 +457,48 @@ public class IdeaServiceImpl implements IdeaService {
 			return tagsToSave;
 		}
 
-		public void setTagsToSave(Set<Tag> tagsToSave) {
-			this.tagsToSave = tagsToSave;
-		}
-
 		public Set<Tag> getTagsToDelete() {
 			return tagsToDelete;
 		}
 
-		public void setTagsToDelete(Set<Tag> tagsToDelete) {
-			this.tagsToDelete = tagsToDelete;
-		}
 
+	}
+
+	
+	/**
+	 *	persist on database upload event and generate File id 
+	 */
+	@Override
+	public Long upload(AttachmentDto fileDto, Account uploadedBy) {
+		File file = new File();
+		file.setName(fileDto.getName());
+		file.setSize(fileDto.getSize());
+		File persistedFile = this.fileRepository.save(file);
+		return persistedFile.getId();
+	}
+
+	@Override
+	public List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, Long> mapFilesId) {
+		List<AttachmentDto> result = new ArrayList<AttachmentDto>() ;
+		if (files!=null) {
+			for (AttachmentDto file:files) {
+				if (file.getId()!=null) {
+					file.setId(mapFilesId.get(file.getIdeaFileId()));
+				}
+			}
+			result = files;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean areUploadededFilesReady(List<AttachmentDto> files) {
+		boolean allReady=true;
+		for (AttachmentDto file:files) {
+			//TODO: Change to Checking finished DateTime
+			allReady = allReady && file.getId()!=null;
+		}
+		return allReady;
 	}
 
 }

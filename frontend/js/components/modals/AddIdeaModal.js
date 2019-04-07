@@ -187,7 +187,9 @@ class AddIdeaModal extends Component {
     );
   }
 
-
+/**
+ * Upload files as soon as they are dragged and dropped
+ */
   onFilesChange = (files) => {
     console.log("onFilesChange");
     console.log(this.props);
@@ -313,7 +315,7 @@ class AddIdeaModal extends Component {
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
-                  style={{ height: '100px' }}
+                  style={{ height: '100px', width: "100%" }}
                   accepts={['image/png', '.pdf', 'audio/*','.txt']}
                   multiple
                   maxFiles={3}

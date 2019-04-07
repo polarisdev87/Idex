@@ -1,16 +1,21 @@
 package com.gs2.pipeline.dto;
 
 public class UploadFileResponseDto {
+	private Long ideaId;
+	private String clientId;
     private String fileName;
     private String fileDownloadUri;
     private String fileType;
     private long size;
 
-    public UploadFileResponseDto(String fileName, String fileDownloadUri, String fileType, long size) {
+    public UploadFileResponseDto(Long ideaId,String clientId,String fileName, String fileDownloadUri, String fileType, long size) {
+    	this.ideaId = ideaId;
+    	this.clientId = clientId;
         this.fileName = fileName;
         this.fileDownloadUri = fileDownloadUri;
         this.fileType = fileType;
         this.size = size;
+        
     }
 
 	public String getFileName() {
@@ -44,6 +49,24 @@ public class UploadFileResponseDto {
 	public void setSize(long size) {
 		this.size = size;
 	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public Long getIdeaId() {
+		return ideaId;
+	}
+
+	public void setIdeaId(Long ideaId) {
+		this.ideaId = ideaId;
+	}
+	
+	
 
 
 }

@@ -12,8 +12,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpSession;
 
 @RequestMapping("/ideas")
 @RestController
@@ -22,7 +27,14 @@ public class IdeaRestController {
     private final IdeaService ideaService;
     private final AccountService accountService;
     private final IdeaDistributionTtmProfitVoteService ideaDistributionTtmProfitVoteService;
+    /**
+     * time in seconds to wait for uploading files after finish editing
+     */
+    private static final int UPLOAD_SESSION_TIMEOUT = 600;
 
+    private static final String MAP_FILES_UPLOAD_NAME = "filesMap";
+    
+    
     @Autowired
     public IdeaRestController(
     		IdeaService ideaService, 
@@ -48,31 +60,75 @@ public class IdeaRestController {
                                   @RequestParam(value = "tags", required = false) Set<String> tags,
                                   @RequestParam(value = "partialFullSwitch", required = false) Boolean partialFullSwitch) {
 
+        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requester = accountService.findByUsername(requestingUser.getUsername());
         GetIdeasDto getIdeasDto =
                 new GetIdeasDto(filter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin,
                                     profitMax, implementationTimeMsMin, implementationTimeMsMax, tags, partialFullSwitch);
-        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account requester = accountService.findByUsername(requestingUser.getUsername());
         
         return ideaService.getIdeas(getIdeasDto,requester);
     }
     
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public IdeaDto upsert(@RequestBody IdeaDto ideaDto) {
+    public IdeaDto upsert(HttpSession session,@RequestBody IdeaDto ideaDto) {
 
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
-
-        return ideaService.upsert(ideaDto, requester);
+        
+        // set attachment ids
+        List<AttachmentDto> files = ideaDto.getFiles();
+        
+        Map<String,Long> mapFilesId = (Map<String,Long>) session.getAttribute(MAP_FILES_UPLOAD_NAME);
+        long startTime = System.nanoTime();
+        boolean uploadedFilesReady = false;
+        boolean uploadedFilesCancelled = false;
+        while (!uploadedFilesReady && !uploadedFilesCancelled) {
+            files = ideaService.checkUploadFilesStatus(files,mapFilesId);
+            uploadedFilesReady = ideaService.areUploadededFilesReady(files);
+            if (!uploadedFilesReady) {
+            	long difference = System.nanoTime()- startTime;
+            	if (TimeUnit.NANOSECONDS.toSeconds(difference)>UPLOAD_SESSION_TIMEOUT) {
+            		uploadedFilesCancelled=true;
+            	} else {
+					try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+            	}
+            }
+        }
+        if (uploadedFilesReady) {
+            return ideaService.upsert(ideaDto, requester);
+        } else {
+        	return null;
+        }
     }
     
     
     @RequestMapping(value = "/attach", method = RequestMethod.POST)
-    public UploadFileResponseDto uploadFile(
-    			@RequestParam(value = "ideaId", required = true) String filter,
-    			@RequestParam(value = "key", required = true) String key,
+    public UploadFileResponseDto uploadFile(HttpSession session,
+    			@RequestParam(value = "ideaId", required = true) Long ideaId,
+    			@RequestParam(value = "fileId", required = true) String fileId,
     			@RequestParam("file") MultipartFile file) {
-    	System.out.println(file);
+        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requester = accountService.findByUsername(requestingUser.getUsername());
+    	System.out.println(requester);
+    	Map<String,Long> fileIdMaps;
+    	String ideaFileIdKey = Long.toString(ideaId)+":"+fileId;
+    	if (session.getAttribute(MAP_FILES_UPLOAD_NAME)==null) {
+    		fileIdMaps=new HashMap<String,Long>();
+    		session.setAttribute(MAP_FILES_UPLOAD_NAME, fileIdMaps);
+    	} else {
+    		fileIdMaps=(Map<String, Long>) session.getAttribute(ideaFileIdKey);
+    	}
+    	
+    	Long filePersistentId = 
+    			ideaService.upload(new AttachmentDto(ideaId, fileId,file.getName(),file.getOriginalFilename(),file.getSize()), requester);
+    	fileIdMaps.put(ideaFileIdKey,filePersistentId);
+    	// TODO: Think about what to return 
+    	
     	
     	/*
         String fileName = fileStorageService.storeFile(file);
@@ -81,18 +137,14 @@ public class IdeaRestController {
                 .path("/downloadFile/")
                 .path(fileName)
                 .toUriString();
-		*/ 
+		*/
+    	
+    	
     	
         String fileDownloadUri = "";
-		return new UploadFileResponseDto(file.getName(), fileDownloadUri ,
+		return new UploadFileResponseDto(ideaId, fileId, file.getName(), fileDownloadUri ,
                 file.getContentType(), file.getSize());
     }
-
-    
-    
-    
-    
-    
 
     @RequestMapping(value = "/vote", method = RequestMethod.POST)
     public IdeaDto vote(@RequestBody VoteDto voteDto) throws IdeaNotFoundException {

@@ -21,11 +21,9 @@ public class File {
 
 
     @Column(name = "sha", length = 300, unique = false)
-    @NotNull
     private String sha;
     
     @Column(name = "store_url", length = 500, unique = false)
-    @NotNull
     private String storeUrl;
     
     

@@ -5,6 +5,7 @@ import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IdeaService {
 
@@ -14,4 +15,7 @@ public interface IdeaService {
     IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException;
     List<TagDto> getPopularTags();
     IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;
+    Long upload(AttachmentDto fileDto, Account uploadedBy);
+	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, Long> mapFilesId);
+	boolean areUploadededFilesReady(List<AttachmentDto> files);
 }
