@@ -52,6 +52,11 @@ public class AttachmentDto {
 
     }
     
+    public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalFileName, Long size) {
+    	this(ideaId,fileId,originalFileName,size);
+    	this.persistenceId= persistenceId;
+    }
+
     public AttachmentDto(Long ideaId, String fileId, String originalFileName, Long size) {
     	this.ideaId = ideaId;
     	this.fileId = fileId;

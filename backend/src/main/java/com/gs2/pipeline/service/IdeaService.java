@@ -14,9 +14,15 @@ public interface IdeaService {
     IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException;
     List<TagDto> getPopularTags();
     IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;
-    Long upload(AttachmentDto fileDto, Account uploadedBy);
+    /**
+     * Creates persistent record in database and returns an attachmentDto with the persistenceId
+     * @param fileDto
+     * @param uploadedBy
+     * @return
+     */
+    AttachmentDto prepareUpload(AttachmentDto fileDto, Account uploadedBy);
 	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files);
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
-	AttachmentDto upload(Long fileId,byte[] bytes, AttachmentDto initialAttachment);
+	AttachmentDto uploadContent(byte[] bytes, AttachmentDto initialAttachment,Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
 }

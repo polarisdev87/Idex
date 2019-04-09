@@ -88,6 +88,40 @@ public class IdeaRestController {
         }
     }
     
+
+    
+    @RequestMapping(value = "/attach-content", method = RequestMethod.POST)
+    public AttachmentDto uploadFileContent(
+    			@RequestParam(value = "ideaId", required = true) Long ideaId,
+    			@RequestParam(value = "fileId", required = true) String fileId,
+    			@RequestParam(value = "persistentId", required = true) Long persistentId,
+    			@RequestParam("file") MultipartFile file) {
+        JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account requester = accountService.findByUsername(requestingUser.getUsername());
+    	
+    	
+    	/*
+        String fileName = fileStorageService.storeFile(file);
+
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(fileName)
+                .toUriString();
+		*/
+    	// UPLOADING FILE
+    	AttachmentDto attachmentDto = new AttachmentDto(persistentId,ideaId,fileId,file.getOriginalFilename(),file.getSize());
+    	if (!file.isEmpty()) {
+    		try {
+    	    	attachmentDto= ideaService.uploadContent(file.getBytes(),attachmentDto,requester);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+		return attachmentDto;
+    }
+
+    
     
     /**
      * Upload individual file
@@ -104,33 +138,10 @@ public class IdeaRestController {
      */
     @RequestMapping(value = "/attach", method = RequestMethod.POST)
     public AttachmentDto uploadFile(
-    			@RequestParam(value = "ideaId", required = true) Long ideaId,
-    			@RequestParam(value = "fileId", required = true) String fileId,
-    			@RequestParam("file") MultipartFile file) {
+    			@RequestBody AttachmentDto attachmentDto) {
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
-    	
-    	
-    	/*
-        String fileName = fileStorageService.storeFile(file);
-
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
-		*/
-    	// UPLOADING FILE
-    	AttachmentDto attachmentDto = new AttachmentDto(ideaId,fileId,file.getOriginalFilename(),file.getSize());
-    	if (!file.isEmpty()) {
-    		try {
-    	    	Long filePersistentId = 
-    	    			ideaService.upload(new AttachmentDto(ideaId, fileId,file.getOriginalFilename(),file.getSize()), requester);
-    	    	attachmentDto= ideaService.upload(filePersistentId,file.getBytes(),attachmentDto);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
+		attachmentDto = ideaService.prepareUpload(attachmentDto, requester);
 		return attachmentDto;
     }
 

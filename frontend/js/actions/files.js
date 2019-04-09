@@ -23,7 +23,7 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   // remove all old files
   // upload file
 
-  console.log("changeFies(...)");
+  console.log('changeFies(...)');
   console.log(oldFiles);
   const filesToAdd = getFilesToAdd(oldFiles, files);
   const filesToRemove = getFilesToRemove(oldFiles, files);
@@ -46,6 +46,57 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
 
 
 export function uploadFile(ideaId, file) {
+
+  console.log("uploadFile(ideaId,file)");
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  let config = {};
+
+  if (token) {
+    const attachmentDto = {
+      ideaId,
+      fileId: file.id,
+      originalFileName: file.name,
+      size: file.size,
+    };
+    config = {
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(attachmentDto),
+    };
+  } else {
+    throw 'No token saved!';
+  }
+  return dispatch => {
+    dispatch(uploadFileRequest(ideaId, file));
+    console.log('uploadFileRequest(...)');
+    console.log(ideaId);
+    console.log(file);
+    console.log(config);
+    return fetch(`${API_BASE_URI}/ideas/attach`, config)
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
+        if (!response.ok) {
+            console.log("error response");
+            console.log(response);
+          dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
+          return Promise.reject('Failed to upload file');
+        }
+        console.log('uploadFile... body');
+        console.log(body);
+        dispatch(uploadFileSuccess(body, ideaId, file));
+        return true;
+      }).catch(err => {
+        dispatch(uploadFileError(`Failed to upload file. ${err}`));
+        console.log('Error: ', err);
+      });
+  };
+}
+
+
+export function uploadFileContent(ideaId, file) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
@@ -70,7 +121,7 @@ export function uploadFile(ideaId, file) {
     console.log('uploadFileRequest(...)');
     console.log(ideaId);
     console.log(file);
-    return fetch(`${API_BASE_URI}/ideas/attach`, config)
+    return fetch(`${API_BASE_URI}/ideas/attach-content`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
@@ -88,9 +139,9 @@ export function uploadFile(ideaId, file) {
   };
 }
 
-export function removeFiles(ideaId, files) {
 
-  console.log("removeFiles");
+export function removeFiles(ideaId, files) {
+  console.log('removeFiles');
   console.log(files);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
@@ -161,8 +212,6 @@ function uploadFileSuccess(uploadedFile, ideaId, file) {
     file,
   };
 }
-
-
 
 
 export const REMOVE_FILES_REQUEST = 'REMOVE_FILES_REQUEST';

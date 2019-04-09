@@ -479,18 +479,20 @@ public class IdeaServiceImpl implements IdeaService {
 	 *	persist on database upload event and generate File id 
 	 */
 	@Override
-	public Long upload(AttachmentDto fileDto, Account submittedBy) {
+	public AttachmentDto prepareUpload(AttachmentDto fileDto, Account submittedBy) {
 		File file = new File();
 		file.setName(fileDto.getOriginalFileName());
 		file.setSize(fileDto.getSize());
 		file.setSubmittedBy(submittedBy);
 		File persistedFile = this.fileRepository.save(file);
-		return persistedFile.getId();
+		fileDto.setPersistenceId(persistedFile.getId());
+		return fileDto;
 	}
 	
+
 	
-	public AttachmentDto upload(Long fileId,byte[] bytes,AttachmentDto initialAttachment) {
-        File file = fileRepository.getOne(fileId);
+	public AttachmentDto uploadContent(byte[] bytes,AttachmentDto initialAttachment, Account requester) {
+        File file = fileRepository.getOne(initialAttachment.getPersistenceId());
         Path path = Paths.get(UPLOADED_FOLDER + file.getName());
         if (file!=null) {
         	/*
@@ -580,5 +582,6 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 		return filesToRemoveDto;
 	}
+
 
 }

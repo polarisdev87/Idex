@@ -156,14 +156,14 @@ export function updateIdea(idea, files) {
   if (token) {
     const jsFiles = files.map((file) => ({
       lastModified: file.lastModified,
-      lastModifiedDate : file.lastModifiedDate,
-      name : file.name,
-      size : file.size,
-      type : file.type,
+      lastModifiedDate: file.lastModifiedDate,
+      name: file.name,
+      size: file.size,
+      type: file.type,
     }));
 
-    const newIdea = Object.assign({},idea,{files:jsFiles})
-    console.log("idea to post");
+    const newIdea = Object.assign({}, idea, { files: jsFiles });
+    console.log('idea to post');
     console.log(newIdea);
     config = {
       headers: {
@@ -196,7 +196,6 @@ export function updateIdea(idea, files) {
       });
   };
 }
-
 
 
 export const DELETE_IDEAS_REQUEST = 'DELETE_IDEAS_REQUEST';
@@ -342,7 +341,6 @@ export function toggleFilterFullPartial() {
 }
 
 
-
 export const TOGGLE_VOTE = 'TOGGLE_VOTE';
 
 
@@ -357,7 +355,7 @@ export function toggleVote(ideaId) {
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({ideaId}),
+      body: JSON.stringify({ ideaId }),
     };
   } else {
     throw 'No token saved!';
@@ -382,7 +380,6 @@ export function toggleVote(ideaId) {
 }
 
 
-
 export const TOGGLE_VOTE_REQUEST = 'TOGGLE_VOTE_REQUEST';
 export const TOGGLE_VOTE_SUCCESS = 'TOGGLE_VOTE_SUCCESS';
 export const TOGGLE_VOTE_FAILURE = 'TOGGLE_VOTE_FAILURE';
@@ -401,7 +398,7 @@ function toggleVoteError(message) {
 }
 
 function toggleVoteSuccess(idea) {
-  const newIdea = Object.assign({}, idea, { anonymousMode:false });
+  const newIdea = Object.assign({}, idea, { anonymousMode: false });
   console.log(newIdea);
 
   return {
