@@ -5,12 +5,15 @@ export const CHANGE_FILES = 'CHANGE_FILES';
 
 
 function getFilesToAdd(oldFiles, files) {
-  const newArray = files.filter((el) => oldFiles.indexOf( el ) < 0);
+  const gotOldFiles = oldFiles == null ? [] : oldFiles;
+  const newArray = files.filter((el) => gotOldFiles.indexOf(el) < 0);
   return newArray;
 }
 
 function getFilesToRemove(oldFiles, files) {
-  const newArray = oldFiles.filter((el) => files.indexOf( el ) <0);
+  const gotFiles = files == null ? [] : files;
+  const gotOldFiles = oldFiles == null ? [] : oldFiles;
+  const newArray = gotOldFiles.filter((el) => gotFiles.indexOf(el) < 0);
   return newArray;
 }
 
@@ -20,6 +23,8 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   // remove all old files
   // upload file
 
+  console.log("changeFies(...)");
+  console.log(oldFiles);
   const filesToAdd = getFilesToAdd(oldFiles, files);
   const filesToRemove = getFilesToRemove(oldFiles, files);
 
@@ -28,7 +33,7 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   console.log('filesToRemove');
   console.log(filesToRemove);
 
-  filesToAdd.forEach((file) => dispatch(uploadFile(ideaId,file)));
+  filesToAdd.forEach((file) => dispatch(uploadFile(ideaId, file)));
   if (filesToRemove.length > 0) {
     dispatch(removeFiles(ideaId, filesToRemove));
   }
@@ -48,8 +53,8 @@ export function uploadFile(ideaId, file) {
     const formData = new FormData();
     formData.append('file', new Blob([file], { type: file.type }), file.name || 'file');
     formData.append('ideaId', ideaId);
-    formData.append('fileId',file.id);
-    formData.append('name',file.name);
+    formData.append('fileId', file.id);
+    formData.append('name', file.name);
     config = {
       headers: {
         Authorization: `${token}`,
@@ -72,6 +77,8 @@ export function uploadFile(ideaId, file) {
           dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to upload file');
         }
+        console.log('uploadFile... body');
+        console.log(body);
         dispatch(uploadFileSuccess(body, ideaId, file));
         return true;
       }).catch(err => {
@@ -82,19 +89,14 @@ export function uploadFile(ideaId, file) {
 }
 
 export function removeFiles(ideaId, files) {
+
+  console.log("removeFiles");
+  console.log(files);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
-  const jsFiles = files.map((file) => ({
-    lastModified: file.lastModified,
-    lastModifiedDate: file.lastModifiedDate,
-    name: file.name,
-    size: file.size,
-    type: file.type,
-  }));
-
   const removeFilesList = {
-    files: jsFiles,
+    files,
     ideaId,
   };
   if (token) {
@@ -110,9 +112,10 @@ export function removeFiles(ideaId, files) {
     throw 'No token saved!';
   }
   return dispatch => {
-    dispatch(removeFilesRequest(removeFilesList));
     console.log('removeFilesRequest(...)');
+    console.log(ideaId);
     console.log(removeFilesList);
+    dispatch(removeFilesRequest(removeFilesList));
     return fetch(`${API_BASE_URI}/ideas/attach`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
@@ -120,6 +123,8 @@ export function removeFiles(ideaId, files) {
           dispatch(removeFilesError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to remove file');
         }
+        console.log('removeFiles -> body');
+        console.log(body);
         dispatch(removeFilesSuccess(body, removeFilesList));
         return true;
       }).catch(err => {
@@ -129,12 +134,11 @@ export function removeFiles(ideaId, files) {
   };
 }
 
-
 export const UPLOAD_FILE_REQUEST = 'UPLOAD_FILE_REQUEST';
 export const UPLOAD_FILE_SUCCESS = 'UPLOAD_FILE_SUCCESS';
 export const UPLOAD_FILE_FAILURE = 'UPLOAD_FILE_FAILURE';
 
-function uploadFileRequest(ideaId,file) {
+function uploadFileRequest(ideaId, file) {
   return {
     type: UPLOAD_FILE_REQUEST,
     ideaId,
@@ -149,19 +153,17 @@ function uploadFileError(message) {
   };
 }
 
-function uploadFileSuccess(body, ideaId, file) {
-  console.log('uploadFileSuccess');
-  console.log(body);
-  console.log(ideaId);
-  console.log(file);
-
+function uploadFileSuccess(uploadedFile, ideaId, file) {
   return {
     type: UPLOAD_FILE_SUCCESS,
     ideaId,
-    body,
+    uploadedFile,
     file,
   };
 }
+
+
+
 
 export const REMOVE_FILES_REQUEST = 'REMOVE_FILES_REQUEST';
 export const REMOVE_FILES_SUCCESS = 'REMOVE_FILES_SUCCESS';

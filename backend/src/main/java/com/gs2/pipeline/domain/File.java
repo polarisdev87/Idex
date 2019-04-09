@@ -50,6 +50,19 @@ public class File {
      */
     @Column(name = "uploaded_at", unique = false)
     private Date uploadedAt;
+
+    
+    /**
+     * Cancelled at - null if not cancelled
+     */
+    @Column(name = "cancelled_at", unique = false)
+    private Date cancelledAt;
+    
+    
+    @ManyToOne
+    @JoinColumn(name = "submitted_by", nullable = false)
+    private Account submittedBy;
+    
     
     
     public Long getId() {
@@ -110,6 +123,22 @@ public class File {
 
 	public void setUploadedAt(Date uploadedAt) {
 		this.uploadedAt = uploadedAt;
+	}
+
+	public Account getSubmittedBy() {
+		return submittedBy;
+	}
+
+	public void setSubmittedBy(Account submittedBy) {
+		this.submittedBy = submittedBy;
+	}
+	
+	public Date getCancelledAt() {
+		return cancelledAt;
+	}
+
+	public void setCancelledAt(Date cancelledAt) {
+		this.cancelledAt = cancelledAt;
 	}
 
 	@Override

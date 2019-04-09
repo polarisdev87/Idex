@@ -29,11 +29,11 @@ type Props = {
   close: () => {},
   dispatch: any,
   idea: any,
-  type: string;
+  type: string,
+  files: any,
 }
 
 class AddIdeaModal extends Component {
-
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps');
     console.log(nextProps);
@@ -88,7 +88,6 @@ class AddIdeaModal extends Component {
     isEditMode: false,
     stage: 'Launched',
     mainTag: -1,
-    files: [],
   }
 
 
@@ -100,6 +99,11 @@ class AddIdeaModal extends Component {
     console.log('close open Modal');
   }
 
+  /**
+   * Close Modal - finish editing or adding
+   * @param {*} type
+   * @param {*} anonymousMode
+   */
   handleIdea(type, anonymousMode) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
@@ -107,7 +111,7 @@ class AddIdeaModal extends Component {
       id, tags, stage, mainTag,
     } = this.state;
     let category = null;
-    if (mainTag != -1) {
+    if (mainTag !== -1) {
       category = tags[mainTag];
     }
     console.log(category);
@@ -126,9 +130,13 @@ class AddIdeaModal extends Component {
     this.props.handleIdea(idea, type);
   }
 
+  /**
+   * Handle tags change
+   * @param {*} tags
+   */
   handleChange(tags) {
-    let mainTag = this.state.mainTag;
-    if (tags.length == 1) {
+    let { mainTag } = this.state;
+    if (tags.length === 1) {
       mainTag = 0;
     }
     this.setState({ tags, mainTag });
@@ -169,7 +177,7 @@ class AddIdeaModal extends Component {
       tag, key, disabled, onRemove, classNameRemove, getTagDisplayValue, ...other
     } = props;
 
-    if (key == classThis.state.mainTag) {
+    if (key === classThis.state.mainTag) {
       if (other.className != null) {
         other.className += ' main-tag';
       }
@@ -187,33 +195,38 @@ class AddIdeaModal extends Component {
     );
   }
 
-/**
- * Upload files as soon as they are dragged and dropped
- */
+  /**
+  * Upload files as soon as they are dragged and dropped
+  */
   onFilesChange = (files) => {
-    console.log("onFilesChange");
+    console.log('onFilesChange');
     console.log(this.props);
     console.log(files);
-    const { dispatch,idea } = this.props;
-    dispatch(changeFiles(dispatch, idea.id, this.props.files, files));
+    const { dispatch, idea } = this.props;
+    dispatch(changeFiles(dispatch, idea.id, idea.files, files));
   }
 
   onFilesError = (error, file) => {
-    console.log(`error code ${error.code }: ${ error.message}`);
+    console.log(`error code ${error.code}: ${error.message}`);
   }
 
+  /** 
+   * It only removes the file from the visual model
+  */
   filesRemoveOne = (file) => {
+    console.log('filesRemoveOne');
+    console.log(file);
     this.refs.files.removeFile(file);
   }
 
+  /*
   filesRemoveAll = () => {
     this.refs.files.removeFiles();
   }
-
+*/
 
   render() {
-
-    console.log("AddIdeaModal.render()");
+    console.log('AddIdeaModal.render()');
     console.log(this.props);
     const {
       isOpen, idea, close, type, files,
@@ -315,8 +328,8 @@ class AddIdeaModal extends Component {
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
-                  style={{ height: '100px', width: "100%" }}
-                  accepts={['image/png', '.pdf', 'audio/*','.txt']}
+                  style={{ height: '100px', width: '100%' }}
+                  accepts={['image/png', '.pdf', 'audio/*', '.txt']}
                   multiple
                   maxFiles={3}
                   maxFileSize={10000000}
@@ -345,9 +358,9 @@ class AddIdeaModal extends Component {
                             className="files-list-item-remove"
                   onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
                           />
-                        </li>))}
+                         </li>))}
                       </ul>
-                    </div>
+                      </div>
                     : null
                 }
 
@@ -375,10 +388,10 @@ class AddIdeaModal extends Component {
 }
 
 function mapStateToProps(state) {
-    console.log("AddIdeaModal.mapStateToProps...");
-    console.log(state);
+  console.log('AddIdeaModal.mapStateToProps...');
+  console.log(state);
   return {
-    files:state.ideas.files,
+    files: state.ideas.files,
   };
 }
 

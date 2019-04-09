@@ -1,12 +1,10 @@
 package com.gs2.pipeline.service;
 
 import com.gs2.pipeline.domain.Account;
-import com.gs2.pipeline.domain.helper.FileCache;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IdeaService {
 
@@ -17,7 +15,8 @@ public interface IdeaService {
     List<TagDto> getPopularTags();
     IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;
     Long upload(AttachmentDto fileDto, Account uploadedBy);
-	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files, Map<String, FileCache> mapFilesId);
+	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files);
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
-	FileDto upload(Long fileId,byte[] bytes);
+	AttachmentDto upload(Long fileId,byte[] bytes, AttachmentDto initialAttachment);
+	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
 }

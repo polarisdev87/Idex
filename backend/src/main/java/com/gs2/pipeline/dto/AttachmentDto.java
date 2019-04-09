@@ -4,25 +4,49 @@ import java.util.Date;
 
 public class AttachmentDto {
 	
-	Long id;
+	
+	
+	/**
+	 * Id of persistence system . It is the id of the table in persistent database
+	 * It is null until is not being saved
+	 * It is unique
+	 */
+	Long persistenceId;
     Date lastModified;
     Date lastModifiedDate;
     String originalFileName;
     Long size;
     String type;
+    /**
+     * public url of the file
+     * 
+     */
+    String url;
     Long ideaId;
     /**
      * initial uploading time
      */
     Date start;
     /**
-     * Final uploading time
+     * Final successful uploading time
      */
-    Date end;
+    Date uploadedAt;
+    
+    /**
+     * If cancelled the time at it was cancelled the upload
+     */
+    Date cancelledAt;
+    
     /**
      * client temporal file id
+     * This is the initial id When it is received from the client
+	 * id unique per session
+	 * It is the temporal id frontend assigns when adding the attachment
+	 * The form is of the type file-1 file-2 file-n
      */
     String fileId;
+    
+    
     
     public AttachmentDto() {
 
@@ -60,12 +84,12 @@ public class AttachmentDto {
 		this.type = type;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getPersistenceId() {
+		return persistenceId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPersistenceId(Long id) {
+		this.persistenceId = id;
 	}
     
 	
@@ -94,14 +118,6 @@ public class AttachmentDto {
 		this.fileId = fileId;
 	}
 
-	/**
-	 * Calculated field combining ideaId + fileId to be kept in map session
-	 * @return
-	 */
-	public String getIdeaFileId() {
-    	return Long.toString(this.getIdeaId())+":"+this.getFileId();
-	}
-
 	public Date getStart() {
 		return start;
 	}
@@ -110,13 +126,30 @@ public class AttachmentDto {
 		this.start = start;
 	}
 
-	public Date getEnd() {
-		return end;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setEnd(Date end) {
-		this.end = end;
+	public void setUrl(String url) {
+		this.url = url;
 	}
+
+	public Date getUploadedAt() {
+		return uploadedAt;
+	}
+
+	public void setUploadedAt(Date uploadedAt) {
+		this.uploadedAt = uploadedAt;
+	}
+
+	public Date getCancelledAt() {
+		return cancelledAt;
+	}
+
+	public void setCancelledAt(Date cancelledAt) {
+		this.cancelledAt = cancelledAt;
+	}
+
     
 	
 

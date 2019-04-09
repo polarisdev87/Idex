@@ -1,7 +1,6 @@
 package com.gs2.pipeline.service.impl;
 
 import com.gs2.pipeline.domain.*;
-import com.gs2.pipeline.domain.helper.FileCache;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 import com.gs2.pipeline.repository.CommentRepository;
@@ -15,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -301,7 +297,7 @@ public class IdeaServiceImpl implements IdeaService {
 			Set<File> files = new HashSet<>(filesDto.size());
 			for (AttachmentDto fileDto : filesDto) {
 
-				File file = fileRepository.findOne(fileDto.getId());
+				File file = fileRepository.findOne(fileDto.getPersistenceId());
 
 				if (file == null) {
 					// TODO: error ... it should be added the
@@ -483,65 +479,106 @@ public class IdeaServiceImpl implements IdeaService {
 	 *	persist on database upload event and generate File id 
 	 */
 	@Override
-	public Long upload(AttachmentDto fileDto, Account uploadedBy) {
+	public Long upload(AttachmentDto fileDto, Account submittedBy) {
 		File file = new File();
 		file.setName(fileDto.getOriginalFileName());
 		file.setSize(fileDto.getSize());
+		file.setSubmittedBy(submittedBy);
 		File persistedFile = this.fileRepository.save(file);
 		return persistedFile.getId();
 	}
 	
 	
-	public FileDto upload(Long fileId,byte[] bytes) {
+	public AttachmentDto upload(Long fileId,byte[] bytes,AttachmentDto initialAttachment) {
         File file = fileRepository.getOne(fileId);
         Path path = Paths.get(UPLOADED_FOLDER + file.getName());
-    	/*
-        try {
-			Files.write(path, bytes);
-			TODO: Write to File on S3
-			TODO: Genearate md5 to save in table
-			*/
-        	try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			file.setUploadedAt(new Date());
-			file = fileRepository.save(file);
-			/*
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+        if (file!=null) {
+        	/*
+            try {
+    			Files.write(path, bytes);
+    			TODO: Write to File on S3
+    			TODO: Genearate md5 to save in table
+    			*/
+            	try {
+            		boolean finish=false;
+            		for (int i=0;i<10 && !finish;i++) {
+        				Thread.sleep(250);
+        				file = fileRepository.getOne(file.getId());
+        				finish = file==null || file.getCancelledAt()!=null;
+            		}
+    			} catch (InterruptedException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+    			file.setUploadedAt(new Date());
+    			file = fileRepository.save(file);
+    			/*
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}		
 		*/
-        return new FileDto(file.getId(),file.getUploadedAt());
+        }
+		AttachmentDto result = initialAttachment;
+		result.setPersistenceId(file.getId());
+		result.setUploadedAt(file.getUploadedAt());
+		result.setCancelledAt(file.getCancelledAt());
+        return result;
 	}
 
+	/**
+	 * Complete getUploadedAt for all the files to attach
+	 */
 	@Override
-	public List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> filesDto, Map<String, FileCache> mapFilesId) {
+	public List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> filesDto) {
 		List<AttachmentDto> result = new ArrayList<AttachmentDto>() ;
 		if (filesDto!=null) {
 			for (AttachmentDto fileDto:filesDto) {
-				if (fileDto.getId()!=null) {
-					fileDto.setId(mapFilesId.get(fileDto.getIdeaFileId()).getId());
-					fileDto.setEnd(mapFilesId.get(fileDto.getIdeaFileId()).getUploaded());
+				if (fileDto.getPersistenceId()!=null) {
+					File file = fileRepository.findOne(fileDto.getPersistenceId());
+					if (file!=null) {
+						fileDto.setUploadedAt(file.getUploadedAt());
+						fileDto.setCancelledAt(file.getCancelledAt());
+					}
 				}
 			}
 			result = filesDto;
 		}
 		return result;
 	}
-
+	
+	/**
+	 * Check all files has not empty uploadedAt
+	 */
 	@Override
 	public boolean areUploadededFilesReady(List<AttachmentDto> files) {
 		boolean allReady=true;
 		for (AttachmentDto file:files) {
-			//TODO: Change to Checking finished DateTime
-			allReady = allReady && file.getId()!=null;
-			allReady = allReady && file.getEnd()!=null;
+			allReady = allReady && file.getPersistenceId()!=null;
+			allReady = allReady && file.getUploadedAt()!=null && file.getCancelledAt()==null;
 		}
 		return allReady;
+	}
+
+	@Override
+	public FilesToRemoveDto removeUploadingFile(FilesToRemoveDto filesToRemoveDto, Account requester) {
+		if (filesToRemoveDto.getFiles()!=null) {
+			for (AttachmentDto attachmentDto:filesToRemoveDto.getFiles()) {
+				attachmentDto.setCancelledAt(null);
+				if (attachmentDto.getPersistenceId()!=null) {
+					File file = this.fileRepository.getOne(attachmentDto.getPersistenceId());
+					if (file!=null) {
+						if (requester.equals(file.getSubmittedBy())) {
+							file.setCancelledAt(new Date());
+							file = this.fileRepository.save(file);
+							attachmentDto.setCancelledAt(file.getCancelledAt());
+							// TODO: Remove file from filesystem also
+						}
+					}
+				}
+			}
+		}
+		return filesToRemoveDto;
 	}
 
 }
