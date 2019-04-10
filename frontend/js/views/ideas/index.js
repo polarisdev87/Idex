@@ -30,7 +30,7 @@ class Ideas extends Component {
   handleIdea(idea, type) {
     console.log("handleIdea(...)");
     console.log(idea);
-    const { dispatch, files  } = this.props;
+    const { dispatch  } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
     if (type === 'edit') {
@@ -178,7 +178,6 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
-    files: state.ideas.files,
     ideasArr: state.ideas.ideasArr,
   };
 }

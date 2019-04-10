@@ -411,13 +411,6 @@ function mapStateToProps(state, ownProps) {
 
   }
 
-/*
-  return {
-    files:state.ideas.files,
-    ...ownProps,
-  };
-*/
-
   return {
     files,
     ...ownProps,

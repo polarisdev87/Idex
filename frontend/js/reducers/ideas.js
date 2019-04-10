@@ -18,7 +18,6 @@ export function ideas(state = {
   commentsErrorMessage: undefined,
   partialFullSwitch: true,
   anonymousMode: false,
-  files: [],
 
 }, action) {
   switch (action.type) {
