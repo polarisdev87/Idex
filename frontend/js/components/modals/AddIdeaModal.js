@@ -107,6 +107,7 @@ class AddIdeaModal extends Component {
   handleIdea(type, anonymousMode) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
+    console.log(this.props.files);
     const {
       id, tags, stage, mainTag,
     } = this.state;
@@ -115,6 +116,7 @@ class AddIdeaModal extends Component {
       category = tags[mainTag];
     }
     console.log(category);
+
     const idea = {
       id,
       title: this.title.value.trim(),
@@ -126,7 +128,9 @@ class AddIdeaModal extends Component {
       tags,
       category,
       anonymousMode,
+      files: this.props.files,
     };
+    console.log(idea);
     this.props.handleIdea(idea, type);
   }
 
@@ -210,7 +214,7 @@ class AddIdeaModal extends Component {
     console.log(`error code ${error.code}: ${error.message}`);
   }
 
-  /** 
+  /**
    * It only removes the file from the visual model
   */
   filesRemoveOne = (file) => {
@@ -358,9 +362,9 @@ class AddIdeaModal extends Component {
                             className="files-list-item-remove"
                   onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
                           />
-                         </li>))}
+                        </li>))}
                       </ul>
-                      </div>
+                    </div>
                     : null
                 }
 
@@ -387,11 +391,36 @@ class AddIdeaModal extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   console.log('AddIdeaModal.mapStateToProps...');
   console.log(state);
+  console.log(ownProps);
+
+  let files = [];
+  if (ownProps.idea !=null) {
+    const index = state.ideas.ideasArr.findIndex(x => x.id === ownProps.idea.id);
+    if (index !== -1) {
+      console.log("index != -1");
+      const ideaFiles = state.ideas.ideasArr[index].files;
+      if (ideaFiles !== null) {
+        console.log("files");  
+        console.log(files);
+        files = ideaFiles;
+      }
+    }
+
+  }
+
+/*
   return {
-    files: state.ideas.files,
+    files:state.ideas.files,
+    ...ownProps,
+  };
+*/
+
+  return {
+    files,
+    ...ownProps,
   };
 }
 

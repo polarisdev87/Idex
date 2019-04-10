@@ -8,7 +8,7 @@ import {
   TOGGLE_VOTE_SUCCESS
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
-import { CHANGE_FILES, UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST } from '../actions/files';
+import { CHANGE_FILES, UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, REMOVE_FILES_SUCCESS } from '../actions/files';
 
 export function ideas(state = {
   isFetchingIdeas: false,
@@ -135,10 +135,12 @@ export function ideas(state = {
       });
     }
     case UPLOAD_FILE_REQUEST: {
+      console.log("UPLOAD_FILE_REQUEST"); 
+      console.log(action.file); 
       let newIdeas = state.ideasArr;
       const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
       if (index !== -1) {
-        let newIdea = newIdeas[index];
+        let newIdea = state.ideasArr[index];
         if (newIdea.files == null) {
           newIdea.files = [action.file];
         } else {
@@ -160,6 +162,7 @@ export function ideas(state = {
     // the api endpoint return the file uploaded information
     case UPLOAD_FILE_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_SUCCESS');
+      console.log(state);
       const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
       if (index !== -1) {
         const idea = state.ideasArr[index];
@@ -205,18 +208,36 @@ export function ideas(state = {
       return state;
     }
     case REMOVE_FILES_REQUEST: {
+        console.log("REMOVE_FILES_REQUEST");
+        console.log("action.fileList.files");
+        console.log(action.fileList.files);
       let newIdeas = state.ideasArr;
       const index = state.ideasArr.findIndex(x => x.id === action.fileList.ideaId);
+        console.log("index");
+        console.log(index);
       if (index !== -1) {
         let newIdea = newIdeas[index];
+        console.log("newIdea");
+        console.log(newIdea);
         if (newIdea.files != null) {
-          for (const file in action.fileList.files) {
-            const fileIndex = newIdea.files.findIndex(x => x.id === file.id);
+            console.log("newIdea.files");
+            console.log(newIdea.files);
+          for (const fileI in action.fileList.files) {
+            console.log("file");  
+            console.log(fileI);  
+            console.log("newIdea");  
+            console.log(newIdea);  
+            const fileIndex = newIdea.files.findIndex(x => x.id == action.fileList.files[fileI].id);
+            console.log("fileIndex");
+            console.log(fileIndex);
             if (fileIndex !== -1) {
                 newIdea.files = [
-                ...idea.files.slice(0, fileIndex),
-                ...idea.files.slice(fileIndex + 1),
+                ...newIdea.files.slice(0, fileIndex),
+                ...newIdea.files.slice(fileIndex + 1),
               ];
+                console.log("newIdea.files");
+                console.log(newIdea.files);
+
             }
           }
           newIdeas = [
@@ -224,6 +245,8 @@ export function ideas(state = {
             newIdea,
             ...state.ideasArr.slice(index + 1),
           ];
+          console.log("newIdeas");
+          console.log(newIdeas);
         }
         return Object.assign({}, state, {
           ideasArr: newIdeas,

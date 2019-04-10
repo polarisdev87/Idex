@@ -28,7 +28,7 @@ class Ideas extends Component {
   }
 
   handleIdea(idea, type) {
-    console.log("handleIdea");
+    console.log("handleIdea(...)");
     console.log(idea);
     const { dispatch, files  } = this.props;
     const errorMessage = this.validateIdea(idea);
@@ -39,7 +39,7 @@ class Ideas extends Component {
         alert(errorMessage);
         return;
       }
-      dispatch(updateIdea(idea , files));
+      dispatch(updateIdea(idea));
     } else if (type === 'add') {
       if (errorMessage.length > 0) {
         dispatch(handleAddIdeaError(errorMessage));

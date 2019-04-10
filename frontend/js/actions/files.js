@@ -46,17 +46,20 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
 
 
 export function uploadFile(ideaId, file) {
-
-  console.log("uploadFile(ideaId,file)");
+  console.log('uploadFile(ideaId,file)');
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
+  let attachmentDto = {};
 
   if (token) {
-    const attachmentDto = {
+    attachmentDto = {
+      ...file,
       ideaId,
       fileId: file.id,
       originalFileName: file.name,
       size: file.size,
+      id: file.id,
+      name: file.name,
     };
     config = {
       headers: {
@@ -70,7 +73,7 @@ export function uploadFile(ideaId, file) {
     throw 'No token saved!';
   }
   return dispatch => {
-    dispatch(uploadFileRequest(ideaId, file));
+    dispatch(uploadFileRequest(ideaId, attachmentDto));
     console.log('uploadFileRequest(...)');
     console.log(ideaId);
     console.log(file);
@@ -79,8 +82,8 @@ export function uploadFile(ideaId, file) {
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-            console.log("error response");
-            console.log(response);
+          console.log('error response');
+          console.log(response);
           dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to upload file');
         }
@@ -232,17 +235,11 @@ function removeFilesError(message) {
   };
 }
 
-function removeFilesSuccess(ideaId, key, file) {
-  console.log('uploadFileSuccess');
-  console.log(ideaId);
-  console.log(key);
-  console.log(file);
-
+function removeFilesSuccess(fileListStructure) {
   return {
     type: REMOVE_FILES_SUCCESS,
-    ideaId,
-    key,
-    file,
+    ideaId:fileListStructure.ideaId,
+    files:fileListStructure.files,
   };
 }
 
