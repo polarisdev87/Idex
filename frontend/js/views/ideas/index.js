@@ -28,9 +28,9 @@ class Ideas extends Component {
   }
 
   handleIdea(idea, type) {
-    console.log("handleIdea(...)");
+    console.log('handleIdea(...)');
     console.log(idea);
-    const { dispatch  } = this.props;
+    const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
     if (type === 'edit') {
@@ -54,6 +54,21 @@ class Ideas extends Component {
 
   closeModal() {
     this.setState({ isOpen: false });
+  }
+
+
+  areAllAttachmentsUploaded(idea) {
+    console.log("areAllAttachmentsUploaded");
+    console.log(idea);
+    let result = true;
+    if (idea.files != null) {
+      const pendingUpload = idea.files.filter(file => file.persistenceId != null && file.cancelledAt == null && file.uploadedAt == null);
+      console.log("pendingUpload");
+      console.log(pendingUpload);
+      result = pendingUpload.length == 0;
+    }
+    console.log(result);
+    return result;
   }
 
   validateIdea(idea) {
@@ -86,6 +101,10 @@ class Ideas extends Component {
       errorMessage += 'Tags must be required.\n';
     }
 
+    // TODO: make a retry behavior when finishing editing or adding ideas
+    if (!this.areAllAttachmentsUploaded(idea)) {
+      errorMessage += 'Wait until all attachments are uploaded.\n';
+    }
     if (errorMessage.endsWith('\n')) {
       errorMessage = errorMessage.substr(0, errorMessage.length - 1);
     }
@@ -124,13 +143,13 @@ class Ideas extends Component {
     console.log('this.modalIdea ===>', this.modalIdea);
     const {
       ideas: {
-        ideasErrorMessage, 
-        isFetchingIdeas, 
-        commentsErrorMessage, 
-        isFetchingComments, 
+        ideasErrorMessage,
+        isFetchingIdeas,
+        commentsErrorMessage,
+        isFetchingComments,
         partialFullSwitch,
       },
-      ideasArr,   
+      ideasArr,
     } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
@@ -139,8 +158,8 @@ class Ideas extends Component {
           key={item.id}
           idea={item}
           liked={item.userSession.liked}
-          votes = {item.votes}
-          editable = {item.userSession.editable}
+          votes= {item.votes}
+          editable= {item.userSession.editable}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
         />
@@ -161,7 +180,7 @@ class Ideas extends Component {
               votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
               implementationTimeMsMax, tags, partialFullSwitch,
             ))}
-            numIdeas= {numIdeas}
+            numIdeas={numIdeas}
           />
           {renderIdeaItems}
         </div>

@@ -123,6 +123,8 @@ function uploadFileContentRequest(ideaId, htmlFormFile) {
 
 
 function uploadFileContentSuccess(uploadedFileMeta, ideaId) {
+  console.log("uploadFileContentSuccess(...)");  
+  console.log(uploadedFileMeta);
   return {
     type: UPLOAD_FILE_CONTENT_SUCCESS,
     ideaId,

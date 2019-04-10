@@ -504,7 +504,7 @@ public class IdeaServiceImpl implements IdeaService {
             	try {
             		boolean finish=false;
             		for (int i=0;i<10 && !finish;i++) {
-        				Thread.sleep(250);
+        				Thread.sleep(2500);
         				file = fileRepository.getOne(file.getId());
         				finish = file==null || file.getCancelledAt()!=null;
             		}
