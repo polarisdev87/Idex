@@ -17,6 +17,10 @@ function getFilesToRemove(oldFiles, files) {
   return newArray;
 }
 
+
+/**
+ * It is called after the user adds or removes file attachments on an idea
+ */
 export function changeFiles(dispatch, ideaId, oldFiles, files) {
   // discover difference with previous file list
   // upload all new files
@@ -37,14 +41,14 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   if (filesToRemove.length > 0) {
     dispatch(removeFiles(ideaId, filesToRemove));
   }
-
-  return {
-    type: CHANGE_FILES,
-    files,
-  };
 }
 
-
+/**
+ * 
+ * @param {*} ideaId 
+ * @param {*} file
+ *  
+ */
 export function uploadFile(ideaId, file) {
   console.log('uploadFile(ideaId,file)');
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
@@ -207,12 +211,12 @@ function uploadFileError(message) {
   };
 }
 
-function uploadFileSuccess(uploadedFile, ideaId, file) {
+function uploadFileSuccess(uploadedFileMeta, ideaId, htmlFormfile) {
   return {
     type: UPLOAD_FILE_SUCCESS,
     ideaId,
-    uploadedFile,
-    file,
+    uploadedFileMeta,
+    htmlFormfile,
   };
 }
 

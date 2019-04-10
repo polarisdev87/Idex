@@ -128,11 +128,6 @@ export function ideas(state = {
         ideasArr: newIdeas,
       });
     }
-    case CHANGE_FILES: {
-      return Object.assign({}, state, {
-        files: action.files,
-      });
-    }
     case UPLOAD_FILE_REQUEST: {
       console.log("UPLOAD_FILE_REQUEST"); 
       console.log(action.file); 
@@ -170,12 +165,12 @@ export function ideas(state = {
         if (idea.files == null) {
           idea.files = [];
         }
-        const fileIndex = idea.files.findIndex(x => x.id === action.file.id);
+        const fileIndex = idea.files.findIndex(x => x.id === action.htmlFormFile.id);
         if (fileIndex !== -1) {
           const newFile = Object.assign({}, idea.files[fileIndex], {
-            cancelledAt: action.uploadedFile.cancelledAt,
-            persistenceId: action.uploadedFile.persistenceId,
-            uploadedAt: action.uploadedFile.uploadedAt,
+            cancelledAt: action.uploadedFileMeta.cancelledAt,
+            persistenceId: action.uploadedFileMeta.persistenceId,
+            uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
           idea.files = [
             ...idea.files.slice(0, fileIndex),
@@ -183,10 +178,10 @@ export function ideas(state = {
             ...idea.files.slice(fileIndex + 1),
           ];
         } else {
-          const newFile = Object.assign({}, action.file, {
-            cancelledAt: action.uploadedFile.cancelledAt,
-            persistenceId: action.uploadedFile.persistenceId,
-            uploadedAt: action.uploadedFile.uploadedAt,
+          const newFile = Object.assign({}, action.htmlFormfile, {
+            cancelledAt: action.uploadedFileMeta.cancelledAt,
+            persistenceId: action.uploadedFileMeta.persistenceId,
+            uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
           idea.files = [
             ...idea.files,

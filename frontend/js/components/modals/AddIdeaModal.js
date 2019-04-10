@@ -207,7 +207,7 @@ class AddIdeaModal extends Component {
     console.log(this.props);
     console.log(files);
     const { dispatch, idea } = this.props;
-    dispatch(changeFiles(dispatch, idea.id, idea.files, files));
+    changeFiles(dispatch, idea.id, idea.files, files);
   }
 
   onFilesError = (error, file) => {
