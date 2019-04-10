@@ -8,7 +8,7 @@ import {
   TOGGLE_VOTE_SUCCESS
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
-import { CHANGE_FILES, UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, REMOVE_FILES_SUCCESS } from '../actions/files';
+import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS } from '../actions/files';
 
 export function ideas(state = {
   isFetchingIdeas: false,
@@ -129,12 +129,12 @@ export function ideas(state = {
       });
     }
     case UPLOAD_FILE_REQUEST: {
-      console.log("UPLOAD_FILE_REQUEST"); 
-      console.log(action.file); 
+      console.log('UPLOAD_FILE_REQUEST');
+      console.log(action.file);
       let newIdeas = state.ideasArr;
       const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
       if (index !== -1) {
-        let newIdea = state.ideasArr[index];
+        const newIdea = state.ideasArr[index];
         if (newIdea.files == null) {
           newIdea.files = [action.file];
         } else {
@@ -153,10 +153,11 @@ export function ideas(state = {
         ideasArr: newIdeas,
       });
     }
-    // the api endpoint return the file uploaded information
+    // the api endpoint return the file uploaded information (metadata - started to upload the file ) 
     case UPLOAD_FILE_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_SUCCESS');
       console.log(state);
+      console.log(action);
       const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
       if (index !== -1) {
         const idea = state.ideasArr[index];
@@ -193,7 +194,54 @@ export function ideas(state = {
           idea,
           ...state.ideasArr.slice(index + 1),
         ];
-        console.log("newIdeas");
+        console.log('newIdeas');
+        console.log(newIdeas);
+        return Object.assign({}, state, {
+          ideasArr: newIdeas,
+        });
+      }
+      return state;
+    }
+    // finished to upload file (uploaded completely)
+    case UPLOAD_FILE_CONTENT_SUCCESS: {
+      console.log('reducer:UPLOAD_FILE_CONTENT_SUCCESS');
+      const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+      if (index !== -1) {
+        const idea = state.ideasArr[index];
+        console.log('idea');
+        console.log(idea);
+        if (idea.files == null) {
+          idea.files = [];
+        }
+        const fileIndex = idea.files.findIndex(x => x.persistenceId === action.uploadedFileMeta.persistenceId);
+        if (fileIndex !== -1) {
+          const newFile = Object.assign({}, idea.files[fileIndex], {
+            cancelledAt: action.uploadedFileMeta.cancelledAt,
+            persistenceId: action.uploadedFileMeta.persistenceId,
+            uploadedAt: action.uploadedFileMeta.uploadedAt,
+          });
+          idea.files = [
+            ...idea.files.slice(0, fileIndex),
+            newFile,
+            ...idea.files.slice(fileIndex + 1),
+          ];
+        } else {
+          const newFile = Object.assign({}, action.htmlFormfile, {
+            cancelledAt: action.uploadedFileMeta.cancelledAt,
+            persistenceId: action.uploadedFileMeta.persistenceId,
+            uploadedAt: action.uploadedFileMeta.uploadedAt,
+          });
+          idea.files = [
+            ...idea.files,
+            newFile,
+          ];
+        }
+        const newIdeas = [
+          ...state.ideasArr.slice(0, index),
+          idea,
+          ...state.ideasArr.slice(index + 1),
+        ];
+        console.log('newIdeas');
         console.log(newIdeas);
         return Object.assign({}, state, {
           ideasArr: newIdeas,
@@ -202,36 +250,18 @@ export function ideas(state = {
       return state;
     }
     case REMOVE_FILES_REQUEST: {
-        console.log("REMOVE_FILES_REQUEST");
-        console.log("action.fileList.files");
-        console.log(action.fileList.files);
       let newIdeas = state.ideasArr;
       const index = state.ideasArr.findIndex(x => x.id === action.fileList.ideaId);
-        console.log("index");
-        console.log(index);
       if (index !== -1) {
-        let newIdea = newIdeas[index];
-        console.log("newIdea");
-        console.log(newIdea);
+        const newIdea = newIdeas[index];
         if (newIdea.files != null) {
-            console.log("newIdea.files");
-            console.log(newIdea.files);
           for (const fileI in action.fileList.files) {
-            console.log("file");  
-            console.log(fileI);  
-            console.log("newIdea");  
-            console.log(newIdea);  
             const fileIndex = newIdea.files.findIndex(x => x.id == action.fileList.files[fileI].id);
-            console.log("fileIndex");
-            console.log(fileIndex);
             if (fileIndex !== -1) {
-                newIdea.files = [
+              newIdea.files = [
                 ...newIdea.files.slice(0, fileIndex),
                 ...newIdea.files.slice(fileIndex + 1),
               ];
-                console.log("newIdea.files");
-                console.log(newIdea.files);
-
             }
           }
           newIdeas = [
@@ -239,8 +269,6 @@ export function ideas(state = {
             newIdea,
             ...state.ideasArr.slice(index + 1),
           ];
-          console.log("newIdeas");
-          console.log(newIdeas);
         }
         return Object.assign({}, state, {
           ideasArr: newIdeas,

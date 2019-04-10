@@ -1,15 +1,18 @@
 import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
 
 
-export const CHANGE_FILES = 'CHANGE_FILES';
-
-
+/**
+ * Identify all files that aren't in oldFiles
+ */
 function getFilesToAdd(oldFiles, files) {
   const gotOldFiles = oldFiles == null ? [] : oldFiles;
   const newArray = files.filter((el) => gotOldFiles.indexOf(el) < 0);
   return newArray;
 }
 
+/**
+ * Identify all files that aren't in files and was in oldFiles
+ */
 function getFilesToRemove(oldFiles, files) {
   const gotFiles = files == null ? [] : files;
   const gotOldFiles = oldFiles == null ? [] : oldFiles;
@@ -49,21 +52,22 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
  * @param {*} file
  *  
  */
-export function uploadFile(ideaId, file) {
-  console.log('uploadFile(ideaId,file)');
+export function uploadFile(ideaId, htmlFormFile) {
+  console.log('uploadFile(ideaId,htmlFormFile)');
+  console.log(htmlFormFile);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
   let attachmentDto = {};
 
   if (token) {
     attachmentDto = {
-      ...file,
+      ...htmlFormFile,
       ideaId,
-      fileId: file.id,
-      originalFileName: file.name,
-      size: file.size,
-      id: file.id,
-      name: file.name,
+      fileId: htmlFormFile.id,
+      originalFileName: htmlFormFile.name,
+      size: htmlFormFile.size,
+      id: htmlFormFile.id,
+      name: htmlFormFile.name,
     };
     config = {
       headers: {
@@ -80,7 +84,7 @@ export function uploadFile(ideaId, file) {
     dispatch(uploadFileRequest(ideaId, attachmentDto));
     console.log('uploadFileRequest(...)');
     console.log(ideaId);
-    console.log(file);
+    console.log(htmlFormFile);
     console.log(config);
     return fetch(`${API_BASE_URI}/ideas/attach`, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -88,12 +92,13 @@ export function uploadFile(ideaId, file) {
         if (!response.ok) {
           console.log('error response');
           console.log(response);
-          dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
+          dispatch(updateFileError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to upload file');
         }
         console.log('uploadFile... body');
         console.log(body);
-        dispatch(uploadFileSuccess(body, ideaId, file));
+        console.log(htmlFormFile);
+        dispatch(uploadFileSuccess(dispatch, body, ideaId, htmlFormFile));
         return true;
       }).catch(err => {
         dispatch(uploadFileError(`Failed to upload file. ${err}`));
@@ -103,16 +108,40 @@ export function uploadFile(ideaId, file) {
 }
 
 
-export function uploadFileContent(ideaId, file) {
+export const UPLOAD_FILE_CONTENT_REQUEST = 'UPLOAD_FILE_CONTENT_REQUEST';
+export const UPLOAD_FILE_CONTENT_SUCCESS = 'UPLOAD_FILE_CONTENT_SUCCESS';
+export const UPLOAD_FILE_CONTENT_FAILURE = 'UPLOAD_FILE_CONTENT_FAILURE';
+
+
+function uploadFileContentRequest(ideaId, htmlFormFile) {
+  return {
+    type: UPLOAD_FILE_CONTENT_REQUEST,
+    ideaId,
+    htmlFormFile,
+  };
+}
+
+
+function uploadFileContentSuccess(uploadedFileMeta, ideaId) {
+  return {
+    type: UPLOAD_FILE_CONTENT_SUCCESS,
+    ideaId,
+    uploadedFileMeta,
+  };
+}
+
+
+export function uploadFileContent(ideaId, persistenceId, htmlFormFile) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
   if (token) {
     const formData = new FormData();
-    formData.append('file', new Blob([file], { type: file.type }), file.name || 'file');
+    formData.append('file', new Blob([htmlFormFile], { type: htmlFormFile.type }), htmlFormFile.name || 'file');
     formData.append('ideaId', ideaId);
-    formData.append('fileId', file.id);
-    formData.append('name', file.name);
+    formData.append('fileId', htmlFormFile.id);
+    formData.append('persistenceId', persistenceId);
+    formData.append('name', htmlFormFile.name);
     config = {
       headers: {
         Authorization: `${token}`,
@@ -124,23 +153,23 @@ export function uploadFileContent(ideaId, file) {
     throw 'No token saved!';
   }
   return dispatch => {
-    dispatch(uploadFileRequest(ideaId, file));
-    console.log('uploadFileRequest(...)');
+    dispatch(uploadFileContentRequest(ideaId, htmlFormFile));
+    console.log('uploadFileContentRequest(...)');
     console.log(ideaId);
-    console.log(file);
+    console.log(htmlFormFile);
     return fetch(`${API_BASE_URI}/ideas/attach-content`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(updateIdeaError(`Failed to upload file. ${body.error}`));
+          dispatch(uploadFileContentError(`Failed to upload file. ${body.error}`));
           return Promise.reject('Failed to upload file');
         }
-        console.log('uploadFile... body');
+        console.log('uploadFileContent... body');
         console.log(body);
-        dispatch(uploadFileSuccess(body, ideaId, file));
+        dispatch(uploadFileContentSuccess(body, ideaId, htmlFormFile));
         return true;
       }).catch(err => {
-        dispatch(uploadFileError(`Failed to upload file. ${err}`));
+        dispatch(uploadFileContentError(`Failed to upload file. ${err}`));
         console.log('Error: ', err);
       });
   };
@@ -211,12 +240,14 @@ function uploadFileError(message) {
   };
 }
 
-function uploadFileSuccess(uploadedFileMeta, ideaId, htmlFormfile) {
+function uploadFileSuccess(dispatch, uploadedFileMeta, ideaId, htmlFormFile) {
+  console.log("uploadFileSuccess(...)");
+  dispatch(uploadFileContent(ideaId, uploadedFileMeta.persistenceId, htmlFormFile));
   return {
     type: UPLOAD_FILE_SUCCESS,
     ideaId,
     uploadedFileMeta,
-    htmlFormfile,
+    htmlFormFile,
   };
 }
 

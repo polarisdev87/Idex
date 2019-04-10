@@ -94,7 +94,7 @@ public class IdeaRestController {
     public AttachmentDto uploadFileContent(
     			@RequestParam(value = "ideaId", required = true) Long ideaId,
     			@RequestParam(value = "fileId", required = true) String fileId,
-    			@RequestParam(value = "persistentId", required = true) Long persistentId,
+    			@RequestParam(value = "persistenceId", required = true) Long persistenceId,
     			@RequestParam("file") MultipartFile file) {
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
@@ -109,7 +109,7 @@ public class IdeaRestController {
                 .toUriString();
 		*/
     	// UPLOADING FILE
-    	AttachmentDto attachmentDto = new AttachmentDto(persistentId,ideaId,fileId,file.getOriginalFilename(),file.getSize());
+    	AttachmentDto attachmentDto = new AttachmentDto(persistenceId,ideaId,fileId,file.getOriginalFilename(),file.getSize());
     	if (!file.isEmpty()) {
     		try {
     	    	attachmentDto= ideaService.uploadContent(file.getBytes(),attachmentDto,requester);
