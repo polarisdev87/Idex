@@ -3,7 +3,9 @@ package com.gs2.pipeline.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
+import com.gs2.pipeline.domain.File;
 import com.gs2.pipeline.domain.Idea;
+import com.gs2.pipeline.domain.IdeaFile;
 import com.gs2.pipeline.domain.Tag;
 
 import java.util.ArrayList;
@@ -83,7 +85,7 @@ public class IdeaDto {
     
     
 
-    public Idea toDao(Set<Tag> tags, Tag category, Account submittedBy) {
+    public Idea toDao(Set<Tag> tags, Set<File> files, Tag category, Account submittedBy) {
         Idea idea = new Idea();
 
         idea.setId(id);
@@ -98,6 +100,12 @@ public class IdeaDto {
         idea.setExpectedTtm(expectedTtm);
 //        idea.setActualTtm(actualTtm);
         idea.setTags(tags);
+        for (File file:files) {
+        	IdeaFile ideaFile = new IdeaFile();
+        	ideaFile.setIdea(idea);
+        	ideaFile.setFile(file);
+        	idea.addIdeaFile(ideaFile);
+        }
         idea.setCategory(category);
         idea.setVotes(votes);
         idea.setExpectedProfitInCents(expectedProfitInCents);

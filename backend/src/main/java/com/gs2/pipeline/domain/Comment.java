@@ -3,6 +3,7 @@ package com.gs2.pipeline.domain;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -97,12 +98,20 @@ public class Comment {
 		this.anonymous = anonymous;
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "comment_file",
-            joinColumns = {@JoinColumn(name = "comment_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "file_id", referencedColumnName = "id")})
-    private Set<File> files;
+    @OneToMany(mappedBy = "primaryKey.comment")    
+    private Set<CommentFile> commentFiles = new HashSet<CommentFile>();
+    
+    public Set<CommentFile> getCommentFiles() {
+        return commentFiles;
+    }    
+    
+    public void setCommentFiles(Set<CommentFile> commentFiles) {
+		this.commentFiles = commentFiles;
+	}
+
+    public void addCommentFile(CommentFile commentFile) {
+    	this.commentFiles.add(commentFile);
+    }
 
 	@Override
 	public int hashCode() {

@@ -6,12 +6,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "idea")
 public class Idea {
 
+	
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idea_seq")
@@ -70,16 +72,22 @@ public class Idea {
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private Set<Tag> tags;
     
+    @OneToMany(mappedBy = "primaryKey.idea")    
+    private Set<IdeaFile> ideaFiles = new HashSet<IdeaFile>();
+    
+    public Set<IdeaFile> getIdeaFiles() {
+        return ideaFiles;
+    }    
+    
+    public void setIdeaFiles(Set<IdeaFile> ideaFiles) {
+		this.ideaFiles = ideaFiles;
+	}
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "idea_file",
-            joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "file_id", referencedColumnName = "id")})
-    private Set<File> files;
-    
-    
-    @ManyToOne
+    public void addIdeaFile(IdeaFile ideaFile) {
+    	this.ideaFiles.add(ideaFile);
+    }
+
+	@ManyToOne
     @JoinColumn(name = "category")
     private Tag category;
 
@@ -231,13 +239,6 @@ public class Idea {
 	
 	
 	
-	public Set<File> getFiles() {
-		return files;
-	}
-
-	public void setFiles(Set<File> files) {
-		this.files = files;
-	}
 
 	/**
 	 * requester is allowed to edit Idea

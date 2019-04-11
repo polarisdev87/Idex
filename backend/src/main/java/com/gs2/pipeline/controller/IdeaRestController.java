@@ -4,6 +4,7 @@ import com.gs2.pipeline.config.security.jwt.JwtUser;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
+import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
 import com.gs2.pipeline.service.AccountService;
 import com.gs2.pipeline.service.IdeaDistributionTtmProfitVoteService;
 import com.gs2.pipeline.service.IdeaService;
@@ -68,24 +69,12 @@ public class IdeaRestController {
     
     
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public IdeaDto upsert(@RequestBody IdeaDto ideaDto) {
+    public IdeaDto upsert(@RequestBody IdeaDto ideaDto) throws AttachmentsNotUploadedException {
 
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
         
-        // set attachment ids
-        List<AttachmentDto> files = ideaDto.getFiles();
-        
-        long startTime = System.nanoTime();
-        boolean uploadedFilesReady = false;
-        boolean uploadedFilesCancelled = false;
-        files = ideaService.checkUploadFilesStatus(files);
-        uploadedFilesReady = ideaService.areUploadededFilesReady(files);
-        if (uploadedFilesReady) {
-            return ideaService.upsert(ideaDto, requester);
-        } else {
-        	return null;
-        }
+        return ideaService.upsert(ideaDto, requester);
     }
     
 

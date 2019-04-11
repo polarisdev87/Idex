@@ -2,6 +2,7 @@ package com.gs2.pipeline.service;
 
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.dto.*;
+import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface IdeaService {
 
     List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto, Account requester);
     List<IdeaDto> getIdeasSummary(GetIdeasDto getIdeasDto);
-    IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy);
+    IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) throws AttachmentsNotUploadedException;
     IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException;
     List<TagDto> getPopularTags();
     IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;

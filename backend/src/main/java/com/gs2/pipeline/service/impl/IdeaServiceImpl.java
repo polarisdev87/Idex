@@ -2,9 +2,12 @@ package com.gs2.pipeline.service.impl;
 
 import com.gs2.pipeline.domain.*;
 import com.gs2.pipeline.dto.*;
+import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
+import com.gs2.pipeline.repository.CommentFileRepository;
 import com.gs2.pipeline.repository.CommentRepository;
 import com.gs2.pipeline.repository.FileRepository;
+import com.gs2.pipeline.repository.IdeaFileRepository;
 import com.gs2.pipeline.repository.IdeaRepository;
 import com.gs2.pipeline.repository.TagRepository;
 import com.gs2.pipeline.repository.VoteRepository;
@@ -12,6 +15,7 @@ import com.gs2.pipeline.service.IdeaService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.expression.spel.ast.ValueRef.NullValueRef;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +24,6 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import javax.management.RuntimeErrorException;
 
 @Service
 public class IdeaServiceImpl implements IdeaService {
@@ -34,16 +37,22 @@ public class IdeaServiceImpl implements IdeaService {
 	private final VoteRepository voteRepository;
 	private final CommentRepository commentRepository;
 	private final FileRepository fileRepository;
+	private final IdeaFileRepository ideaFileRepository;
+	private final CommentFileRepository commentFileRepository;
 
 	@Autowired
-	public IdeaServiceImpl(IdeaRepository ideaRepository, TagRepository tagRepository, VoteRepository voteRepository,
-			CommentRepository commentRepository, FileRepository fileRepository) {
+	public IdeaServiceImpl(
+			IdeaRepository ideaRepository, TagRepository tagRepository, VoteRepository voteRepository,
+			CommentRepository commentRepository, FileRepository fileRepository, IdeaFileRepository ideaFileRepository, 
+			CommentFileRepository commentFileRepository) {
 
 		this.ideaRepository = ideaRepository;
 		this.tagRepository = tagRepository;
 		this.voteRepository = voteRepository;
 		this.commentRepository = commentRepository;
 		this.fileRepository = fileRepository;
+		this.ideaFileRepository = ideaFileRepository;
+		this.commentFileRepository = commentFileRepository;
 	}
 
 	private Set<String> getNormalizedTags(Set<String> tags) {
@@ -167,9 +176,17 @@ public class IdeaServiceImpl implements IdeaService {
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) {
+	public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) throws AttachmentsNotUploadedException {
 
-		Set<File> files = upsertInitialFiles(ideaDto.getFiles());
+        List<AttachmentDto> filesDto = ideaDto.getFiles();
+        filesDto = checkUploadFilesStatus(filesDto);
+        boolean uploadedFilesReady = areUploadededFilesReady(filesDto);
+		
+		if (!uploadedFilesReady) {
+			throw new AttachmentsNotUploadedException("attachments not uploaded:"+filesDto.toString());
+		}
+		
+		Set<File> files = upsertInitialFiles(filesDto);
 		Set<Tag> tags = upsertInitialTagsFromStrings(ideaDto.getTags());
 
 		Idea existing = null;
@@ -180,13 +197,13 @@ public class IdeaServiceImpl implements IdeaService {
 
 		if (existing != null) {
 			if (existing.isEditable(upsertedBy)) {
-				return update(existing, ideaDto, upsertedBy, tags);
+				return update(existing, ideaDto, upsertedBy, tags, files);
 			} else {
 				// Not authorized user
 				return null;
 			}
 		} else {
-			return insert(ideaDto, upsertedBy, tags);
+			return insert(ideaDto, upsertedBy, tags, files);
 		}
 	}
 
@@ -292,7 +309,7 @@ public class IdeaServiceImpl implements IdeaService {
 	 * @param filesDto
 	 * @return
 	 */
-	private Set<File> upsertInitialFiles(List<AttachmentDto> filesDto) {
+	private Set<File> upsertInitialFiles(List<AttachmentDto> filesDto) throws AttachmentsNotUploadedException {
 		if (filesDto!=null) {
 			Set<File> files = new HashSet<>(filesDto.size());
 			for (AttachmentDto fileDto : filesDto) {
@@ -300,11 +317,11 @@ public class IdeaServiceImpl implements IdeaService {
 				File file = fileRepository.findOne(fileDto.getPersistenceId());
 
 				if (file == null) {
-					// TODO: error ... it should be added the
-					throw new RuntimeErrorException(null, "not uploaded file");
+					throw new AttachmentsNotUploadedException("not uploaded file:"+fileDto);
 				}
-
-				files.add(file);
+				if (file.getCancelledAt()==null && file.getUploadedAt()!=null) {
+					files.add(file);
+				}
 			}
 			return files;
 		} else {
@@ -350,7 +367,7 @@ public class IdeaServiceImpl implements IdeaService {
 	 * @return
 	 */
 
-	private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags) {
+	private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags, Set <File> files) {
 
 		for (Tag tag : tags) {
 			tag.setUses(tag.getUses() + 1);
@@ -361,7 +378,7 @@ public class IdeaServiceImpl implements IdeaService {
 			category = tagRepository.findByNameIgnoreCase(ideaDto.getCategory());
 		}
 
-		Idea idea = ideaDto.toDao(tags, category, insertedBy);
+		Idea idea = ideaDto.toDao(tags, files, category, insertedBy);
 
 		Date currentTime = new Date();
 		idea.setSubmittedAt(currentTime);
@@ -373,10 +390,12 @@ public class IdeaServiceImpl implements IdeaService {
 		return ideaRepository.save(idea).toDto(false, insertedBy);
 	}
 
-	private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags) {
+	private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags, Set<File> files) {
 
 		TagsToUpdate tagTasks = updateTags(existing.getTags(), tags);
 		tagRepository.save(tagTasks.getTagsToSave());
+		
+		IdeaFilesToUpdate ideaFileTasks = updateIdeaFiles(existing.getIdeaFiles(),files);
 
 		Tag category = null;
 		if (updatedIdeaDto.getCategory() != null) {
@@ -395,6 +414,7 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 
 		existing.setTags(tags);
+// 		existing.setFiles(files);
 
 		existing.setExpectedCostInCents(updatedIdeaDto.getExpectedCostInCents());
 //         existing.setActualCostInCents(updatedIdeaDto.getActualCostInCents());
@@ -409,6 +429,7 @@ public class IdeaServiceImpl implements IdeaService {
 
 		ideaRepository.save(existing);
 		tagRepository.delete(tagTasks.getTagsToDelete());
+		fileRepository.delete(ideaFileTasks.getFilesToDelete());
 
 		// Don't let votes change here. That should be done via call to vote endpoint
 		updatedIdeaDto.setVotes(existing.getVotes());
@@ -419,6 +440,45 @@ public class IdeaServiceImpl implements IdeaService {
 		return updatedIdeaDto;
 	}
 
+	
+	/**
+	 * This method should only be used when updating an existing idea, not when
+	 * inserting a new one.
+	 *
+	 */
+	private IdeaFilesToUpdate updateIdeaFiles(Set<IdeaFile> existingIdeaFiles, Set<File> updatedFiles) {
+
+		// Add any new file uses
+		// All files were saved when uploaded
+		Set<File> filesToSave = new HashSet<File>();
+
+		// Remove any existing file uses that are no longer used
+		Set<IdeaFile> ideaFilesToDelete = new HashSet<IdeaFile>();
+		for (IdeaFile existingIdeaFile : existingIdeaFiles) {
+			if (!updatedFiles.contains(existingIdeaFile.getFile())) {
+				ideaFilesToDelete.add(existingIdeaFile);
+			} else {
+				Optional<File> file = 
+						updatedFiles.stream().filter(fileElement -> fileElement.getId().equals(existingIdeaFile.getFile().getId())).findFirst();
+				if (file.get().getCancelledAt()!=null) {
+					ideaFilesToDelete.add(existingIdeaFile);
+				}
+			}
+		}
+		Set<File> confirmedFilesToDelete = new HashSet<File>();
+		for (IdeaFile existingIdeaFile : ideaFilesToDelete) {
+			List<IdeaFile> ideaFiles = this.ideaFileRepository.findByPrimaryKeyFile(existingIdeaFile.getFile());
+			List<CommentFile> commentFiles = this.commentFileRepository.findByPrimaryKeyFile(existingIdeaFile.getFile());
+			if (ideaFiles.size() <= 1 && commentFiles.size() <= 1) {
+				confirmedFilesToDelete.add(existingIdeaFile.getFile());
+			}
+		}
+		
+		return new IdeaFilesToUpdate(filesToSave, confirmedFilesToDelete);
+	}
+
+	
+	
 	/**
 	 * This method should only be used when updating an existing idea, not when
 	 * inserting a new one.
@@ -474,6 +534,28 @@ public class IdeaServiceImpl implements IdeaService {
 
 	}
 
+
+	private class IdeaFilesToUpdate {
+		Set<File> filesToSave;
+		Set<File> filesToDelete;
+
+		public IdeaFilesToUpdate(Set<File> filesToSave, Set<File> filesToDelete) {
+			super();
+			this.filesToSave = filesToSave;
+			this.filesToDelete = filesToDelete;
+		}
+
+		public Set<File> getFilesToSave() {
+			return filesToSave;
+		}
+
+		public Set<File> getFilesToDelete() {
+			return filesToDelete;
+		}
+
+	}
+	
+	
 	
 	/**
 	 *	persist on database upload event and generate File id 
@@ -502,9 +584,12 @@ public class IdeaServiceImpl implements IdeaService {
     			TODO: Genearate md5 to save in table
     			*/
             	try {
+                    long startTime = System.nanoTime();
+            		// TODO: Save the file to S3 instance
             		boolean finish=false;
             		for (int i=0;i<10 && !finish;i++) {
-        				Thread.sleep(2500);
+            			
+        				Thread.sleep(1250);
         				file = fileRepository.getOne(file.getId());
         				finish = file==null || file.getCancelledAt()!=null;
             		}

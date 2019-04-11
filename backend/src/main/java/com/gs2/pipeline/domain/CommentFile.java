@@ -2,66 +2,66 @@ package com.gs2.pipeline.domain;
 
 import java.util.Date;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "comment_file")
+@AssociationOverrides({
+    @AssociationOverride(name = "primaryKey.comment",
+        joinColumns = @JoinColumn(name = "comment_id")),
+    @AssociationOverride(name = "primaryKey.file",
+        joinColumns = @JoinColumn(name = "file_id")) })
 public class CommentFile {
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_file_seq")
-    @SequenceGenerator(name = "comment_file_seq", sequenceName = "comment_file_seq", allocationSize = 1)
-    private Long id;
+	
+	@EmbeddedId
+	private CommentFileId primaryKey = new CommentFileId();
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id")
-    private Comment comment;
     
     @ManyToOne
-    @JoinColumn(name = "file_id")
-    private File file;
-    
-    @ManyToOne
-    @JoinColumn(name = "submitted_by", nullable = false)
+    @JoinColumn(name = "submitted_by", nullable = true)
     private Account submittedBy;
 
     @Column(name = "submitted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
 
-	public Long getId() {
-		return id;
+	
+    public CommentFileId getPrimaryKey() {
+		return primaryKey;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setPrimaryKey(CommentFileId primaryKey) {
+		this.primaryKey = primaryKey;
 	}
 
+	@Transient
 	public Comment getComment() {
-		return comment;
+		return primaryKey.getComment();
 	}
 
 	public void setComment(Comment comment) {
-		this.comment = comment;
+		this.primaryKey.setComment(comment); 
 	}
 
+	@Transient
 	public File getFile() {
-		return file;
+		return primaryKey.getFile();
 	}
 
 	public void setFile(File file) {
-		this.file = file;
+		this.primaryKey.setFile(file);
 	}
+
 
 	public Account getSubmittedBy() {
 		return submittedBy;
@@ -78,7 +78,6 @@ public class CommentFile {
 	public void setSubmittedAt(Date submittedAt) {
 		this.submittedAt = submittedAt;
 	}
-
     
     
 }
