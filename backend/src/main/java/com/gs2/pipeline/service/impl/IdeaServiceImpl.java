@@ -395,7 +395,7 @@ public class IdeaServiceImpl implements IdeaService {
 		TagsToUpdate tagTasks = updateTags(existing.getTags(), tags);
 		tagRepository.save(tagTasks.getTagsToSave());
 		
-		IdeaFilesToUpdate ideaFileTasks = updateIdeaFiles(existing.getIdeaFiles(),files);
+		IdeaFilesToUpdate ideaFileTasks = updateIdeaFiles(existing, existing.getIdeaFiles(),files);
 
 		Tag category = null;
 		if (updatedIdeaDto.getCategory() != null) {
@@ -414,7 +414,11 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 
 		existing.setTags(tags);
-// 		existing.setFiles(files);
+		
+		for (IdeaFile ideaFile:ideaFileTasks.getFilesToSave() ) {
+			ideaFileRepository.save(ideaFile);
+			existing.addIdeaFile(ideaFile);
+		}
 
 		existing.setExpectedCostInCents(updatedIdeaDto.getExpectedCostInCents());
 //         existing.setActualCostInCents(updatedIdeaDto.getActualCostInCents());
@@ -426,7 +430,7 @@ public class IdeaServiceImpl implements IdeaService {
 //         existing.setActualTtm(updatedIdeaDto.getActualTtm());
 
 		existing.setUpdatedAt(new Date());
-
+		
 		ideaRepository.save(existing);
 		tagRepository.delete(tagTasks.getTagsToDelete());
 		fileRepository.delete(ideaFileTasks.getFilesToDelete());
@@ -446,11 +450,24 @@ public class IdeaServiceImpl implements IdeaService {
 	 * inserting a new one.
 	 *
 	 */
-	private IdeaFilesToUpdate updateIdeaFiles(Set<IdeaFile> existingIdeaFiles, Set<File> updatedFiles) {
+	private IdeaFilesToUpdate updateIdeaFiles(Idea idea,Set<IdeaFile> existingIdeaFiles, Set<File> updatedFiles) {
 
 		// Add any new file uses
 		// All files were saved when uploaded
-		Set<File> filesToSave = new HashSet<File>();
+		Set<IdeaFile> filesToSave = new HashSet<IdeaFile>();
+		for (File updatedFile : updatedFiles) {
+			Optional<IdeaFile> ideaFile = existingIdeaFiles.stream().filter(ideaFileItem -> ideaFileItem.getFile().getId().equals(updatedFile.getId())).findFirst();
+			if (!ideaFile.isPresent()) {
+				IdeaFile newIdeaFile = new IdeaFile();
+				newIdeaFile.setIdea(idea);
+				newIdeaFile.setFile(updatedFile);
+				filesToSave.add(newIdeaFile);
+			}
+		}
+		
+		
+		
+		
 
 		// Remove any existing file uses that are no longer used
 		Set<IdeaFile> ideaFilesToDelete = new HashSet<IdeaFile>();
@@ -474,7 +491,7 @@ public class IdeaServiceImpl implements IdeaService {
 			}
 		}
 		
-		return new IdeaFilesToUpdate(filesToSave, confirmedFilesToDelete);
+		return new IdeaFilesToUpdate(filesToSave, ideaFilesToDelete, confirmedFilesToDelete);
 	}
 
 	
@@ -536,21 +553,27 @@ public class IdeaServiceImpl implements IdeaService {
 
 
 	private class IdeaFilesToUpdate {
-		Set<File> filesToSave;
+		Set<IdeaFile> filesToSave;
+		Set<IdeaFile> ideaFilesToDelete;
 		Set<File> filesToDelete;
 
-		public IdeaFilesToUpdate(Set<File> filesToSave, Set<File> filesToDelete) {
+		public IdeaFilesToUpdate(Set<IdeaFile> filesToSave, Set<IdeaFile> ideaFilesToDelete, Set<File> filesToDelete) {
 			super();
 			this.filesToSave = filesToSave;
 			this.filesToDelete = filesToDelete;
+			this.ideaFilesToDelete = ideaFilesToDelete;
 		}
 
-		public Set<File> getFilesToSave() {
+		public Set<IdeaFile> getFilesToSave() {
 			return filesToSave;
 		}
 
 		public Set<File> getFilesToDelete() {
 			return filesToDelete;
+		}
+		
+		public Set<IdeaFile> getIdeaFilesToDelete() {
+			return ideaFilesToDelete;
 		}
 
 	}
