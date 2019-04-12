@@ -393,6 +393,7 @@ class AddIdeaModal extends Component {
 
 function mapStateToProps(state, ownProps) {
   console.log('AddIdeaModal.mapStateToProps...');
+  console.log('state');
   console.log(state);
   console.log(ownProps);
 

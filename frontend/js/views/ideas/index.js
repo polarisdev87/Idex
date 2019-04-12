@@ -124,7 +124,7 @@ class Ideas extends Component {
     });
     this.modalIdea = idea;
     this.type = 'edit';
-    console.log('edit type ===>', this.type);
+    console.log('index.editbutton.edit type ===>', this.type);
   }
 
   viewIdeaClickHandler(idea) {
@@ -133,7 +133,7 @@ class Ideas extends Component {
     });
     this.modalIdea = idea;
     this.type = 'view';
-    console.log('view type ===>', this.type);
+    console.log('index.view button view type ===>', this.type);
   }
 
   render() {

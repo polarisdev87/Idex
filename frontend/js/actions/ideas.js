@@ -128,11 +128,15 @@ function updateIdeaError(message) {
   };
 }
 
-function updateIdeaSuccess(idea, anonymousMode) {
-  console.log('updateIdeaSuccess');
-  console.log(idea);
+function updateIdeaSuccess(updatedIdea, oldIdea, anonymousMode) {
+  console.log('updateIdeaSuccess(...)');
+  console.log("updatedIdea");
+  console.log(updatedIdea);
+  console.log("oldIdea");
+  console.log(oldIdea);
   console.log(anonymousMode);
-  const newIdea = Object.assign({}, idea, { anonymousMode });
+  const newIdea = Object.assign({},oldIdea, updatedIdea, { anonymousMode });
+  console.log("newIdea");
   console.log(newIdea);
 
   return {
@@ -179,7 +183,7 @@ export function updateIdea(idea) {
           return Promise.reject('Failed to update idea');
         }
         // TODO: Take anonymousMode from userSession property
-        dispatch(updateIdeaSuccess(body, idea.anonymousMode));
+        dispatch(updateIdeaSuccess(body, idea, idea.anonymousMode));
         return true;
       }).catch(err => {
         dispatch(updateIdeaError(`Failed to update user. ${err}`));

@@ -122,13 +122,17 @@ function uploadFileContentRequest(ideaId, htmlFormFile) {
 }
 
 
-function uploadFileContentSuccess(uploadedFileMeta, ideaId) {
+function uploadFileContentSuccess(uploadedFileMeta, ideaId, oldFile) {
   console.log("uploadFileContentSuccess(...)");  
+  console.log("uploadedFileMeta");
   console.log(uploadedFileMeta);
+  const newFile = Object.assign({},oldFile,uploadedFileMeta);
+  console.log("newFile");
+  console.log(newFile);
   return {
     type: UPLOAD_FILE_CONTENT_SUCCESS,
     ideaId,
-    uploadedFileMeta,
+    uploadedFileMeta:newFile,
   };
 }
 
@@ -234,6 +238,13 @@ function uploadFileRequest(ideaId, file) {
     file,
   };
 }
+
+function uploadFileContentError(message) {
+	  return {
+	    type: UPLOAD_FILE_CONTENT_FAILURE,
+	    message,
+	  };
+	}
 
 function uploadFileError(message) {
   return {

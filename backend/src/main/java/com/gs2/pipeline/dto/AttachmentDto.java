@@ -16,7 +16,7 @@ public class AttachmentDto {
     Date lastModifiedDate;
     String originalFileName;
     Long size;
-    String type;
+    String extension;
     /**
      * public url of the file
      * 
@@ -45,6 +45,8 @@ public class AttachmentDto {
 	 * The form is of the type file-1 file-2 file-n
      */
     String fileId;
+    
+    String sizeReadeable;
     
     
     
@@ -82,11 +84,11 @@ public class AttachmentDto {
 	public void setSize(Long size) {
 		this.size = size;
 	}
-	public String getType() {
-		return type;
+	public String getExtension() {
+		return extension;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setExtension(String extension) {
+		this.extension = extension;
 	}
 
 	public Long getPersistenceId() {
@@ -155,6 +157,15 @@ public class AttachmentDto {
 		this.cancelledAt = cancelledAt;
 	}
 
+	public String getSizeReadeable() {
+		return sizeReadeable;
+	}
+
+	public void setSizeReadeable(String sizeReadeable) {
+		this.sizeReadeable = sizeReadeable;
+	}
+
+	
     
 	
 

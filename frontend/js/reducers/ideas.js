@@ -20,6 +20,9 @@ export function ideas(state = {
   anonymousMode: false,
 
 }, action) {
+	 console.log("IDEAS REDUCER...");
+	 console.log(action);
+	 console.log(state);
   switch (action.type) {
     case GET_IDEAS_REQUEST:
       return Object.assign({}, state, {
@@ -71,12 +74,19 @@ export function ideas(state = {
       });
     }
     case UPDATE_IDEA_SUCCESS: {
+      console.log("UPDATE_IDEA_SUCCESS");
       let newIdeas = state.ideasArr;
       const index = state.ideasArr.findIndex(x => x.id === action.idea.id);
       if (index !== -1) {
+        console.log(state.ideasArr[index]);
+        console.log("action.idea");
+        console.log(action.idea);
+        const newIdea = Object.assign({},state.ideasArr[index],action.idea);
+        console.log("newIdea");
+        console.log(newIdea);
         newIdeas = [
           ...state.ideasArr.slice(0, index),
-          action.idea,
+          newIdea,
           ...state.ideasArr.slice(index + 1),
         ];
       }
@@ -168,22 +178,30 @@ export function ideas(state = {
         }
         const fileIndex = idea.files.findIndex(x => x.id === action.htmlFormFile.id);
         if (fileIndex !== -1) {
+        	console.log('initial file');
+        	console.log(idea.files[fileIndex]);
           const newFile = Object.assign({}, idea.files[fileIndex], {
             cancelledAt: action.uploadedFileMeta.cancelledAt,
             persistenceId: action.uploadedFileMeta.persistenceId,
             uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
+      	console.log('newFile');
+    	console.log(newFile);
           idea.files = [
             ...idea.files.slice(0, fileIndex),
             newFile,
             ...idea.files.slice(fileIndex + 1),
           ];
         } else {
+        	console.log('htmlFormFile');
+        	console.log(htmlFormFile);
           const newFile = Object.assign({}, action.htmlFormfile, {
             cancelledAt: action.uploadedFileMeta.cancelledAt,
             persistenceId: action.uploadedFileMeta.persistenceId,
             uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
+        	console.log('newFile');
+        	console.log(newFile);
           idea.files = [
             ...idea.files,
             newFile,
@@ -215,22 +233,30 @@ export function ideas(state = {
         }
         const fileIndex = idea.files.findIndex(x => x.persistenceId === action.uploadedFileMeta.persistenceId);
         if (fileIndex !== -1) {
+            console.log("file =>");
+            console.log(idea.files[fileIndex]);
           const newFile = Object.assign({}, idea.files[fileIndex], {
             cancelledAt: action.uploadedFileMeta.cancelledAt,
             persistenceId: action.uploadedFileMeta.persistenceId,
             uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
+          console.log("newFile");
+          console.log(newFile);
           idea.files = [
             ...idea.files.slice(0, fileIndex),
             newFile,
             ...idea.files.slice(fileIndex + 1),
           ];
         } else {
+        	console.log('htmlFormFile');
+        	console.log(htmlFormFile);
           const newFile = Object.assign({}, action.htmlFormfile, {
             cancelledAt: action.uploadedFileMeta.cancelledAt,
             persistenceId: action.uploadedFileMeta.persistenceId,
             uploadedAt: action.uploadedFileMeta.uploadedAt,
           });
+          console.log("newFile");
+          console.log(newFile);
           idea.files = [
             ...idea.files,
             newFile,
