@@ -64,6 +64,17 @@ public class File {
     private Account submittedBy;
     
     
+    @Column(name = "original_name", unique = false)
+    String originalName;
+    
+    @Column
+    String extension;
+    @Column
+    String url;
+    //TODO: Calculate in DTO or only frontend
+    @Column
+    String sizeReadeable;
+    
     
     public Long getId() {
 		return id;
@@ -139,6 +150,40 @@ public class File {
 
 	public void setCancelledAt(Date cancelledAt) {
 		this.cancelledAt = cancelledAt;
+	}
+	
+	
+
+	public String getOriginalName() {
+		return originalName;
+	}
+
+	public void setOriginalName(String originalName) {
+		this.originalName = originalName;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getSizeReadeable() {
+		return sizeReadeable;
+	}
+
+	public void setSizeReadeable(String sizeReadeable) {
+		this.sizeReadeable = sizeReadeable;
 	}
 
 	@Override

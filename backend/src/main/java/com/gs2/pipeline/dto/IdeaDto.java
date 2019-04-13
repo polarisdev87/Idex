@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,11 +82,22 @@ public class IdeaDto {
         this.userSession = new UserSessionIdeaDto(idea);
         this.getUserSession().setLiked(liked);
         this.getUserSession().setEditable(editable);
+        this.files= new ArrayList<AttachmentDto>(AttachmentDto.toDto(idea.getIdeaFiles()));
     }
     
     
 
-    public Idea toDao(Set<Tag> tags, Set<File> files, Tag category, Account submittedBy) {
+    /**
+     * 
+     * @param tags
+     * @param files
+     * 	Files are already persisted . Each one has its id
+     * @param category
+     * @param submittedBy
+     * @param mapAttachments
+     * @return
+     */
+    public Idea toDao(Set<Tag> tags, Set<File> files, Tag category, Account submittedBy, Map<Long,AttachmentDto> mapAttachments) {
         Idea idea = new Idea();
 
         idea.setId(id);
@@ -104,6 +116,8 @@ public class IdeaDto {
         	IdeaFile ideaFile = new IdeaFile();
         	ideaFile.setIdea(idea);
         	ideaFile.setFile(file);
+        	ideaFile.setType(mapAttachments.get(file.getId()).getPreview().getType());
+        	ideaFile.setUrl(file.getUrl());
         	idea.addIdeaFile(ideaFile);
         }
         idea.setCategory(category);

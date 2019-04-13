@@ -187,6 +187,11 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 		
 		Set<File> files = upsertInitialFiles(filesDto);
+		Map<Long,AttachmentDto> mapViews = new HashMap<Long,AttachmentDto>();
+		for (AttachmentDto fileDto:filesDto) {
+			mapViews.put(fileDto.getPersistenceId(),fileDto);
+		}
+		
 		Set<Tag> tags = upsertInitialTagsFromStrings(ideaDto.getTags());
 
 		Idea existing = null;
@@ -197,13 +202,13 @@ public class IdeaServiceImpl implements IdeaService {
 
 		if (existing != null) {
 			if (existing.isEditable(upsertedBy)) {
-				return update(existing, ideaDto, upsertedBy, tags, files);
+				return update(existing, ideaDto, upsertedBy, tags, files, mapViews);
 			} else {
 				// Not authorized user
 				return null;
 			}
 		} else {
-			return insert(ideaDto, upsertedBy, tags, files);
+			return insert(ideaDto, upsertedBy, tags, files, mapViews);
 		}
 	}
 
@@ -367,7 +372,7 @@ public class IdeaServiceImpl implements IdeaService {
 	 * @return
 	 */
 
-	private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags, Set <File> files) {
+	private IdeaDto insert(IdeaDto ideaDto, Account insertedBy, Set<Tag> tags, Set <File> files, Map<Long,AttachmentDto> mapViews) {
 
 		for (Tag tag : tags) {
 			tag.setUses(tag.getUses() + 1);
@@ -378,7 +383,7 @@ public class IdeaServiceImpl implements IdeaService {
 			category = tagRepository.findByNameIgnoreCase(ideaDto.getCategory());
 		}
 
-		Idea idea = ideaDto.toDao(tags, files, category, insertedBy);
+		Idea idea = ideaDto.toDao(tags, files, category, insertedBy, mapViews);
 
 		Date currentTime = new Date();
 		idea.setSubmittedAt(currentTime);
@@ -390,12 +395,12 @@ public class IdeaServiceImpl implements IdeaService {
 		return ideaRepository.save(idea).toDto(false, insertedBy);
 	}
 
-	private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags, Set<File> files) {
+	private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags, Set<File> files, Map<Long,AttachmentDto> mapViews) {
 
 		TagsToUpdate tagTasks = updateTags(existing.getTags(), tags);
 		tagRepository.save(tagTasks.getTagsToSave());
 		
-		IdeaFilesToUpdate ideaFileTasks = updateIdeaFiles(existing, existing.getIdeaFiles(),files);
+		IdeaFilesToUpdate ideaFileTasks = updateIdeaFiles(existing, existing.getIdeaFiles(),files, mapViews, updatedBy);
 
 		Tag category = null;
 		if (updatedIdeaDto.getCategory() != null) {
@@ -450,7 +455,7 @@ public class IdeaServiceImpl implements IdeaService {
 	 * inserting a new one.
 	 *
 	 */
-	private IdeaFilesToUpdate updateIdeaFiles(Idea idea,Set<IdeaFile> existingIdeaFiles, Set<File> updatedFiles) {
+	private IdeaFilesToUpdate updateIdeaFiles(Idea idea,Set<IdeaFile> existingIdeaFiles, Set<File> updatedFiles, Map<Long,AttachmentDto> mapAttachments, Account requester) {
 
 		// Add any new file uses
 		// All files were saved when uploaded
@@ -461,13 +466,12 @@ public class IdeaServiceImpl implements IdeaService {
 				IdeaFile newIdeaFile = new IdeaFile();
 				newIdeaFile.setIdea(idea);
 				newIdeaFile.setFile(updatedFile);
+				newIdeaFile.setViewId(mapAttachments.get(updatedFile.getId()).getViewId());
+				newIdeaFile.setSubmittedAt(new Date());
+				newIdeaFile.setSubmittedBy(requester);
 				filesToSave.add(newIdeaFile);
 			}
 		}
-		
-		
-		
-		
 
 		// Remove any existing file uses that are no longer used
 		Set<IdeaFile> ideaFilesToDelete = new HashSet<IdeaFile>();
@@ -586,9 +590,12 @@ public class IdeaServiceImpl implements IdeaService {
 	@Override
 	public AttachmentDto prepareUpload(AttachmentDto fileDto, Account submittedBy) {
 		File file = new File();
-		file.setName(fileDto.getOriginalFileName());
+		file.setName(fileDto.getOriginalName());
+		file.setOriginalName(fileDto.getOriginalName());
 		file.setSize(fileDto.getSize());
 		file.setSubmittedBy(submittedBy);
+		file.setExtension(fileDto.getExtension());
+		file.setSizeReadeable(fileDto.getSizeReadeable());
 		File persistedFile = this.fileRepository.save(file);
 		fileDto.setPersistenceId(persistedFile.getId());
 		return fileDto;

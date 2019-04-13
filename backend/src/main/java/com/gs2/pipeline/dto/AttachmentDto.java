@@ -1,6 +1,11 @@
 package com.gs2.pipeline.dto;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.gs2.pipeline.domain.File;
+import com.gs2.pipeline.domain.IdeaFile;
 
 public class AttachmentDto {
 	
@@ -14,7 +19,7 @@ public class AttachmentDto {
 	Long persistenceId;
     Date lastModified;
     Date lastModifiedDate;
-    String originalFileName;
+    String originalName;
     Long size;
     String extension;
     /**
@@ -42,27 +47,62 @@ public class AttachmentDto {
      * This is the initial id When it is received from the client
 	 * id unique per session
 	 * It is the temporal id frontend assigns when adding the attachment
-	 * The form is of the type file-1 file-2 file-n
+	 * The form is of the type files-1 files-2 files-n
      */
-    String fileId;
+    String viewId;
     
     String sizeReadeable;
     
-    
+    AttachmentPreviewDto preview;
     
     public AttachmentDto() {
-
+    	
     }
     
-    public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalFileName, Long size) {
-    	this(ideaId,fileId,originalFileName,size);
+    public AttachmentDto(IdeaFile ideaFile) {
+    	/**
+    	 * Id of persistence system . It is the id of the table in persistent database
+    	 * It is null until is not being saved
+    	 * It is unique
+    	 */
+    	
+    	File file = ideaFile.getFile();
+        this.viewId = ideaFile.getViewId();
+        this.ideaId=ideaFile.getIdea().getId();
+    	this.persistenceId=file.getId();
+        this.originalName=file.getOriginalName();
+        this.size= file.getSize();
+        this.extension= file.getExtension();
+        this.url = file.getUrl();
+        this.start = file.getStart();
+        this.uploadedAt = file.getUploadedAt();
+        this.cancelledAt = file.getCancelledAt();
+        this.sizeReadeable = file.getSizeReadeable();
+        this.preview = new AttachmentPreviewDto(ideaFile.getType(),ideaFile.getUrl());
+    }
+    
+    
+    
+    public static Set<AttachmentDto> toDto(Set<IdeaFile> ideaFiles) {
+    	Set<AttachmentDto> attachments=new HashSet<AttachmentDto>();
+    	int i=1;
+    	for (IdeaFile ideaFile:ideaFiles) {
+    		AttachmentDto attachmentDto = new AttachmentDto(ideaFile);
+    		i++;
+    		attachments.add(attachmentDto);
+    	}
+    	return attachments;
+    }
+    
+    public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalName, Long size) {
+    	this(ideaId,fileId,originalName,size);
     	this.persistenceId= persistenceId;
     }
 
-    public AttachmentDto(Long ideaId, String fileId, String originalFileName, Long size) {
+    public AttachmentDto(Long ideaId, String viewId, String originalName, Long size) {
     	this.ideaId = ideaId;
-    	this.fileId = fileId;
-    	this.originalFileName = originalFileName;
+    	this.viewId = viewId;
+    	this.originalName = originalName;
     	this.size=size;
     }
     
@@ -101,12 +141,12 @@ public class AttachmentDto {
     
 	
 	
-	public String getOriginalFileName() {
-		return originalFileName;
+	public String getOriginalName() {
+		return originalName;
 	}
 
-	public void setOriginalFileName(String originalFileName) {
-		this.originalFileName = originalFileName;
+	public void setOriginalName(String originalName) {
+		this.originalName = originalName;
 	}
 
 	public Long getIdeaId() {
@@ -117,12 +157,12 @@ public class AttachmentDto {
 		this.ideaId = ideaId;
 	}
 
-	public String getFileId() {
-		return fileId;
+	public String getViewId() {
+		return viewId;
 	}
 
-	public void setFileId(String fileId) {
-		this.fileId = fileId;
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
 	}
 
 	public Date getStart() {
@@ -163,6 +203,14 @@ public class AttachmentDto {
 
 	public void setSizeReadeable(String sizeReadeable) {
 		this.sizeReadeable = sizeReadeable;
+	}
+
+	public AttachmentPreviewDto getPreview() {
+		return preview;
+	}
+
+	public void setPreview(AttachmentPreviewDto preview) {
+		this.preview = preview;
 	}
 
 	

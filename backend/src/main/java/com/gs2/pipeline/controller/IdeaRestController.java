@@ -82,7 +82,7 @@ public class IdeaRestController {
     @RequestMapping(value = "/attach-content", method = RequestMethod.POST)
     public AttachmentDto uploadFileContent(
     			@RequestParam(value = "ideaId", required = true) Long ideaId,
-    			@RequestParam(value = "fileId", required = true) String fileId,
+    			@RequestParam(value = "viewId", required = true) String viewId,
     			@RequestParam(value = "persistenceId", required = true) Long persistenceId,
     			@RequestParam("file") MultipartFile file) {
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -98,7 +98,7 @@ public class IdeaRestController {
                 .toUriString();
 		*/
     	// UPLOADING FILE
-    	AttachmentDto attachmentDto = new AttachmentDto(persistenceId,ideaId,fileId,file.getOriginalFilename(),file.getSize());
+    	AttachmentDto attachmentDto = new AttachmentDto(persistenceId,ideaId,viewId,file.getOriginalFilename(),file.getSize());
     	if (!file.isEmpty()) {
     		try {
     	    	attachmentDto= ideaService.uploadContent(file.getBytes(),attachmentDto,requester);
@@ -119,10 +119,7 @@ public class IdeaRestController {
      * Updates session map 
      * Add entry to File table
      * 
-     * @param session
-     * @param ideaId
-     * @param fileId
-     * @param file
+     * @param attachmentDto
      * @return
      */
     @RequestMapping(value = "/attach", method = RequestMethod.POST)

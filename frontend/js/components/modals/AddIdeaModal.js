@@ -406,6 +406,7 @@ function mapStateToProps(state, ownProps) {
       if (ideaFiles !== null) {
         console.log("files");  
         console.log(files);
+        console.log(ideaFiles);
         files = ideaFiles;
       }
     }

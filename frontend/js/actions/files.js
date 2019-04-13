@@ -63,11 +63,12 @@ export function uploadFile(ideaId, htmlFormFile) {
     attachmentDto = {
       ...htmlFormFile,
       ideaId,
-      fileId: htmlFormFile.id,
-      originalFileName: htmlFormFile.name,
+      viewId: htmlFormFile.id,
+      originalName: htmlFormFile.name,
       size: htmlFormFile.size,
       id: htmlFormFile.id,
       name: htmlFormFile.name,
+      sizeReadeable: htmlFormFile.sizeReadeable, 
     };
     config = {
       headers: {
@@ -145,7 +146,7 @@ export function uploadFileContent(ideaId, persistenceId, htmlFormFile) {
     const formData = new FormData();
     formData.append('file', new Blob([htmlFormFile], { type: htmlFormFile.type }), htmlFormFile.name || 'file');
     formData.append('ideaId', ideaId);
-    formData.append('fileId', htmlFormFile.id);
+    formData.append('viewId', htmlFormFile.id);
     formData.append('persistenceId', persistenceId);
     formData.append('name', htmlFormFile.name);
     config = {

@@ -14,6 +14,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.gs2.pipeline.dto.AttachmentDto;
+import com.gs2.pipeline.dto.IdeaDto;
+
 
 /**
  * Relation between idea and file
@@ -32,6 +35,8 @@ import javax.persistence.Transient;
     @AssociationOverride(name = "primaryKey.file",
         joinColumns = @JoinColumn(name = "file_id")) })
 public class IdeaFile {
+
+	
 	
 	@EmbeddedId
 	private IdeaFileId primaryKey = new IdeaFileId();
@@ -44,6 +49,16 @@ public class IdeaFile {
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
 
+    
+    /**
+     * Frontend session id : TODO:Analyze to remove from backend model 
+     */
+    @Column(name = "view_id")
+    private String viewId;
+    
+    
+    private String type;
+    private String url;
 	
     public IdeaFileId getPrimaryKey() {
 		return primaryKey;
@@ -87,6 +102,32 @@ public class IdeaFile {
 	public void setSubmittedAt(Date submittedAt) {
 		this.submittedAt = submittedAt;
 	}
+
+	public String getViewId() {
+		return viewId;
+	}
+
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
     
-    
+
+	
+	
 }
