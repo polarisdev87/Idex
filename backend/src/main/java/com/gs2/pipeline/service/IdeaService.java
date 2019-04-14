@@ -5,6 +5,7 @@ import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
 import com.gs2.pipeline.exception.IdeaNotFoundException;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface IdeaService {
@@ -24,6 +25,6 @@ public interface IdeaService {
     AttachmentDto prepareUpload(AttachmentDto fileDto, Account uploadedBy);
 	List<AttachmentDto> checkUploadFilesStatus(List<AttachmentDto> files);
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
-	AttachmentDto uploadContent(byte[] bytes, AttachmentDto initialAttachment,Account requester);
+	AttachmentDto uploadContent( AttachmentDto initialAttachment,InputStream inputStream, Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
 }

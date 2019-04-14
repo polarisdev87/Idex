@@ -9,8 +9,6 @@ import com.gs2.pipeline.domain.IdeaFile;
 
 public class AttachmentDto {
 	
-	
-	
 	/**
 	 * Id of persistence system . It is the id of the table in persistent database
 	 * It is null until is not being saved
@@ -55,6 +53,11 @@ public class AttachmentDto {
     
     AttachmentPreviewDto preview;
     
+    /**
+     * ContentType of multipartFile when content is uploaded from web in controller.
+     */
+    String contentType;
+    
     public AttachmentDto() {
     	
     }
@@ -82,28 +85,27 @@ public class AttachmentDto {
     }
     
     
-    
-    public static Set<AttachmentDto> toDto(Set<IdeaFile> ideaFiles) {
-    	Set<AttachmentDto> attachments=new HashSet<AttachmentDto>();
-    	int i=1;
-    	for (IdeaFile ideaFile:ideaFiles) {
-    		AttachmentDto attachmentDto = new AttachmentDto(ideaFile);
-    		i++;
-    		attachments.add(attachmentDto);
-    	}
-    	return attachments;
-    }
-    
-    public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalName, Long size) {
-    	this(ideaId,fileId,originalName,size);
+    public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalName, String contentType, Long size) {
+    	this(ideaId,fileId,originalName,contentType, size);
     	this.persistenceId= persistenceId;
     }
 
-    public AttachmentDto(Long ideaId, String viewId, String originalName, Long size) {
+    public AttachmentDto(Long ideaId, String viewId, String originalName, String contentType, Long size) {
     	this.ideaId = ideaId;
     	this.viewId = viewId;
     	this.originalName = originalName;
     	this.size=size;
+    	this.contentType = contentType;
+    }
+    
+    
+    public static Set<AttachmentDto> toDto(Set<IdeaFile> ideaFiles) {
+    	Set<AttachmentDto> attachments=new HashSet<AttachmentDto>();
+    	for (IdeaFile ideaFile:ideaFiles) {
+    		AttachmentDto attachmentDto = new AttachmentDto(ideaFile);
+    		attachments.add(attachmentDto);
+    	}
+    	return attachments;
     }
     
 	public Date getLastModified() {
@@ -211,6 +213,14 @@ public class AttachmentDto {
 
 	public void setPreview(AttachmentPreviewDto preview) {
 		this.preview = preview;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	

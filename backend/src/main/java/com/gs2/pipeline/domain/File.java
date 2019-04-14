@@ -75,6 +75,9 @@ public class File {
     @Column
     String sizeReadeable;
     
+    @Column
+    String contentType;
+    
     
     public Long getId() {
 		return id;
@@ -184,6 +187,16 @@ public class File {
 
 	public void setSizeReadeable(String sizeReadeable) {
 		this.sizeReadeable = sizeReadeable;
+	}
+	
+	
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	@Override

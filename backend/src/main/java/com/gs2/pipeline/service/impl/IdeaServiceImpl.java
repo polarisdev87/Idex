@@ -1,5 +1,6 @@
 package com.gs2.pipeline.service.impl;
 
+import com.gs2.pipeline.dao.AttachmentDao;
 import com.gs2.pipeline.domain.*;
 import com.gs2.pipeline.dto.*;
 import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
@@ -19,6 +20,7 @@ import org.springframework.expression.spel.ast.ValueRef.NullValueRef;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -39,12 +41,15 @@ public class IdeaServiceImpl implements IdeaService {
 	private final FileRepository fileRepository;
 	private final IdeaFileRepository ideaFileRepository;
 	private final CommentFileRepository commentFileRepository;
-
+	private final AttachmentDao attachmentDao;
+	
+	
 	@Autowired
 	public IdeaServiceImpl(
 			IdeaRepository ideaRepository, TagRepository tagRepository, VoteRepository voteRepository,
 			CommentRepository commentRepository, FileRepository fileRepository, IdeaFileRepository ideaFileRepository, 
-			CommentFileRepository commentFileRepository) {
+			CommentFileRepository commentFileRepository,
+			AttachmentDao attachmentDao) {
 
 		this.ideaRepository = ideaRepository;
 		this.tagRepository = tagRepository;
@@ -53,6 +58,7 @@ public class IdeaServiceImpl implements IdeaService {
 		this.fileRepository = fileRepository;
 		this.ideaFileRepository = ideaFileRepository;
 		this.commentFileRepository = commentFileRepository;
+		this.attachmentDao = attachmentDao;
 	}
 
 	private Set<String> getNormalizedTags(Set<String> tags) {
@@ -603,30 +609,47 @@ public class IdeaServiceImpl implements IdeaService {
 	
 
 	
-	public AttachmentDto uploadContent(byte[] bytes,AttachmentDto initialAttachment, Account requester) {
+	public AttachmentDto uploadContent(AttachmentDto initialAttachment, InputStream inputStream, Account requester) {
         File file = fileRepository.getOne(initialAttachment.getPersistenceId());
         Path path = Paths.get(UPLOADED_FOLDER + file.getName());
         if (file!=null) {
+        	
+        	
+        	
         	/*
             try {
     			Files.write(path, bytes);
     			TODO: Write to File on S3
     			TODO: Genearate md5 to save in table
-    			*/
             	try {
+    			*/
                     long startTime = System.nanoTime();
             		// TODO: Save the file to S3 instance
             		boolean finish=false;
+            		String md5 = this.attachmentDao.upload(initialAttachment.getIdeaId(), 
+            				initialAttachment.getPersistenceId(), 
+            				initialAttachment.getOriginalName(), 
+            				inputStream, 
+            				initialAttachment.getContentType(), 
+            				initialAttachment.getSize());
+            		
+            		/*
             		for (int i=0;i<10 && !finish;i++) {
             			
-        				Thread.sleep(1250);
+        				Thread.sleep(675);
         				file = fileRepository.getOne(file.getId());
         				finish = file==null || file.getCancelledAt()!=null;
             		}
-    			} catch (InterruptedException e) {
+            		*/
+            		/*
+        		} catch (InterruptedException e) {
+
     				// TODO Auto-generated catch block
     				e.printStackTrace();
     			}
+    			*/
+            	file.setContentType(initialAttachment.getContentType());	
+            	file.setSha(md5);
     			file.setUploadedAt(new Date());
     			file = fileRepository.save(file);
     			/*
