@@ -7,7 +7,9 @@
 4. Run PostgreSQL
 5. Create a Postgres database to hold the data, such as pipeline_test
 6. Navigate to the backend directory in your terminal
-7. Run `mvn spring-boot:run -DPIPELINE_DB=pipeline_test -DPIPELINE_DB_USER=postgres -DPIPELINE_DB_PASS=postgres`
+7. Run `mvn spring-boot:run -DPIPELINE_DB=pipeline_test -DPIPELINE_DB_USER=postgres -DPIPELINE_DB_PASS=postgres` -DS3_BUCKET_NAME=pipeline-2-dev -DS3_API_KEY=<s3 api key value> -DS3_API_SECRET=<api secret value> -DS3_REGION=eu-west-1
+
+
 8. The backend is now running at `localhost:8080`
 
 ## Running the Frontend
