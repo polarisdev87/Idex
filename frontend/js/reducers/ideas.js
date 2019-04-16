@@ -8,7 +8,7 @@ import {
   TOGGLE_VOTE_SUCCESS
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
-import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS } from '../actions/files';
+import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
 
 export function ideas(state = {
   isFetchingIdeas: false,
@@ -301,7 +301,31 @@ export function ideas(state = {
         });
       }
     }
-    default:
-      return state;
-  }
+    case REMOVE_REMOTE_FILE: {
+        let newIdeas = state.ideasArr;
+        const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+        if (index !== -1) {
+          const newIdea = newIdeas[index];
+          if (newIdea.files != null) {
+            const fileIndex = newIdea.files.findIndex(x => x.id == action.file.id);
+            if (fileIndex !== -1) {
+              newIdea.files = [
+                ...newIdea.files.slice(0, fileIndex),
+                ...newIdea.files.slice(fileIndex + 1),
+              ];
+            }
+            newIdeas = [
+              ...state.ideasArr.slice(0, index),
+              newIdea,
+              ...state.ideasArr.slice(index + 1),
+            ];
+          }
+          return Object.assign({}, state, {
+            ideasArr: newIdeas,
+          });
+        }
+      }
+  default:
+    return state;
+}
 }

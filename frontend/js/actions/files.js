@@ -46,6 +46,24 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
   }
 }
 
+
+export const REMOVE_REMOTE_FILE = 'REMOVE_REMOTE_FILE';
+
+
+/**
+ * It is called to remove an idea file attachment got from the backend (not a local drag and dropped file)
+ */
+export function removeRemoteFile(ideaId, file) {
+
+  console.log('removeRemoteFile(...)');
+  return {
+	    type: REMOVE_REMOTE_FILE,
+	    ideaId,
+	    file,
+	  };  
+}
+
+
 /**
  * 
  * @param {*} ideaId 

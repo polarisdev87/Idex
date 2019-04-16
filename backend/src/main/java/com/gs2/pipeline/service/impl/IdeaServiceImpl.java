@@ -444,6 +444,7 @@ public class IdeaServiceImpl implements IdeaService {
 		tagRepository.delete(tagTasks.getTagsToDelete());
 
 		attachmentDao.remove(ideaFileTasks.getIdeaFilesToDelete());
+		ideaFileRepository.delete(ideaFileTasks.getIdeaFilesToDelete());
 		fileRepository.delete(ideaFileTasks.getFilesToDelete());
 			
 

@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
 import Files from 'react-files';
 import CommonButton from '../buttons/CommonButton';
-import { changeFiles } from '../../actions/files';
+import { changeFiles, removeRemoteFile } from '../../actions/files';
 import { API_BASE_URI } from '../../const';
 
 const modalStyle = {
@@ -225,12 +225,20 @@ class AddIdeaModal extends Component {
   /**
    * It only removes the file from the visual model
   */
-  filesRemoveOne = (file) => {
-    console.log('filesRemoveOne');
+  localFilesRemoveOne = (file) => {
+    console.log('localFilesRemoveOne');
     console.log(file);
-    this.refs.files.removeFile(file);
+    this.refs.localFiles.removeFile(file);
   }
 
+  
+  remoteFilesRemoveOne = (file) => {
+	    const { dispatch, idea } = this.props;
+	    console.log('remoteFilesRemoveOne');
+	    dispatch(removeRemoteFile(idea.id, file));
+  }
+  
+  
   /*
   filesRemoveAll = () => {
     this.refs.files.removeFiles();
@@ -338,7 +346,23 @@ class AddIdeaModal extends Component {
 
               
               
-              
+              <Files
+              ref="remoteFiles"
+              className="files-dropzone-list"
+              onChange={this.onRemoteFilesChange}
+              onError={this.onFilesError}
+              style={{ height: '100px', width: '100%' }}
+              accepts={['image/png', '.pdf', 'audio/*', '.txt']}
+              multiple
+              maxFiles={3}
+              maxFileSize={10000000}
+              minFileSize={0}
+              clickable
+            >
+             Drop files here or click to upload
+            </Files>
+
+             
               <Files
                   ref="localFiles"
                   className="files-dropzone-list"
@@ -373,7 +397,7 @@ class AddIdeaModal extends Component {
                              <div
                                id={file.id}
                                className="files-list-item-remove"
-                               	onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                               	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
                              />
                            </li>))}
                          </ul>
@@ -399,7 +423,7 @@ class AddIdeaModal extends Component {
                           <div
                             id={file.id}
                             className="files-list-item-remove"
-                            	onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                            	onClick={this.localFilesRemoveOne.bind(this, file)} // eslint-disable-line
                           />
                         </li>))}
                       </ul>

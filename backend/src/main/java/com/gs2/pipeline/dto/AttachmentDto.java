@@ -96,7 +96,7 @@ public class AttachmentDto {
     	
     	File file = ideaFile.getFile();
         this.viewId = ideaFile.getViewId();
-        this.id = "rem-"+ideaFile.getViewId(); 
+        this.id = "remote-files-"+Long.toString(file.getId()); 
         this.ideaId=ideaFile.getIdea().getId();
     	this.persistenceId=file.getId();
         this.originalName=file.getOriginalName();
