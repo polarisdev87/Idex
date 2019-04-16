@@ -7,6 +7,7 @@ import TagsInput from 'react-tagsinput';
 import Files from 'react-files';
 import CommonButton from '../buttons/CommonButton';
 import { changeFiles } from '../../actions/files';
+import { API_BASE_URI } from '../../const';
 
 const modalStyle = {
   overlay: {
@@ -350,7 +351,7 @@ class AddIdeaModal extends Component {
                         (<li className="files-list-item" key={file.id}>
                           <div className="files-list-item-preview">
                             {file.preview.type === 'image'
-                              ? <img className="files-list-item-preview-image" src={file.preview.url} />
+                              ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
                               : <div className="files-list-item-preview-extension">{file.extension}</div>}
                           </div>
                           <div className="files-list-item-content">

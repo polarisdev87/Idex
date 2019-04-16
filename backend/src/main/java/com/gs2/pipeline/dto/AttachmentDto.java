@@ -9,6 +9,8 @@ import com.gs2.pipeline.domain.IdeaFile;
 
 public class AttachmentDto {
 	
+	
+	
 	/**
 	 * Id of persistence system . It is the id of the table in persistent database
 	 * It is null until is not being saved
@@ -49,8 +51,6 @@ public class AttachmentDto {
      */
     String viewId;
     
-    String sizeReadeable;
-    
     AttachmentPreviewDto preview;
     
     /**
@@ -58,8 +58,33 @@ public class AttachmentDto {
      */
     String contentType;
     
+    String name; 
+    
+    /**
+     * frontend id
+     */
+    String id;
+    
+    /**
+     * Calculated field based on size
+     */
+    String sizeReadable;
+    
+    /**
+     * true if it is generated from idea in backend. 
+     * False or null if it is generated in the frontend
+     */
+    Boolean remote;
+    
+    
     public AttachmentDto() {
     	
+    }
+    
+    
+    private String generateImageUrl(Long ideaId, Long fileId) {
+    	String result = "/ideas/images?ideaId=+"+Long.toString(ideaId)+"&fileId="+Long.toString(fileId);
+    	return result;
     }
     
     public AttachmentDto(IdeaFile ideaFile) {
@@ -71,17 +96,19 @@ public class AttachmentDto {
     	
     	File file = ideaFile.getFile();
         this.viewId = ideaFile.getViewId();
+        this.id = ideaFile.getViewId(); 
         this.ideaId=ideaFile.getIdea().getId();
     	this.persistenceId=file.getId();
         this.originalName=file.getOriginalName();
+        this.name = file.getOriginalName();
         this.size= file.getSize();
         this.extension= file.getExtension();
-        this.url = file.getUrl();
         this.start = file.getStart();
         this.uploadedAt = file.getUploadedAt();
         this.cancelledAt = file.getCancelledAt();
-        this.sizeReadeable = file.getSizeReadeable();
-        this.preview = new AttachmentPreviewDto(ideaFile.getType(),ideaFile.getUrl());
+        this.sizeReadable = ideaFile.getSizeReadable();
+        this.preview = new AttachmentPreviewDto(ideaFile.getType(),generateImageUrl(ideaFile.getIdea().getId(),ideaFile.getFile().getId()));
+        this.remote = true;
     }
     
     
@@ -94,6 +121,7 @@ public class AttachmentDto {
     	this.ideaId = ideaId;
     	this.viewId = viewId;
     	this.originalName = originalName;
+    	this.name = originalName;
     	this.size=size;
     	this.contentType = contentType;
     }
@@ -199,14 +227,6 @@ public class AttachmentDto {
 		this.cancelledAt = cancelledAt;
 	}
 
-	public String getSizeReadeable() {
-		return sizeReadeable;
-	}
-
-	public void setSizeReadeable(String sizeReadeable) {
-		this.sizeReadeable = sizeReadeable;
-	}
-
 	public AttachmentPreviewDto getPreview() {
 		return preview;
 	}
@@ -221,6 +241,46 @@ public class AttachmentDto {
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+	public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+	public String getSizeReadable() {
+		return sizeReadable;
+	}
+
+
+	public void setSizeReadable(String sizeReadable) {
+		this.sizeReadable = sizeReadable;
+	}
+
+
+	public Boolean getRemote() {
+		return remote;
+	}
+
+
+	public void setRemote(Boolean remote) {
+		this.remote = remote;
 	}
 
 	

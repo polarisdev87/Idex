@@ -27,4 +27,5 @@ public interface IdeaService {
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
 	AttachmentDto uploadContent( AttachmentDto initialAttachment,InputStream inputStream, Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
+	InputStream getAttachmentImage(Long ideaId, Long persistenceId);
 }

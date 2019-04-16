@@ -117,7 +117,6 @@ public class IdeaDto {
         	ideaFile.setIdea(idea);
         	ideaFile.setFile(file);
         	ideaFile.setType(mapAttachments.get(file.getId()).getPreview().getType());
-        	ideaFile.setUrl(file.getUrl());
         	idea.addIdeaFile(ideaFile);
         }
         idea.setCategory(category);

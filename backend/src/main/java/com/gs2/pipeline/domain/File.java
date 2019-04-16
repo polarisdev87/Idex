@@ -29,8 +29,8 @@ public class File {
     @Column(name = "sha", length = 300, unique = false)
     private String sha;
     
-    @Column(name = "store_url", length = 500, unique = false)
-    private String storeUrl;
+    @Column(name = "address", length = 500, unique = false)
+    private String address;
     
     
     @Column(name = "size", unique = false)
@@ -69,11 +69,7 @@ public class File {
     
     @Column
     String extension;
-    @Column
-    String url;
-    //TODO: Calculate in DTO or only frontend
-    @Column
-    String sizeReadeable;
+
     
     @Column
     String contentType;
@@ -103,12 +99,12 @@ public class File {
 		this.sha = sha;
 	}
 
-	public String getStoreUrl() {
-		return storeUrl;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setStoreUrl(String storeUrl) {
-		this.storeUrl = storeUrl;
+	public void setAddress(String storeUrl) {
+		this.address = storeUrl;
 	}
 
 	public Long getSize() {
@@ -173,23 +169,6 @@ public class File {
 		this.extension = extension;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getSizeReadeable() {
-		return sizeReadeable;
-	}
-
-	public void setSizeReadeable(String sizeReadeable) {
-		this.sizeReadeable = sizeReadeable;
-	}
-	
-	
 
 	public String getContentType() {
 		return contentType;
@@ -207,7 +186,7 @@ public class File {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((sha == null) ? 0 : sha.hashCode());
 		result = prime * result + ((size == null) ? 0 : size.hashCode());
-		result = prime * result + ((storeUrl == null) ? 0 : storeUrl.hashCode());
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
 		return result;
 	}
 
@@ -240,17 +219,17 @@ public class File {
 				return false;
 		} else if (!size.equals(other.size))
 			return false;
-		if (storeUrl == null) {
-			if (other.storeUrl != null)
+		if (address == null) {
+			if (other.address != null)
 				return false;
-		} else if (!storeUrl.equals(other.storeUrl))
+		} else if (!address.equals(other.address))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "File [id=" + id + ", name=" + name + ", sha=" + sha + ", storeUrl=" + storeUrl + ", size=" + size + "]";
+		return "File [id=" + id + ", name=" + name + ", sha=" + sha + ", address=" + address + ", size=" + size + "]";
 	}
 
 	

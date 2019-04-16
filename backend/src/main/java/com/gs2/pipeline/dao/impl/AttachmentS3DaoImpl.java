@@ -1,6 +1,7 @@
 package com.gs2.pipeline.dao.impl;
 
 import java.io.InputStream;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -14,9 +15,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.gs2.pipeline.dao.AttachmentDao;
+import com.gs2.pipeline.domain.IdeaFile;
+import com.gs2.pipeline.dto.UploadDto;
 
 @Repository
 public class AttachmentS3DaoImpl implements AttachmentDao {
@@ -34,6 +38,8 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     
     
     private static String BUCKET_NAME;
+    
+    private static AmazonS3 s3client;
     
 /*
     AmazonS3 s3client = AmazonS3ClientBuilder
@@ -78,30 +84,78 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     		  .build();
     
     
-    public String upload(Long ideaId, Long fileId, String originalFileName, InputStream inputStream, String contentType, Long size ) {
-    	if (REGION == null) {
-    		REGION = Regions.fromName(REGION_NAME);
-            credentials = new BasicAWSCredentials(
-                    API_KEY, 
-                    API_SECRET
-                  );    		
+    private String getFullDestination(Long ideaId, Long fileId, String originalFileName) {
+        String ideaFolder = Long.toString(ideaId);
+        String fileFolder = Long.toString(fileId);
+        String keyName = ideaFolder+"/"+fileFolder+"/"+originalFileName;
+        return keyName;
+        
+    }
+    
+    private AmazonS3 getS3Client() {
+    	if (s3client == null ) {
+        	if (REGION == null) {
+        		REGION = Regions.fromName(REGION_NAME);
+                credentials = new BasicAWSCredentials(
+                        API_KEY, 
+                        API_SECRET
+                      );    		
+        	}
+            s3client = AmazonS3ClientBuilder.standard().withRegion(REGION).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
     	}
+        return s3client;
+    }
+    
+    
+    public UploadDto upload(Long ideaId, Long fileId, String originalFileName, InputStream inputStream, String contentType, Long size ) {
     	
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(contentType);
         metadata.setContentLength(size);
 
-        String ideaFolder = Long.toString(ideaId);
-        String fileFolder = Long.toString(fileId);
-        String keyName = ideaFolder+"/"+fileFolder+"/"+originalFileName;
+        String keyName = getFullDestination(ideaId,fileId,originalFileName);
         
 //         Upload upload = tm.upload(BUCKET_NAME, keyName, inputStream, metadata);
         
 //         BasicAWSCredentials creds = new BasicAWSCredentials(API_KEY, API_SECRET);
-        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(REGION).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-        PutObjectResult objectResult = s3client.putObject(BUCKET_NAME, keyName, inputStream, metadata);
-        return objectResult.getContentMd5();
+        PutObjectResult objectResult = getS3Client().putObject(BUCKET_NAME, keyName, inputStream, metadata);
+        return new UploadDto(objectResult.getContentMd5(),"S3:"+BUCKET_NAME+":"+keyName);
     }
+
+	@Override
+	public Boolean remove(Long ideaId, Long fileId, String originalFileName) {
+        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+		getS3Client().deleteObject(BUCKET_NAME, keyName);
+		return true;
+	}
+
+	@Override
+	public void remove(Set<IdeaFile> ideaFilesToDelete) {
+		for (IdeaFile ideaFile:ideaFilesToDelete) {
+			getS3Client().deleteObject(
+					BUCKET_NAME,
+					getFullDestination(ideaFile.getIdea().getId(),ideaFile.getFile().getId(),ideaFile.getFile().getOriginalName()));
+		}
+	}
+
+	@Override
+	public InputStream getImageFile(Long ideaId, Long fileId, String originalFileName) {
+        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        
+        S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
+        InputStream inputStream = s3object.getObjectContent();        
+        
+        return inputStream;
+	}
     
+	@Override
+	public InputStream download(Long ideaId, Long fileId, String originalFileName) {
+        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        
+        S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
+        InputStream inputStream = s3object.getObjectContent();        
+        
+        return inputStream;
+	}
     
 }

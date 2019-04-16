@@ -8,14 +8,20 @@ import com.gs2.pipeline.exception.AttachmentsNotUploadedException;
 import com.gs2.pipeline.service.AccountService;
 import com.gs2.pipeline.service.IdeaDistributionTtmProfitVoteService;
 import com.gs2.pipeline.service.IdeaService;
+
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 @RequestMapping("/ideas")
@@ -77,7 +83,24 @@ public class IdeaRestController {
         return ideaService.upsert(ideaDto, requester);
     }
     
-
+    @RequestMapping(value = "/images2", method = RequestMethod.GET)
+    public @ResponseBody byte[] getImage(
+    		@RequestParam(value = "ideaId", required = true) Long ideaId,
+			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
+        InputStream in = ideaService.getAttachmentImage(ideaId,persistenceId);
+        return in.toString().getBytes();
+    }
+    
+    
+    
+    @RequestMapping(value = "/images", method = RequestMethod.GET)
+    public void getImageAsByteArray(HttpServletResponse response,
+			@RequestParam(value = "ideaId", required = true) Long ideaId,
+			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
+        InputStream in = ideaService.getAttachmentImage(ideaId,persistenceId);
+        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        IOUtils.copy(in, response.getOutputStream());
+    }
     
     @RequestMapping(value = "/attach-content", method = RequestMethod.POST)
     public AttachmentDto uploadFileContent(

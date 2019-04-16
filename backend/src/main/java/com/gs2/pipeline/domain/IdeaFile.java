@@ -57,8 +57,14 @@ public class IdeaFile {
     private String viewId;
     
     
+    @Column
     private String type;
+    @Column
     private String url;
+    
+    @Column
+    String sizeReadable;
+    
 	
     public IdeaFileId getPrimaryKey() {
 		return primaryKey;
@@ -125,6 +131,14 @@ public class IdeaFile {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public String getSizeReadable() {
+		return sizeReadable;
+	}
+
+	public void setSizeReadable(String sizeReadable) {
+		this.sizeReadable = sizeReadable;
 	}
     
 

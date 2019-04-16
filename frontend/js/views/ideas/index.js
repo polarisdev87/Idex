@@ -169,6 +169,8 @@ class Ideas extends Component {
     return (
       <div className="container">
         <div className="ideas-container">
+        
+        <Link to="./attach-img1" target="_self">...</Link>
           <Header
             addIdeaButtonClick={() => this.addIdeaButtonClickHandler()}
             fetchIdeas={(

@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -444,7 +442,10 @@ public class IdeaServiceImpl implements IdeaService {
 		
 		ideaRepository.save(existing);
 		tagRepository.delete(tagTasks.getTagsToDelete());
+
+		attachmentDao.remove(ideaFileTasks.getIdeaFilesToDelete());
 		fileRepository.delete(ideaFileTasks.getFilesToDelete());
+			
 
 		// Don't let votes change here. That should be done via call to vote endpoint
 		updatedIdeaDto.setVotes(existing.getVotes());
@@ -475,6 +476,8 @@ public class IdeaServiceImpl implements IdeaService {
 				newIdeaFile.setViewId(mapAttachments.get(updatedFile.getId()).getViewId());
 				newIdeaFile.setSubmittedAt(new Date());
 				newIdeaFile.setSubmittedBy(requester);
+				newIdeaFile.setType(mapAttachments.get(updatedFile.getId()).getPreview().getType());
+				newIdeaFile.setSizeReadable(mapAttachments.get(updatedFile.getId()).getSizeReadable());
 				filesToSave.add(newIdeaFile);
 			}
 		}
@@ -601,7 +604,6 @@ public class IdeaServiceImpl implements IdeaService {
 		file.setSize(fileDto.getSize());
 		file.setSubmittedBy(submittedBy);
 		file.setExtension(fileDto.getExtension());
-		file.setSizeReadeable(fileDto.getSizeReadeable());
 		File persistedFile = this.fileRepository.save(file);
 		fileDto.setPersistenceId(persistedFile.getId());
 		return fileDto;
@@ -611,53 +613,18 @@ public class IdeaServiceImpl implements IdeaService {
 	
 	public AttachmentDto uploadContent(AttachmentDto initialAttachment, InputStream inputStream, Account requester) {
         File file = fileRepository.getOne(initialAttachment.getPersistenceId());
-        Path path = Paths.get(UPLOADED_FOLDER + file.getName());
         if (file!=null) {
-        	
-        	
-        	
-        	/*
-            try {
-    			Files.write(path, bytes);
-    			TODO: Write to File on S3
-    			TODO: Genearate md5 to save in table
-            	try {
-    			*/
-                    long startTime = System.nanoTime();
-            		// TODO: Save the file to S3 instance
-            		boolean finish=false;
-            		String md5 = this.attachmentDao.upload(initialAttachment.getIdeaId(), 
-            				initialAttachment.getPersistenceId(), 
-            				initialAttachment.getOriginalName(), 
-            				inputStream, 
-            				initialAttachment.getContentType(), 
-            				initialAttachment.getSize());
-            		
-            		/*
-            		for (int i=0;i<10 && !finish;i++) {
-            			
-        				Thread.sleep(675);
-        				file = fileRepository.getOne(file.getId());
-        				finish = file==null || file.getCancelledAt()!=null;
-            		}
-            		*/
-            		/*
-        		} catch (InterruptedException e) {
-
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			}
-    			*/
-            	file.setContentType(initialAttachment.getContentType());	
-            	file.setSha(md5);
-    			file.setUploadedAt(new Date());
-    			file = fileRepository.save(file);
-    			/*
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}		
-		*/
+    		UploadDto uploadDto = this.attachmentDao.upload(initialAttachment.getIdeaId(), 
+    				initialAttachment.getPersistenceId(), 
+            		initialAttachment.getOriginalName(), 
+            		inputStream, 
+            		initialAttachment.getContentType(), 
+            		initialAttachment.getSize());
+            file.setContentType(initialAttachment.getContentType());	
+            file.setSha(uploadDto.getMd5());
+    		file.setUploadedAt(new Date());
+    		file.setAddress(uploadDto.getStoreDestination());
+    		file = fileRepository.save(file);
         }
 		AttachmentDto result = initialAttachment;
 		result.setPersistenceId(file.getId());
@@ -712,13 +679,28 @@ public class IdeaServiceImpl implements IdeaService {
 							file.setCancelledAt(new Date());
 							file = this.fileRepository.save(file);
 							attachmentDto.setCancelledAt(file.getCancelledAt());
-							// TODO: Remove file from filesystem also
+
+							// Remove file from filesystem also
+		            		Boolean removed = this.attachmentDao.remove(filesToRemoveDto.getIdeaId(), 
+		            				attachmentDto.getPersistenceId(), 
+		            				attachmentDto.getOriginalName());						
+						
 						}
 					}
 				}
 			}
 		}
 		return filesToRemoveDto;
+	}
+
+	@Override
+	public InputStream getAttachmentImage(Long ideaId, Long persistenceId) {
+		InputStream is=null;
+		File file = this.fileRepository.findOne(persistenceId);
+		if (file!=null) {
+			is = this.attachmentDao.getImageFile(ideaId,file.getId(),file.getOriginalName());
+		}
+		return is;
 	}
 
 
