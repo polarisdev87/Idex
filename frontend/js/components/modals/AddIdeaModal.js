@@ -31,7 +31,8 @@ type Props = {
   dispatch: any,
   idea: any,
   type: string,
-  files: any,
+  localFiles: any,
+  remoteFiles: any,
 }
 
 class AddIdeaModal extends Component {
@@ -117,7 +118,9 @@ class AddIdeaModal extends Component {
       category = tags[mainTag];
     }
     console.log(category);
-
+    let newFiles = [];
+    Array.prototype.push.apply(newFiles,this.props.localFiles); 
+    Array.prototype.push.apply(newFiles,this.props.remoteFiles); 
     const idea = {
       id,
       title: this.title.value.trim(),
@@ -129,7 +132,7 @@ class AddIdeaModal extends Component {
       tags,
       category,
       anonymousMode,
-      files: this.props.files,
+      files: newFiles,
     };
     console.log(idea);
     this.props.handleIdea(idea, type);
@@ -207,8 +210,12 @@ class AddIdeaModal extends Component {
     console.log('onFilesChange');
     console.log(this.props);
     console.log(files);
-    const { dispatch, idea } = this.props;
-    changeFiles(dispatch, idea.id, idea.files, files);
+    const { dispatch, idea, remoteFiles } = this.props;
+
+    let newFiles = [];
+    Array.prototype.push.apply(newFiles,files); 
+    Array.prototype.push.apply(newFiles,remoteFiles); 
+    changeFiles(dispatch, idea.id, idea.files, newFiles);
   }
 
   onFilesError = (error, file) => {
@@ -234,7 +241,7 @@ class AddIdeaModal extends Component {
     console.log('AddIdeaModal.render()');
     console.log(this.props);
     const {
-      isOpen, idea, close, type, files,
+      isOpen, idea, close, type, localFiles, remoteFiles,
     } = this.props;
     console.log('type ===>', type);
     console.log(idea);
@@ -328,8 +335,12 @@ class AddIdeaModal extends Component {
 
             <div className="form-group">
               <div className="files">
-                <Files
-                  ref="files"
+
+              
+              
+              
+              <Files
+                  ref="localFiles"
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
@@ -344,10 +355,37 @@ class AddIdeaModal extends Component {
                  Drop files here or click to upload
                 </Files>
 
-                {
-                  files.length > 0
+                 
+                 {
+                     remoteFiles.length > 0
+                       ? <div className="files-list">
+                         <ul>{remoteFiles.map((file) =>
+                           (<li className="files-list-item" key={file.id}>
+                             <div className="files-list-item-preview">
+                               {file.preview.type === 'image'
+                                 ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
+                                 : <div className="files-list-item-preview-extension">{file.extension}</div>}
+                             </div>
+                             <div className="files-list-item-content">
+                               <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
+                               <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
+                             </div>
+                             <div
+                               id={file.id}
+                               className="files-list-item-remove"
+                               	onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                             />
+                           </li>))}
+                         </ul>
+                       </div>
+                       : null
+                   }
+                 
+                 
+                 {
+                  localFiles.length > 0
                     ? <div className="files-list">
-                      <ul>{files.map((file) =>
+                      <ul>{localFiles.map((file) =>
                         (<li className="files-list-item" key={file.id}>
                           <div className="files-list-item-preview">
                             {file.preview.type === 'image'
@@ -361,7 +399,7 @@ class AddIdeaModal extends Component {
                           <div
                             id={file.id}
                             className="files-list-item-remove"
-                  onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                            	onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
                           />
                         </li>))}
                       </ul>
@@ -398,7 +436,8 @@ function mapStateToProps(state, ownProps) {
   console.log(state);
   console.log(ownProps);
 
-  let files = [];
+  let localFiles = [];
+  let remoteFiles = [];
   if (ownProps.idea !=null) {
     const index = state.ideas.ideasArr.findIndex(x => x.id === ownProps.idea.id);
     if (index !== -1) {
@@ -406,16 +445,24 @@ function mapStateToProps(state, ownProps) {
       const ideaFiles = state.ideas.ideasArr[index].files;
       if (ideaFiles !== null) {
         console.log("files");  
-        console.log(files);
+        console.log(localFiles);
+        console.log(remoteFiles);
         console.log(ideaFiles);
-        files = ideaFiles;
+        for (let fileIndex in ideaFiles) {
+        	if (ideaFiles[fileIndex].remote) {
+        		remoteFiles.push(ideaFiles[fileIndex]);
+        	} else {
+        		localFiles.push(ideaFiles[fileIndex]);
+        	}
+        }
       }
     }
 
   }
 
   return {
-    files,
+    localFiles,
+    remoteFiles,
     ...ownProps,
   };
 }
