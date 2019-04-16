@@ -104,7 +104,7 @@ public class IdeaRestController {
     
     @RequestMapping(value = "/attach-content", method = RequestMethod.POST)
     public AttachmentDto uploadFileContent(
-    			@RequestParam(value = "ideaId", required = true) Long ideaId,
+    			@RequestParam(value = "ideaId", required = false) Long ideaId,
     			@RequestParam(value = "viewId", required = true) String viewId,
     			@RequestParam(value = "persistenceId", required = true) Long persistenceId,
     			@RequestParam("file") MultipartFile multipartFile) {

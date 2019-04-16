@@ -84,10 +84,9 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     		  .build();
     
     
-    private String getFullDestination(Long ideaId, Long fileId, String originalFileName) {
-        String ideaFolder = Long.toString(ideaId);
+    private String getFullDestination(Long fileId, String originalFileName) {
         String fileFolder = Long.toString(fileId);
-        String keyName = ideaFolder+"/"+fileFolder+"/"+originalFileName;
+        String keyName = fileFolder+"/"+originalFileName;
         return keyName;
         
     }
@@ -113,7 +112,7 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
         metadata.setContentType(contentType);
         metadata.setContentLength(size);
 
-        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        String keyName = getFullDestination(fileId,originalFileName);
         
 //         Upload upload = tm.upload(BUCKET_NAME, keyName, inputStream, metadata);
         
@@ -124,7 +123,7 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
 
 	@Override
 	public Boolean remove(Long ideaId, Long fileId, String originalFileName) {
-        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        String keyName = getFullDestination(fileId,originalFileName);
 		getS3Client().deleteObject(BUCKET_NAME, keyName);
 		return true;
 	}
@@ -134,13 +133,13 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
 		for (IdeaFile ideaFile:ideaFilesToDelete) {
 			getS3Client().deleteObject(
 					BUCKET_NAME,
-					getFullDestination(ideaFile.getIdea().getId(),ideaFile.getFile().getId(),ideaFile.getFile().getOriginalName()));
+					getFullDestination(ideaFile.getFile().getId(),ideaFile.getFile().getOriginalName()));
 		}
 	}
 
 	@Override
 	public InputStream getImageFile(Long ideaId, Long fileId, String originalFileName) {
-        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
         InputStream inputStream = s3object.getObjectContent();        
@@ -150,7 +149,7 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     
 	@Override
 	public InputStream download(Long ideaId, Long fileId, String originalFileName) {
-        String keyName = getFullDestination(ideaId,fileId,originalFileName);
+        String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
         InputStream inputStream = s3object.getObjectContent();        

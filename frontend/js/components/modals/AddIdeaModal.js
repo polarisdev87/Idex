@@ -109,7 +109,7 @@ class AddIdeaModal extends Component {
   handleIdea(type, anonymousMode) {
     console.log('AddIdeaModal -> handleIdea(type)');
     console.log(type);
-    console.log(this.props.files);
+    console.log(this.props.localFiles);
     const {
       id, tags, stage, mainTag,
     } = this.state;
@@ -121,6 +121,7 @@ class AddIdeaModal extends Component {
     let newFiles = [];
     Array.prototype.push.apply(newFiles,this.props.localFiles); 
     Array.prototype.push.apply(newFiles,this.props.remoteFiles); 
+    console.log(newFiles);
     const idea = {
       id,
       title: this.title.value.trim(),
@@ -210,12 +211,19 @@ class AddIdeaModal extends Component {
     console.log('onFilesChange');
     console.log(this.props);
     console.log(files);
-    const { dispatch, idea, remoteFiles } = this.props;
+    const { dispatch, idea, remoteFiles, localFiles, type } = this.props;
 
     let newFiles = [];
     Array.prototype.push.apply(newFiles,files); 
     Array.prototype.push.apply(newFiles,remoteFiles); 
-    changeFiles(dispatch, idea.id, idea.files, newFiles);
+    if (type === "edit") {
+        changeFiles(dispatch, idea.id, idea.files, newFiles);
+    } else {
+    	console.log("onFilesChange : adding attachment");
+    	console.log(localFiles);
+    	console.log(files);
+    	changeFiles(dispatch, -1, localFiles, files);
+    }
   }
 
   onFilesError = (error, file) => {
@@ -253,6 +261,8 @@ class AddIdeaModal extends Component {
     } = this.props;
     console.log('type ===>', type);
     console.log(idea);
+    console.log("localFiles");
+    console.log(localFiles);
     const { isEditMode } = this.state;
     const renderTitle = () => {
       if (type === 'view') {
@@ -462,7 +472,12 @@ function mapStateToProps(state, ownProps) {
         }
       }
     }
-
+  } else {
+	  // mode : adding an idea - ownProps.idea == null
+	  console.log("state.ideas.ideaToAdd");
+	  console.log(state.ideas.ideaToAdd);
+	  localFiles = state.ideas.ideaToAdd.files;
+	  remoteFiles = [];
   }
 
   return {

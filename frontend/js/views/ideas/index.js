@@ -200,6 +200,7 @@ function mapStateToProps(state) {
   return {
     ideas: state.ideas,
     ideasArr: state.ideas.ideasArr,
+    ideaToAdd: state.ideas.ideaToAdd,
   };
 }
 

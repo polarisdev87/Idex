@@ -5,6 +5,9 @@ import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
  * Identify all files that aren't in oldFiles
  */
 function getFilesToAdd(oldFiles, files) {
+	console.log("getFilesToAdd(...)"); 
+	console.log(oldFiles); 
+	console.log(files); 
   const gotOldFiles = oldFiles == null ? [] : oldFiles;
   const newArray = files.filter((el) => gotOldFiles.indexOf(el) < 0);
   return newArray;
@@ -23,6 +26,9 @@ function getFilesToRemove(oldFiles, files) {
 
 /**
  * It is called after the user adds or removes file attachments on an idea
+ * @ type is edit or add
+ * The type impacts on what element is updated after success (ideasArr or ideaToAdd)
+ * 
  */
 export function changeFiles(dispatch, ideaId, oldFiles, files) {
   // discover difference with previous file list
@@ -45,6 +51,8 @@ export function changeFiles(dispatch, ideaId, oldFiles, files) {
     dispatch(removeFiles(ideaId, filesToRemove));
   }
 }
+
+
 
 
 export const REMOVE_REMOTE_FILE = 'REMOVE_REMOTE_FILE';
@@ -227,7 +235,7 @@ export function removeFiles(ideaId, files) {
     console.log('removeFilesRequest(...)');
     console.log(ideaId);
     console.log(removeFilesList);
-    dispatch(removeFilesRequest(removeFilesList));
+    dispatch(removeFilesRequest(ideaId, removeFilesList));
     return fetch(`${API_BASE_URI}/ideas/attach`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
@@ -288,10 +296,11 @@ export const REMOVE_FILES_REQUEST = 'REMOVE_FILES_REQUEST';
 export const REMOVE_FILES_SUCCESS = 'REMOVE_FILES_SUCCESS';
 export const REMOVE_FILES_FAILURE = 'REMOVE_FILES_FAILURE';
 
-function removeFilesRequest(removeFilesList) {
+function removeFilesRequest(ideaId, removeFilesList) {
   return {
     type: REMOVE_FILES_REQUEST,
     fileList: removeFilesList,
+    ideaId, 
   };
 }
 

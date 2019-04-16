@@ -10,6 +10,127 @@ import {
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
 
+
+function updateFileOnIdea(idea, htmlFormFile, uploadedFileMeta) {
+	console.log("updateFileOnIdea");
+	console.log(idea);
+	
+	console.log("htmlFormFile");
+	console.log(htmlFormFile);
+    if (idea.files == null) {
+        idea.files = [];
+      }
+      const fileIndex = idea.files.findIndex(x => x.id === htmlFormFile.id);
+      if (fileIndex !== -1) {
+      	console.log('initial file');
+      	console.log(idea.files[fileIndex]);
+        const newFile = Object.assign({}, idea.files[fileIndex], {
+          cancelledAt: uploadedFileMeta.cancelledAt,
+          persistenceId: uploadedFileMeta.persistenceId,
+          uploadedAt: uploadedFileMeta.uploadedAt,
+        });
+    	console.log('newFile');
+    	console.log(newFile);
+        idea.files = [
+          ...idea.files.slice(0, fileIndex),
+          newFile,
+          ...idea.files.slice(fileIndex + 1),
+        ];
+      } else {
+      	console.log('htmlFormFile');
+      	console.log(htmlFormFile);
+        const newFile = Object.assign({}, htmlFormFile, {
+          cancelledAt: uploadedFileMeta.cancelledAt,
+          persistenceId: uploadedFileMeta.persistenceId,
+          uploadedAt: uploadedFileMeta.uploadedAt,
+        });
+      	console.log('newFile');
+      	console.log(newFile);
+        idea.files = [
+          ...idea.files,
+          newFile,
+        ];
+      }
+      console.log(idea);
+      return idea;
+}
+
+
+function completeFileOnIdea(idea, htmlFormFile, uploadedFileMeta) {
+	
+    if (idea.files == null) {
+        idea.files = [];
+      }
+      const fileIndex = idea.files.findIndex(x => x.persistenceId === uploadedFileMeta.persistenceId);
+      if (fileIndex !== -1) {
+          console.log("file =>");
+          console.log(idea.files[fileIndex]);
+        const newFile = Object.assign({}, idea.files[fileIndex], {
+          cancelledAt:  uploadedFileMeta.cancelledAt,
+          persistenceId: uploadedFileMeta.persistenceId,
+          uploadedAt: uploadedFileMeta.uploadedAt,
+        });
+        console.log("newFile");
+        console.log(newFile);
+        idea.files = [
+          ...idea.files.slice(0, fileIndex),
+          newFile,
+          ...idea.files.slice(fileIndex + 1),
+        ];
+      } else {
+      	console.log('htmlFormFile');
+      	console.log(htmlFormFile);
+      	
+      	if (htmlFormFile) {
+            const newFile = Object.assign({}, htmlFormFile, {
+                cancelledAt: uploadedFileMeta.cancelledAt,
+                persistenceId: uploadedFileMeta.persistenceId,
+                uploadedAt: uploadedFileMeta.uploadedAt,
+              });
+              console.log("newFile");
+              console.log(newFile);
+              idea.files = [
+                ...idea.files,
+                newFile,
+              ];
+      	}
+      }
+
+      return idea;
+}
+
+
+function addFileOnIdea(idea,file) {
+	console.log("addFileOnIdea");
+	console.log(idea);
+    if (idea.files == null) {
+        idea.files = [file];
+      } else {
+    	idea.files = [
+          ...idea.files,
+          file,
+        ];
+    }
+	console.log(idea);
+    return idea;
+}
+
+
+function removeFileListOnIdea(newIdea, files) {
+    if (newIdea.files != null) {
+        for (const fileI in files) {
+          const fileIndex = newIdea.files.findIndex(x => x.id == files[fileI].id);
+          if (fileIndex !== -1) {
+            newIdea.files = [
+              ...newIdea.files.slice(0, fileIndex),
+              ...newIdea.files.slice(fileIndex + 1),
+            ];
+          }
+        }
+      }
+	return newIdea;
+}
+
 export function ideas(state = {
   isFetchingIdeas: false,
   isFetchingComments: false,
@@ -18,6 +139,9 @@ export function ideas(state = {
   commentsErrorMessage: undefined,
   partialFullSwitch: true,
   anonymousMode: false,
+  ideaToAdd: {
+	  files: [],
+  }
 
 }, action) {
 	 console.log("IDEAS REDUCER...");
@@ -141,165 +265,136 @@ export function ideas(state = {
     case UPLOAD_FILE_REQUEST: {
       console.log('UPLOAD_FILE_REQUEST');
       console.log(action.file);
-      let newIdeas = state.ideasArr;
-      const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
-      if (index !== -1) {
-        const newIdea = state.ideasArr[index];
-        if (newIdea.files == null) {
-          newIdea.files = [action.file];
-        } else {
-          newIdea.files = [
-            ...newIdea.files,
-            action.file,
-          ];
-        }
-        newIdeas = [
-          ...state.ideasArr.slice(0, index),
-          newIdea,
-          ...state.ideasArr.slice(index + 1),
-        ];
+      if (action.ideaId>=0) {  // editing
+          let newIdeas = state.ideasArr;
+          const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+          if (index !== -1) {
+            let newIdea = state.ideasArr[index];
+            newIdea = addFileOnIdea(newIdea, action.file);
+            newIdeas = [
+              ...state.ideasArr.slice(0, index),
+              newIdea,
+              ...state.ideasArr.slice(index + 1),
+            ];
+          }
+          return Object.assign({}, state, {
+            ideasArr: newIdeas,
+          });
+    	  
+      } else {  // adding idea - ideaId == -1
+          let newIdea = state.ideaToAdd;
+          newIdea = addFileOnIdea(newIdea, action.file);
+          return Object.assign({}, state, {
+            ideaToAdd: newIdea,
+          });
+    	  
       }
-      return Object.assign({}, state, {
-        ideasArr: newIdeas,
-      });
     }
     // the api endpoint return the file uploaded information (metadata - started to upload the file ) 
     case UPLOAD_FILE_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_SUCCESS');
       console.log(state);
       console.log(action);
-      const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
-      if (index !== -1) {
-        const idea = state.ideasArr[index];
-        console.log('idea');
-        console.log(idea);
-        if (idea.files == null) {
-          idea.files = [];
-        }
-        const fileIndex = idea.files.findIndex(x => x.id === action.htmlFormFile.id);
-        if (fileIndex !== -1) {
-        	console.log('initial file');
-        	console.log(idea.files[fileIndex]);
-          const newFile = Object.assign({}, idea.files[fileIndex], {
-            cancelledAt: action.uploadedFileMeta.cancelledAt,
-            persistenceId: action.uploadedFileMeta.persistenceId,
-            uploadedAt: action.uploadedFileMeta.uploadedAt,
+      if (action.ideaId>=0) { // edit mode
+    	  console.log("editMode");
+          const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+          if (index !== -1) {
+            let idea = state.ideasArr[index];
+            console.log('idea');
+            console.log(idea);
+
+            idea = updateFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta) 
+            
+            const newIdeas = [
+              ...state.ideasArr.slice(0, index),
+              idea,
+              ...state.ideasArr.slice(index + 1),
+            ];
+            console.log('newIdeas');
+            console.log(newIdeas);
+            return Object.assign({}, state, {
+              ideasArr: newIdeas,
+            });
+          }
+    	  
+      } else {  // add mode  - action.ideaId == -1
+    	  console.log("addMode");
+    	  let idea = state.ideaToAdd;
+          idea = updateFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta) 
+          
+          return Object.assign({}, state, {
+            ideaToAdd: idea,
           });
-      	console.log('newFile');
-    	console.log(newFile);
-          idea.files = [
-            ...idea.files.slice(0, fileIndex),
-            newFile,
-            ...idea.files.slice(fileIndex + 1),
-          ];
-        } else {
-        	console.log('htmlFormFile');
-        	console.log(htmlFormFile);
-          const newFile = Object.assign({}, action.htmlFormfile, {
-            cancelledAt: action.uploadedFileMeta.cancelledAt,
-            persistenceId: action.uploadedFileMeta.persistenceId,
-            uploadedAt: action.uploadedFileMeta.uploadedAt,
-          });
-        	console.log('newFile');
-        	console.log(newFile);
-          idea.files = [
-            ...idea.files,
-            newFile,
-          ];
-        }
-        const newIdeas = [
-          ...state.ideasArr.slice(0, index),
-          idea,
-          ...state.ideasArr.slice(index + 1),
-        ];
-        console.log('newIdeas');
-        console.log(newIdeas);
-        return Object.assign({}, state, {
-          ideasArr: newIdeas,
-        });
       }
       return state;
     }
     // finished to upload file (uploaded completely)
     case UPLOAD_FILE_CONTENT_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_CONTENT_SUCCESS');
-      const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
-      if (index !== -1) {
-        const idea = state.ideasArr[index];
-        console.log('idea');
-        console.log(idea);
-        if (idea.files == null) {
-          idea.files = [];
-        }
-        const fileIndex = idea.files.findIndex(x => x.persistenceId === action.uploadedFileMeta.persistenceId);
-        if (fileIndex !== -1) {
-            console.log("file =>");
-            console.log(idea.files[fileIndex]);
-          const newFile = Object.assign({}, idea.files[fileIndex], {
-            cancelledAt: action.uploadedFileMeta.cancelledAt,
-            persistenceId: action.uploadedFileMeta.persistenceId,
-            uploadedAt: action.uploadedFileMeta.uploadedAt,
-          });
-          console.log("newFile");
-          console.log(newFile);
-          idea.files = [
-            ...idea.files.slice(0, fileIndex),
-            newFile,
-            ...idea.files.slice(fileIndex + 1),
-          ];
-        } else {
-        	console.log('htmlFormFile');
-        	console.log(htmlFormFile);
-          const newFile = Object.assign({}, action.htmlFormfile, {
-            cancelledAt: action.uploadedFileMeta.cancelledAt,
-            persistenceId: action.uploadedFileMeta.persistenceId,
-            uploadedAt: action.uploadedFileMeta.uploadedAt,
-          });
-          console.log("newFile");
-          console.log(newFile);
-          idea.files = [
-            ...idea.files,
-            newFile,
-          ];
-        }
-        const newIdeas = [
-          ...state.ideasArr.slice(0, index),
-          idea,
-          ...state.ideasArr.slice(index + 1),
-        ];
-        console.log('newIdeas');
-        console.log(newIdeas);
-        return Object.assign({}, state, {
-          ideasArr: newIdeas,
-        });
+      if (action.ideaId >= 0 ) { // edit idea
+          const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
+          if (index !== -1) {
+            let idea = state.ideasArr[index];
+            console.log('idea');
+            console.log(idea);
+
+            idea = completeFileOnIdea(idea, action.htmlFormfile, action.uploadedFileMeta);
+            const newIdeas = [
+              ...state.ideasArr.slice(0, index),
+              idea,
+              ...state.ideasArr.slice(index + 1),
+            ];
+            console.log('newIdeas');
+            console.log(newIdeas);
+            return Object.assign({}, state, {
+              ideasArr: newIdeas,
+            });
+          }
+          return state;
+    	  
+      } else {  // add idea - ideaId = -1
+    	  let idea = state.ideaToAdd;
+          idea = completeFileOnIdea(idea, action.htmlFormfile, action.uploadedFileMeta);
+          return Object.assign({}, state, {
+              ideaToAdd: idea,
+            });
+    	  
       }
-      return state;
+      
+      
     }
     case REMOVE_FILES_REQUEST: {
-      let newIdeas = state.ideasArr;
-      const index = state.ideasArr.findIndex(x => x.id === action.fileList.ideaId);
-      if (index !== -1) {
-        const newIdea = newIdeas[index];
-        if (newIdea.files != null) {
-          for (const fileI in action.fileList.files) {
-            const fileIndex = newIdea.files.findIndex(x => x.id == action.fileList.files[fileI].id);
-            if (fileIndex !== -1) {
-              newIdea.files = [
-                ...newIdea.files.slice(0, fileIndex),
-                ...newIdea.files.slice(fileIndex + 1),
-              ];
-            }
-          }
-          newIdeas = [
-            ...state.ideasArr.slice(0, index),
-            newIdea,
-            ...state.ideasArr.slice(index + 1),
-          ];
-        }
-        return Object.assign({}, state, {
-          ideasArr: newIdeas,
-        });
-      }
+    	if (action.ideaId >=0 ) {  // editing
+    	      let newIdeas = state.ideasArr;
+    	      const index = state.ideasArr.findIndex(x => x.id === action.fileList.ideaId);
+    	      if (index !== -1) {
+    	        let newIdea = newIdeas[index];
+
+    	        
+	        	newIdea = removeFileListOnIdea(newIdea, action.fileList.files);
+    	        
+    	        
+    	        
+    	        newIdeas = [
+    	        	...state.ideasArr.slice(0, index),
+    	        	newIdea,
+    	        	...state.ideasArr.slice(index + 1),
+    	        	];
+    	        
+    	        return Object.assign({}, state, {
+    	          ideasArr: newIdeas,
+    	        });
+    	      }
+    		
+    	} else { // remove files when adding idea
+    		let newIdea = state.ideaToAdd;
+        	newIdea = removeFileListOnIdea(newIdea, action.fileList.files);
+	        return Object.assign({}, state, {
+  	          ideaToAdd: newIdea,
+  	        });
+    		
+    	}
+    	
     }
     case REMOVE_REMOTE_FILE: {
         let newIdeas = state.ideasArr;
