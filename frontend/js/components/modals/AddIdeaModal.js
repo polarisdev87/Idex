@@ -343,25 +343,6 @@ class AddIdeaModal extends Component {
 
             <div className="form-group">
               <div className="files">
-
-              
-              
-              <Files
-              ref="remoteFiles"
-              className="files-dropzone-list"
-              onChange={this.onRemoteFilesChange}
-              onError={this.onFilesError}
-              style={{ height: '100px', width: '100%' }}
-              accepts={['image/png', '.pdf', 'audio/*', '.txt']}
-              multiple
-              maxFiles={3}
-              maxFileSize={10000000}
-              minFileSize={0}
-              clickable
-            >
-             Drop files here or click to upload
-            </Files>
-
              
               <Files
                   ref="localFiles"
