@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
+import AttachmentsModal from '../../components/modals/AttachmentsModal';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
 
 type Props = {
@@ -25,6 +26,7 @@ class Ideas extends Component {
 
   state = {
     isOpen: false,
+    isOpenAttachments: false,
   }
 
   handleIdea(idea, type) {
@@ -56,7 +58,11 @@ class Ideas extends Component {
     this.setState({ isOpen: false });
   }
 
+  closeAttachmentsModal() {
+	    this.setState({ isOpenAttachments: false });
+  }
 
+  
   areAllAttachmentsUploaded(idea) {
     console.log("areAllAttachmentsUploaded");
     console.log(idea);
@@ -112,6 +118,19 @@ class Ideas extends Component {
     return errorMessage;
   }
 
+
+  addCommentAttachmentsButtonClickHandler() {
+	    this.setState({ isOpenAttachments: true });
+	    this.modalIdea = null;
+	    this.type = 'add';
+  }
+  
+  viewCommentAttachmentsButtonClickHandler() {
+	    this.setState({ isOpenAttachments: true });
+	    this.modalIdea = null;
+	    this.type = 'view';
+  }
+  
   addIdeaButtonClickHandler() {
     this.setState({ isOpen: true });
     this.modalIdea = null;
@@ -139,7 +158,7 @@ class Ideas extends Component {
   render() {
     console.log('index.js.render()');
     console.log(this.props);
-    const { isOpen } = this.state;
+    const { isOpen, isOpenAttachments } = this.state;
     console.log('this.modalIdea ===>', this.modalIdea);
     const {
       ideas: {
@@ -162,6 +181,8 @@ class Ideas extends Component {
           editable= {item.userSession.editable}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
+          addCommentAttachments={() => this.addCommentAttachmentsButtonClickHandler(item)}
+          viewCommentAttachments={() => this.viewCommentAttachmentsButtonClickHandler(item)}
         />
       )) :
       null;
@@ -170,7 +191,6 @@ class Ideas extends Component {
       <div className="container">
         <div className="ideas-container">
         
-        <Link to="./attach-img1" target="_self">...</Link>
           <Header
             addIdeaButtonClick={() => this.addIdeaButtonClickHandler()}
             fetchIdeas={(
@@ -190,6 +210,11 @@ class Ideas extends Component {
           isOpen={isOpen} idea={this.modalIdea} type={this.type}
           handleIdea={(idea, type) => this.handleIdea(idea, type)}
           close={() => this.closeModal()}
+        />
+        <AttachmentsModal
+          isOpen={isOpenAttachments} idea={this.modalIdea} type={this.type}
+          handleIdea={(idea, type) => this.handleIdea(idea, type)}
+          close={() => this.closeAttachmentsModal()}
         />
       </div>
     );

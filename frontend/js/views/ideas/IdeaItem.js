@@ -95,7 +95,12 @@ class IdeaItem extends Component {
               <span onClick={this.handleToggleAnonymous} className={idea.anonymousMode ? 'identity-icon-anonymous' : 'identity-icon-identified'} />
             </div>
           </div>
-          <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
+          <div className="col-xs-1 col-sm-1 col-md-1 col-lg-1 comment-attachments">
+          	<div className="avatar-container">
+          		<span onClick={this.openNewCommentAttachments} className="attachment-clip-enabled" />
+          	</div>
+          </div>
+          <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9 comment">
             <input
               type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
               onKeyPress={this.handleAddCommentKeyPress}

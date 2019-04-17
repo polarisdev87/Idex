@@ -22,7 +22,12 @@ class Comment extends Component {
             <div className="avatar-container">
               <span> {comment.account.displayName}</span></div>
           </div>
-          <div className="col-xs-10 col-sm-10 col-md-10 col-lg-10 comment">
+          <div className="col-xs-1 col-sm-1 col-md-1 col-lg-1 comment-attachments">
+        	<div className="avatar-container">
+        		<span onClick={this.openCommentAttachments} className="attachment-clip-enabled" />
+        	</div>
+          </div>
+          <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9 comment">
             <div className="label-base-base">{comment.text}</div>
             <div className="date">
               <OverlayTrigger

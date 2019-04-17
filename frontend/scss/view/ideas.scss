@@ -311,6 +311,13 @@
       .author .date {
         background-color: $color-blue-white;
       }
+      .attachment-clip-enabled {
+            background: url(../assets/images/baseline_attach_file_black_36dp.png) no-repeat;
+            background-size:contain;
+            width: 100%;
+            height: 2em;
+            background-position: center;
+      }
       .avatar-container {
         min-width: 8rem;
         min-height: 4rem;
