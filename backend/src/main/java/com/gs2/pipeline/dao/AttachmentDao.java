@@ -21,8 +21,8 @@ public interface AttachmentDao {
 	void remove(Set<IdeaFile> ideaFilesToDelete);
 
 	
-	InputStream getImageFile(Long ideaId, Long id, String originalName);
-	InputStream download(Long ideaId, Long fileId, String originalFileName);
+	InputStream getAttachmentFile(Long id, String originalName);
+	InputStream download(Long fileId, String originalFileName);
 
 
 

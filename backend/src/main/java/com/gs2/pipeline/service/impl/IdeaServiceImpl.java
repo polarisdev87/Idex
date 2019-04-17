@@ -593,13 +593,8 @@ public class IdeaServiceImpl implements IdeaService {
 
 	}
 	
-	
-	
-	/**
-	 *	persist on database upload event and generate File id 
-	 */
-	@Override
-	public AttachmentDto prepareUpload(AttachmentDto fileDto, Account submittedBy) {
+
+	private AttachmentDto prepareUploadBase(AttachmentDto fileDto, Account submittedBy) {
 		if (fileDto.getSize()<=IdeaService.MAX_ATTACHMENT_SIZE) {
 			File file = new File();
 			file.setName(fileDto.getOriginalName());
@@ -613,11 +608,25 @@ public class IdeaServiceImpl implements IdeaService {
 		} else {
 			return null;
 		}
+		
 	}
 	
-
+	/**
+	 *	persist on database upload event and generate File id 
+	 */
+	@Override
+	public AttachmentDto prepareUpload(AttachmentDto fileDto, Account submittedBy) {
+		return prepareUploadBase(fileDto, submittedBy);
+	}
 	
-	public AttachmentDto uploadContent(AttachmentDto initialAttachment, InputStream inputStream, Account requester) {
+	
+	@Override
+	public AttachmentDto prepareUploadOnNewComment(AttachmentDto attachmentDto, Account requester) {
+		return prepareUploadBase(attachmentDto, requester);
+	}
+	
+	
+	private AttachmentDto uploadContentBase(AttachmentDto initialAttachment, InputStream inputStream, Account requester) {
         File file = fileRepository.getOne(initialAttachment.getPersistenceId());
         if (file!=null) {
     		UploadDto uploadDto = this.attachmentDao.upload(initialAttachment.getIdeaId(), 
@@ -638,7 +647,18 @@ public class IdeaServiceImpl implements IdeaService {
 		result.setCancelledAt(file.getCancelledAt());
         return result;
 	}
+	
+	public AttachmentDto uploadContent(AttachmentDto initialAttachment, InputStream inputStream, Account requester) {
+		return uploadContentBase(initialAttachment, inputStream, requester);
+	}
 
+	@Override
+	public AttachmentDto uploadContentOnNewComment(AttachmentDto attachmentDto, InputStream inputStream,
+			Account requester) {
+		return uploadContentBase(attachmentDto, inputStream, requester);
+	}
+	
+	
 	/**
 	 * Complete getUploadedAt for all the files to attach
 	 */
@@ -698,16 +718,43 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 		return filesToRemoveDto;
 	}
-
+	
+	
 	@Override
-	public InputStream getAttachmentImage(Long ideaId, Long persistenceId) {
+	public FilesToRemoveDto removeUploadingFileOnComment(FilesToRemoveDto filesToRemoveDto, Account requester) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
+	
+	
+	private InputStream getAttachment(Long persistenceId) {
 		InputStream is=null;
 		File file = this.fileRepository.findOne(persistenceId);
 		if (file!=null) {
-			is = this.attachmentDao.getImageFile(ideaId,file.getId(),file.getOriginalName());
+			is = this.attachmentDao.getAttachmentFile(file.getId(),file.getOriginalName());
 		}
 		return is;
 	}
+	
+	
+	
+	/**
+	 * ideaId it is interesting as parameter as it is used for user restrictions 
+	 */
+	@Override
+	public InputStream getAttachment(Long ideaId, Long persistenceId, Account requester) {
+		return this.getAttachment(persistenceId);
+	}
+	
+	
+	@Override
+	public InputStream getAttachmentOnComment(Long ideaId, Long commentId, Long persistenceId, Account requester) {
+		return this.getAttachment(persistenceId);
+	}
+	
+	
 
 	@Override
 	public String getFileContentType(Long persistenceId) {
@@ -718,6 +765,12 @@ public class IdeaServiceImpl implements IdeaService {
 		}
 		return returnValue;
 	}
+
+
+
+
+
+
 
 
 }

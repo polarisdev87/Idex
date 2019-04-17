@@ -9,32 +9,33 @@ import {
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
+import { UPLOAD_FILE_ON_NEW_COMMENT_SUCCESS, UPLOAD_FILE_ON_NEW_COMMENT_REQUEST, REMOVE_FILES_ON_NEW_COMMENT_REQUEST, UPLOAD_FILE_ON_NEW_COMMENT_CONTENT_SUCCESS, REMOVE_REMOTE_FILE_ON_NEW_COMMENT } from '../actions/files';
 
 
-function updateFileOnIdea(idea, htmlFormFile, uploadedFileMeta) {
-	console.log("updateFileOnIdea");
-	console.log(idea);
+function updateFileOnElement(element, htmlFormFile, uploadedFileMeta) {
+	console.log("updateFileOnElement");
+	console.log(element);
 	
 	console.log("htmlFormFile");
 	console.log(htmlFormFile);
-    if (idea.files == null) {
-        idea.files = [];
+    if (element.files == null) {
+    	element.files = [];
       }
-      const fileIndex = idea.files.findIndex(x => x.id === htmlFormFile.id);
+      const fileIndex = element.files.findIndex(x => x.id === htmlFormFile.id);
       if (fileIndex !== -1) {
       	console.log('initial file');
-      	console.log(idea.files[fileIndex]);
-        const newFile = Object.assign({}, idea.files[fileIndex], {
+      	console.log(element.files[fileIndex]);
+        const newFile = Object.assign({}, element.files[fileIndex], {
           cancelledAt: uploadedFileMeta.cancelledAt,
           persistenceId: uploadedFileMeta.persistenceId,
           uploadedAt: uploadedFileMeta.uploadedAt,
         });
     	console.log('newFile');
     	console.log(newFile);
-        idea.files = [
-          ...idea.files.slice(0, fileIndex),
+    	element.files = [
+          ...element.files.slice(0, fileIndex),
           newFile,
-          ...idea.files.slice(fileIndex + 1),
+          ...element.files.slice(fileIndex + 1),
         ];
       } else {
       	console.log('htmlFormFile');
@@ -46,13 +47,13 @@ function updateFileOnIdea(idea, htmlFormFile, uploadedFileMeta) {
         });
       	console.log('newFile');
       	console.log(newFile);
-        idea.files = [
-          ...idea.files,
+      	element.files = [
+          ...element.files,
           newFile,
         ];
       }
-      console.log(idea);
-      return idea;
+      console.log(element);
+      return element;
 }
 
 
@@ -100,19 +101,19 @@ function completeFileOnIdea(idea, htmlFormFile, uploadedFileMeta) {
 }
 
 
-function addFileOnIdea(idea,file) {
-	console.log("addFileOnIdea");
-	console.log(idea);
-    if (idea.files == null) {
-        idea.files = [file];
+function addFileOnElement(element,file) {
+	console.log("addFileOnElement");
+	console.log(element);
+    if (element.files == null) {
+    	element.files = [file];
       } else {
-    	idea.files = [
-          ...idea.files,
+    	  element.files = [
+          ...element.files,
           file,
         ];
     }
-	console.log(idea);
-    return idea;
+	console.log(element);
+    return element;
 }
 
 
@@ -270,7 +271,7 @@ export function ideas(state = {
           const index = state.ideasArr.findIndex(x => x.id === action.ideaId);
           if (index !== -1) {
             let newIdea = state.ideasArr[index];
-            newIdea = addFileOnIdea(newIdea, action.file);
+            newIdea = addFileOnElement(newIdea, action.file);
             newIdeas = [
               ...state.ideasArr.slice(0, index),
               newIdea,
@@ -283,14 +284,14 @@ export function ideas(state = {
     	  
       } else {  // adding idea - ideaId == -1
           let newIdea = state.ideaToAdd;
-          newIdea = addFileOnIdea(newIdea, action.file);
+          newIdea = addFileOnElement(newIdea, action.file);
           return Object.assign({}, state, {
             ideaToAdd: newIdea,
           });
     	  
       }
     }
-    // the api endpoint return the file uploaded information (metadata - started to upload the file ) 
+    // the api endpoint returns the file uploaded information (metadata - started to upload the file ) 
     case UPLOAD_FILE_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_SUCCESS');
       console.log(state);
@@ -303,7 +304,7 @@ export function ideas(state = {
             console.log('idea');
             console.log(idea);
 
-            idea = updateFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta) 
+            idea = updateFileOnElement(idea, action.htmlFormFile, action.uploadedFileMeta) 
             
             const newIdeas = [
               ...state.ideasArr.slice(0, index),
@@ -320,7 +321,7 @@ export function ideas(state = {
       } else {  // add mode  - action.ideaId == -1
     	  console.log("addMode");
     	  let idea = state.ideaToAdd;
-          idea = updateFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta) 
+          idea = updateFileOnElement(idea, action.htmlFormFile, action.uploadedFileMeta) 
           
           return Object.assign({}, state, {
             ideaToAdd: idea,
@@ -328,6 +329,79 @@ export function ideas(state = {
       }
       return state;
     }
+
+    
+    case UPLOAD_FILE_ON_NEW_COMMENT_REQUEST: {
+        console.log('UPLOAD_FILE_ON_NEW_COMMENT_REQUEST');
+        console.log(action.file);
+        console.log(state);
+        console.log(action);
+        
+        const index = state.commentsToAdd.findIndex(x => x.id === action.ideaId);
+        let comment = {};
+        let newCommentsToAdd = state.commentsToAdd;
+        if (index == -1) {
+          comment = {ideaId: action.ideaId, files: []}
+          comment = addFileOnElement(comment, action.file) 
+          newCommentsToAdd = [
+              ...state.commentsToAdd,
+              comment,
+           ];
+          return Object.assign({}, state, {
+              commentsToAdd: newCommentsToAdd,
+           });
+        } else  {
+          comment = state.commentsToAdd[index];
+
+          comment = addFileOnElement(comment, action.file) 
+              
+          newCommentsToAdd = [
+             ...state.commentsToAdd.slice(0, index),
+             comment,
+             ...state.commentsToAdd.slice(index + 1),
+          ];
+        }  
+        return Object.assign({}, state, {
+            commentsToAdd: newCommentsToAdd,
+         });
+      }
+    // the api endpoint returns the file uploaded information (metadata - started to upload the file ) 
+    case UPLOAD_FILE_ON_NEW_COMMENT_SUCCESS: {
+      console.log('reducer:UPLOAD_FILE_ON_NEW_COMMENT_SUCCESS');
+      console.log(state);
+      console.log(action);
+
+      
+      const index = state.commentsToAdd.findIndex(x => x.id === action.ideaId);
+      let comment = {};
+      if (index == -1) {
+    	comment = {ideaId: action.ideaId, files: [action.htmlFormFile]}
+        comment = updateFileOnElement(comment, action.htmlFormFile, action.uploadedFileMeta) 
+        const newCommentsToAdd = [
+            ...state.commentsToAdd,
+            comment,
+         ];
+        return Object.assign({}, state, {
+            commentsToAdd: newCommentsToAdd,
+         });
+      } else  {
+        comment = state.commentsToAdd[index];
+
+        comment = updateFileOnElement(comment, action.htmlFormFile, action.uploadedFileMeta) 
+            
+        const newCommentsToAdd = [
+           ...state.commentsToAdd.slice(0, index),
+           comment,
+           ...state.commentsToAdd.slice(index + 1),
+        ];
+        return Object.assign({}, state, {
+           commentsToAdd: newCommentsToAdd,
+        });
+      }  
+    }
+    
+    
+    
     // finished to upload file (uploaded completely)
     case UPLOAD_FILE_CONTENT_SUCCESS: {
       console.log('reducer:UPLOAD_FILE_CONTENT_SUCCESS');
@@ -338,7 +412,7 @@ export function ideas(state = {
             console.log('idea');
             console.log(idea);
 
-            idea = completeFileOnIdea(idea, action.htmlFormfile, action.uploadedFileMeta);
+            idea = completeFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta);
             const newIdeas = [
               ...state.ideasArr.slice(0, index),
               idea,
@@ -354,7 +428,7 @@ export function ideas(state = {
     	  
       } else {  // add idea - ideaId = -1
     	  let idea = state.ideaToAdd;
-          idea = completeFileOnIdea(idea, action.htmlFormfile, action.uploadedFileMeta);
+          idea = completeFileOnIdea(idea, action.htmlFormFile, action.uploadedFileMeta);
           return Object.assign({}, state, {
               ideaToAdd: idea,
             });

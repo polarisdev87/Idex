@@ -155,7 +155,7 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
 	}
 
 	@Override
-	public InputStream getImageFile(Long ideaId, Long fileId, String originalFileName) {
+	public InputStream getAttachmentFile( Long fileId, String originalFileName) {
         String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
@@ -165,7 +165,7 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
 	}
     
 	@Override
-	public InputStream download(Long ideaId, Long fileId, String originalFileName) {
+	public InputStream download(Long fileId, String originalFileName) {
         String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);

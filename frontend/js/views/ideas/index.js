@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
-import AttachmentsModal from '../../components/modals/AttachmentsModal';
+import CommentAttachmentsModal from '../../components/modals/CommentAttachmentsModal';
 import { updateCommentAttachments } from '../../actions/comments';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
 
@@ -236,7 +236,7 @@ class Ideas extends Component {
           handleIdea={(idea, type) => this.handleIdea(idea, type)}
           close={() => this.closeModal()}
         />
-        <AttachmentsModal
+        <CommentAttachmentsModal
           isOpen={isOpenAttachments} 
           idea={this.ideaBeingCommented} 
           comment = {this.modalComment}

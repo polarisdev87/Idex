@@ -30,7 +30,7 @@ public interface IdeaService {
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
 	AttachmentDto uploadContent( AttachmentDto initialAttachment,InputStream inputStream, Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
-	InputStream getAttachmentImage(Long ideaId, Long persistenceId);
+	InputStream getAttachment(Long ideaId, Long persistenceId, Account requester);
 	
 	/**
 	 * Gets content type of the selected file
@@ -38,4 +38,10 @@ public interface IdeaService {
 	 * @return
 	 */
 	String getFileContentType(Long persistenceId);
+	
+	
+	InputStream getAttachmentOnComment(Long ideaId, Long commentId, Long persistenceId, Account requester);
+	FilesToRemoveDto removeUploadingFileOnComment(FilesToRemoveDto filesToRemoveDto, Account requester);
+	AttachmentDto prepareUploadOnNewComment(AttachmentDto attachmentDto, Account requester);
+	AttachmentDto uploadContentOnNewComment(AttachmentDto attachmentDto, InputStream inputStream, Account requester);
 }

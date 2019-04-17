@@ -6,7 +6,7 @@ import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
 import Files from 'react-files';
 import CommonButton from '../buttons/CommonButton';
-import { changeFiles, removeRemoteFile } from '../../actions/files';
+import { changeFilesOnNewComment } from '../../actions/files';
 import { API_BASE_URI } from '../../const';
 import AttachmentsSection from '../attachments/AttachmentsSection';
 
@@ -36,7 +36,10 @@ type Props = {
   remoteFiles: any,
 }
 
-class AttachmentsModal extends Component {
+/**
+ * Attachments Modal for comments
+ */
+class CommentAttachmentsModal extends Component {
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps');
     console.log(nextProps);
@@ -134,14 +137,11 @@ class AttachmentsModal extends Component {
     let newFiles = [];
     Array.prototype.push.apply(newFiles,files); 
     Array.prototype.push.apply(newFiles,remoteFiles); 
-    if (type === "edit") {
-        changeFiles(dispatch, idea.id, idea.files, newFiles);
-    } else {
-    	console.log("onFilesChange : adding attachment");
-    	console.log(localFiles);
-    	console.log(files);
-    	changeFiles(dispatch, -1, localFiles, files);
-    }
+    console.log("newFiles");
+    console.log(newFiles);
+    console.log("localFiles");
+    console.log(localFiles);
+    changeFilesOnNewComment(dispatch, idea.id, localFiles, newFiles);
   }
 
   onFilesError = (error, file) => {
@@ -161,7 +161,7 @@ class AttachmentsModal extends Component {
   remoteFilesRemoveOne = (file) => {
 	    const { dispatch, idea } = this.props;
 	    console.log('remoteFilesRemoveOne');
-	    dispatch(removeRemoteFile(idea.id, file));
+	    dispatch(removeRemoteFileOnNewComment(idea.id, file));
   }
   
   
@@ -236,7 +236,7 @@ class AttachmentsModal extends Component {
             	idea={idea}
             	localFiles = {localFiles}
             	remoteFiles = {remoteFiles}
-        		remoteFilesRemoveOne={(file) => {this.remoteFilesRemoveOne(file)}} 
+        		remoteFilesRemoveOne={(file) => {} }
          		localFilesRemoveOne={(file) => {this.localFilesRemoveOne(file)}} 
         		onFilesChange = {(files) => {this.onFilesChange(files)}} 
          		onFilesError = {(error, file) => {this.onFilesError(error, file)}} 
@@ -298,4 +298,4 @@ function mapDispatchToProps(dispatch) {
   return { dispatch };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AttachmentsModal);
+export default connect(mapStateToProps, mapDispatchToProps)(CommentAttachmentsModal);
