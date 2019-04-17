@@ -139,7 +139,13 @@ body {
 
 
 .files a {
-      z-index: 9998;
+      z-index: 9997;
       position: absolute;
    
+}
+
+
+.files-list-item-remove button {
+	z-index: 9998;
+    position: absolute;
 }

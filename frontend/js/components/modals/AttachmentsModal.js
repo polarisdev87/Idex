@@ -229,7 +229,9 @@ class AttachmentsModal extends Component {
             </div>
             
             <div className="form-group">
-              <div className="files">
+
+            
+            <div className="files">
              {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }
              { allowAttachments && 
                  <Files

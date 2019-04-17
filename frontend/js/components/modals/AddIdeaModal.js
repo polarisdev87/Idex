@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
-import Files from 'react-files';
 import CommonButton from '../buttons/CommonButton';
 import { changeFiles, removeRemoteFile } from '../../actions/files';
-import { API_BASE_URI } from '../../const';
+import AttachmentsSection from '../attachments/AttachmentsSection';
 
 const modalStyle = {
   overlay: {
@@ -247,12 +246,6 @@ class AddIdeaModal extends Component {
   }
   
   
-  /*
-  filesRemoveAll = () => {
-    this.refs.files.removeFiles();
-  }
-*/
-
   render() {
     console.log('AddIdeaModal.render()');
     console.log(this.props);
@@ -352,92 +345,17 @@ class AddIdeaModal extends Component {
             </div>
 
             <div className="form-group">
-              <div className="files">
-             {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }
-              { allowAttachments &&
-            	  <Files
-                  ref="localFiles"
-                  className="files-dropzone-list"
-                  onChange={this.onFilesChange}
-                  onError={this.onFilesError}
-                  style={{ height: '100px', width: '100%' }}
-                  accepts={['image/*', '.pdf', 'audio/*', '.txt', '.json', '.xml', '.docx', '.xml' ]}
-                  multiple
-                  maxFiles={10}
-                  maxFileSize={3145728}
-                  minFileSize={0}
-                  clickable
-                >
-                 Drop files here or click to upload
-                </Files>
-              }
-                 
-                 {
-                     remoteFiles.length > 0
-                       ? <div className="files-list">
-                         <ul>{remoteFiles.map((file) =>
-                           (<li className="files-list-item" key={file.id}>
-                           
-                           
-                           		<a href={API_BASE_URI+file.preview.url} target="_blank" >
-                             <div className="files-list-item-preview">
-                               {file.preview.type === 'image'
-                                 ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
-                                 : <div className="files-list-item-preview-extension">{file.extension}</div>}
-                             </div>
-                             <div className="files-list-item-content">
-                               <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
-                               <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
-                             </div>
-                          	</a>
-                          	{allowAttachments &&
-                                <div
-                                id={file.id}
-                                className="files-list-item-remove"
-                                	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
-                              />
-
-                          	}
-                             </li>))}
-                         </ul>
-                       </div>
-                       : null
-                   }
-                 
-                 
-                 {
-                  localFiles.length > 0
-                    ? <div className="files-list">
-                      <ul>{localFiles.map((file) =>
-                        (<li className="files-list-item" key={file.id}>
-                        
-                   		<a href={file.preview.url} target="_blank" >
-                          <div className="files-list-item-preview">
-                            {file.preview.type === 'image'
-                              ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
-                              : <div className="files-list-item-preview-extension">{file.extension}</div>}
-                          </div>
-                          <div className="files-list-item-content">
-                            <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
-                            <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
-                          </div>
-                        	</a>
-                                <div
-                                id={file.id}
-                                className="files-list-item-remove"
-                                	onClick={this.localFilesRemoveOne.bind(this, file)} // eslint-disable-line
-                              />
-                        </li>))}
-                      </ul>
-                    </div>
-                    : null
-                }
-
-
-              </div>
+            
+            <AttachmentsSection allowAttachments={type != "view"} idea={idea}  
+            	remoteFilesRemoveOne={(file) => {this.remoteFilesRemoveOne(file)}} 
+             	localFilesRemoveOne={(file) => {this.localFilesRemoveOne(file)}} 
+            	onFilesChange = {(files) => {this.onFilesChange(files)}} 
+             	onFilesError = {(error, file) => {this.onFilesError(error, file)}} 
+            />
+            
             </div>
 
-
+            
             <div className="button-container">
               <button type="button" className="btn idea-modal-button" onClick={() => this.handleIdea(type, idea == null ? false : idea.anonymousMode)} >
                 {renderButtonTitle()}
