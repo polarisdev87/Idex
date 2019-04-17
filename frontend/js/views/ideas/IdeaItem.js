@@ -85,7 +85,7 @@ class IdeaItem extends Component {
           comment={comment}
           shortDateTime={moment(comment.submittedAt).fromNow()}
           fullDateTime={(new Date(comment.submittedAt)).toString()}
-          viewCommentAttachments = {() => viewCommentAttachments()}
+          viewCommentAttachments = {() => viewCommentAttachments(comment)}
         />
       ));
 

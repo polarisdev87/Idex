@@ -280,7 +280,7 @@ class AddIdeaModal extends Component {
       }
       return <span>Add Idea</span>;
     };
-
+    const allowAttachments = type !== "view";
     return (
       <Modal
         isOpen={isOpen}
@@ -354,7 +354,8 @@ class AddIdeaModal extends Component {
             <div className="form-group">
               <div className="files">
              {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }
-              <Files
+              { allowAttachments &&
+            	  <Files
                   ref="localFiles"
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
@@ -369,7 +370,7 @@ class AddIdeaModal extends Component {
                 >
                  Drop files here or click to upload
                 </Files>
-
+              }
                  
                  {
                      remoteFiles.length > 0
@@ -389,14 +390,14 @@ class AddIdeaModal extends Component {
                                <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
                              </div>
                           	</a>
-                             <div
-                               id={file.id}
-                               className="files-list-item-remove"
-                               	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
-                             />
-                             
-                             
-                             
+                          	{allowAttachments &&
+                                <div
+                                id={file.id}
+                                className="files-list-item-remove"
+                                	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
+                              />
+
+                          	}
                              </li>))}
                          </ul>
                        </div>
@@ -421,11 +422,11 @@ class AddIdeaModal extends Component {
                             <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
                           </div>
                         	</a>
-                          <div
-                            id={file.id}
-                            className="files-list-item-remove"
-                            	onClick={this.localFilesRemoveOne.bind(this, file)} // eslint-disable-line
-                          />
+                                <div
+                                id={file.id}
+                                className="files-list-item-remove"
+                                	onClick={this.localFilesRemoveOne.bind(this, file)} // eslint-disable-line
+                              />
                         </li>))}
                       </ul>
                     </div>

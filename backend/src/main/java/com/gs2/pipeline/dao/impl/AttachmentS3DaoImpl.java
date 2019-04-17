@@ -39,6 +39,13 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     
     private static String BUCKET_NAME;
     
+    /**
+     * aLL attachments will be inside this folder
+     * This allows many users in dev mode interact with the application with their own baseFolder
+     * Each developer can configure S3_BASE_FOLDER to a unique folder
+     */
+    private static String S3_BASE_FOLDER;
+    
     private static AmazonS3 s3client;
     
 /*
@@ -70,6 +77,10 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     	BUCKET_NAME = bucketName;
     }
     
+    @Value("${pipeline.s3.bucket.base-folder}")
+    private void setBaseFolder(String baseFolder) {
+    	S3_BASE_FOLDER = baseFolder;
+    }
     
     AmazonS3 amazonS3 = AmazonS3ClientBuilder
     		  .standard()
@@ -85,8 +96,14 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     
     
     private String getFullDestination(Long fileId, String originalFileName) {
+    	String baseFolder = S3_BASE_FOLDER;
+    	if (baseFolder==null) {
+    		baseFolder="";
+    	} else {
+    		baseFolder += "/";
+    	}
         String fileFolder = Long.toString(fileId);
-        String keyName = fileFolder+"/"+originalFileName;
+        String keyName = baseFolder+fileFolder+"/"+originalFileName;
         return keyName;
         
     }

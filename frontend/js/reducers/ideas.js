@@ -141,8 +141,8 @@ export function ideas(state = {
   anonymousMode: false,
   ideaToAdd: {
 	  files: [],
-  }
-
+  },
+  commentsToAdd: [],
 }, action) {
 	 console.log("IDEAS REDUCER...");
 	 console.log(action);

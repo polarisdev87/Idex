@@ -41,6 +41,7 @@ class AttachmentsModal extends Component {
     console.log(nextProps);
     const { idea, type, comment } = nextProps;
     console.log('idea ===  ===>', idea);
+    console.log('comment ===  ===>', comment);
     this.idea = idea;
     if (type === 'view' || type === 'edit') {
       if (idea !== undefined && idea !== null) {
@@ -53,9 +54,7 @@ class AttachmentsModal extends Component {
           if (this.title) {
             this.title.value = idea.title;
             this.description.value = idea.description;
-            this.expectedCostInCents.value = idea.expectedCostInCents;
-            this.expectedTtm.value = idea.expectedTtm;
-            this.expectedProfitInCents.value = idea.expectedProfitInCents;
+            this.commentText.value = comment.text;
           }
         }, 500);
       } else {
@@ -177,7 +176,7 @@ class AttachmentsModal extends Component {
     const {
       isOpen, idea, close, type, localFiles, remoteFiles,
     } = this.props;
-    console.log('type ===>', type);
+    console.log('render - type ===>', type);
     console.log(idea);
     console.log("localFiles");
     console.log(localFiles);
@@ -192,7 +191,7 @@ class AttachmentsModal extends Component {
     const renderButtonTitle = () => {
        return <span>Close</span>;
     };
-
+    const allowAttachments = type !== "view";
     return (
       <Modal
         isOpen={isOpen}
@@ -211,42 +210,45 @@ class AttachmentsModal extends Component {
             <div className="form-group">
               <label className="label">Idea Title</label>
               <div className="input-container">
-                <input ref={el => { this.title = el; }} className="form-control" type="text" />
+                <input readOnly ref={el => { this.title = el; }} className="form-control" type="text" />
               </div>
             </div>
 
             <div className="form-group">
               <label className="label">Idea Description</label>
               <div className="input-container">
-                <textarea ref={el => { this.description = el; }} className="form-control" type="text" />
+                <textarea readOnly ref={el => { this.description = el; }} className="form-control" type="text" />
               </div>
             </div>
 
             <div className="form-group">
             <label className="label">Comment</label>
             <div className="input-container">
-              <textarea ref={el => { this.commentText = el; }} className="form-control" type="text" />
+              <textarea readOnly ref={el => { this.commentText = el; }} className="form-control" type="text" />
             </div>
             </div>
             
             <div className="form-group">
               <div className="files">
              {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }
-              <Files
-                  ref="localFiles"
-                  className="files-dropzone-list"
-                  onChange={this.onFilesChange}
-                  onError={this.onFilesError}
-                  style={{ height: '100px', width: '100%' }}
-                  accepts={['image/*', '.pdf', 'audio/*', '.txt', '.json', '.xml', '.docx', '.xml' ]}
-                  multiple
-                  maxFiles={10}
-                  maxFileSize={3145728}
-                  minFileSize={0}
-                  clickable
-                >
-                 Drop files here or click to upload
-                </Files>
+             { allowAttachments && 
+                 <Files
+                 ref="localFiles"
+                 className="files-dropzone-list"
+                 onChange={this.onFilesChange}
+                 onError={this.onFilesError}
+                 style={{ height: '100px', width: '100%' }}
+                 accepts={['image/*', '.pdf', 'audio/*', '.txt', '.json', '.xml', '.docx', '.xml' ]}
+                 multiple
+                 maxFiles={10}
+                 maxFileSize={3145728}
+                 minFileSize={0}
+                 clickable
+               >
+                Drop files here or click to upload
+               </Files>
+            	 
+             }
 
                  
                  {
@@ -267,14 +269,14 @@ class AttachmentsModal extends Component {
                                <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
                              </div>
                           	</a>
-                             <div
-                               id={file.id}
-                               className="files-list-item-remove"
-                               	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
-                             />
-                             
-                             
-                             
+                          	{ allowAttachments &&
+                                <div
+                                id={file.id}
+                                className="files-list-item-remove"
+                                	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
+                              />
+                          		
+                          	}
                              </li>))}
                          </ul>
                        </div>
@@ -334,38 +336,26 @@ class AttachmentsModal extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log('AddIdeaModal.mapStateToProps...');
+  console.log('AttachmentsModal.mapStateToProps...');
   console.log('state');
   console.log(state);
   console.log(ownProps);
+  const {comment, idea} = ownProps;
 
   let localFiles = [];
   let remoteFiles = [];
-  if (ownProps.idea !=null) {
-    const index = state.ideas.ideasArr.findIndex(x => x.id === ownProps.idea.id);
-    if (index !== -1) {
-      console.log("index != -1");
-      const ideaFiles = state.ideas.ideasArr[index].files;
-      if (ideaFiles !== null) {
-        console.log("files");  
-        console.log(localFiles);
-        console.log(remoteFiles);
-        console.log(ideaFiles);
-        for (let fileIndex in ideaFiles) {
-        	if (ideaFiles[fileIndex].remote) {
-        		remoteFiles.push(ideaFiles[fileIndex]);
-        	} else {
-        		localFiles.push(ideaFiles[fileIndex]);
-        	}
-        }
-      }
-    }
+  if (comment !=null) {
+	  // files to view of a saved comment
+	  if (comment.files != null ) {
+		  remoteFiles = comment.files;
+	  }
   } else {
-	  // mode : adding an idea - ownProps.idea == null
-	  console.log("state.ideas.ideaToAdd");
-	  console.log(state.ideas.ideaToAdd);
-	  localFiles = state.ideas.ideaToAdd.files;
-	  remoteFiles = [];
+     // files of a comment that have not been added yet
+     const index = state.ideas.commentsToAdd.findIndex(x => x.ideaId === idea.id);
+	 if (index !== -1) {
+	   console.log("index != -1");
+	   localFiles = state.ideas.commentsToAdd[index].files;
+	 }
   }
 
   return {

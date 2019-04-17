@@ -19,6 +19,7 @@ class Ideas extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     this.modalIdea = null;
+    this.ideaBeingCommented = null;
     this.modalComment = null;
     this.type = 'view'; // 'add', 'edit'
     this.commentAttachmentType = "edit"
@@ -54,6 +55,7 @@ class Ideas extends Component {
       dispatch(addIdea(idea));
     }
     this.modalIdea = null;
+    this.ideaBeingCommented = null;
     this.modalComment = null;
     this.setState({ isOpen: false });
   }
@@ -136,21 +138,24 @@ class Ideas extends Component {
   }
 
 
-  addCommentAttachmentsButtonClickHandler() {
+  addCommentAttachmentsButtonClickHandler(idea) {
 	    this.setState({ isOpenAttachments: true });
+	    this.ideaBeingCommented = idea;
 	    this.modalComment = null;
-	    this.type = 'edit';
+	    this.commentAttachmentType = 'edit';
   }
   
-  viewCommentAttachmentsButtonClickHandler(comment) {
+  viewCommentAttachmentsButtonClickHandler(idea,comment) {
 	    this.setState({ isOpenAttachments: true });
+	    this.ideaBeingCommented = idea;
 	    this.modalComment = comment;
-	    this.type = 'view';
+	    this.commentAttachmentType = 'view';
   }
   
   addIdeaButtonClickHandler() {
     this.setState({ isOpen: true });
     this.modalIdea = null;
+    this.ideaBeingCommented = null;
     this.type = 'add';
   }
 
@@ -159,6 +164,7 @@ class Ideas extends Component {
       isOpen: true,
     });
     this.modalIdea = idea;
+    this.ideaBeingCommented = null;
     this.type = 'edit';
     console.log('index.editbutton.edit type ===>', this.type);
   }
@@ -168,6 +174,7 @@ class Ideas extends Component {
       isOpen: true,
     });
     this.modalIdea = idea;
+    this.ideaBeingCommented = null;
     this.type = 'view';
     console.log('index.view button view type ===>', this.type);
   }
@@ -176,7 +183,6 @@ class Ideas extends Component {
     console.log('index.js.render()');
     console.log(this.props);
     const { isOpen, isOpenAttachments } = this.state;
-    console.log('this.modalIdea ===>', this.modalIdea);
     const {
       ideas: {
         ideasErrorMessage,
@@ -199,7 +205,7 @@ class Ideas extends Component {
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
           addCommentAttachments={() => this.addCommentAttachmentsButtonClickHandler(item)}
-          viewCommentAttachments={() => this.viewCommentAttachmentsButtonClickHandler(item)}
+          viewCommentAttachments={(comment) => this.viewCommentAttachmentsButtonClickHandler(item,comment)}
         />
       )) :
       null;
@@ -230,7 +236,7 @@ class Ideas extends Component {
         />
         <AttachmentsModal
           isOpen={isOpenAttachments} 
-          idea={this.modalIdea} 
+          idea={this.ideaBeingCommented} 
           comment = {this.modalComment}
           type={this.commentAttachmentType}
           handleCommentAttachments={(idea, type) => this.handleCommentAttachments(idea, type)}
