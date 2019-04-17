@@ -62,12 +62,13 @@ class AttachmentsSection extends Component {
                                 </div>
                              	</a>
                              	{allowAttachments &&
+                             		<div>
                                    <div
                                    id={file.id}
                                    className="files-list-item-remove"
                                    	onClick={() => remoteFilesRemoveOne(file)} // eslint-disable-line
                                  />
-
+                                   </div>
                              	}
                                 </li>))}
                             </ul>
