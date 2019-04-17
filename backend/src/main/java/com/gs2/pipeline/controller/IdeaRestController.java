@@ -83,22 +83,14 @@ public class IdeaRestController {
         return ideaService.upsert(ideaDto, requester);
     }
     
-    @RequestMapping(value = "/images2", method = RequestMethod.GET)
-    public @ResponseBody byte[] getImage(
-    		@RequestParam(value = "ideaId", required = true) Long ideaId,
-			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
-        InputStream in = ideaService.getAttachmentImage(ideaId,persistenceId);
-        return in.toString().getBytes();
-    }
     
-    
-    
-    @RequestMapping(value = "/images", method = RequestMethod.GET)
+    @RequestMapping(value = "/attach", method = RequestMethod.GET)
     public void getImageAsByteArray(HttpServletResponse response,
 			@RequestParam(value = "ideaId", required = true) Long ideaId,
 			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
-        InputStream in = ideaService.getAttachmentImage(ideaId,persistenceId);
-        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+    	String fileContentType = ideaService.getFileContentType(persistenceId);
+    	InputStream in = ideaService.getAttachmentImage(ideaId,persistenceId);
+        response.setContentType(fileContentType);
         IOUtils.copy(in, response.getOutputStream());
     }
     
@@ -122,7 +114,7 @@ public class IdeaRestController {
 		*/
     	// UPLOADING FILE
     	AttachmentDto attachmentDto = new AttachmentDto(persistenceId,ideaId,viewId,multipartFile.getOriginalFilename(),multipartFile.getContentType(),multipartFile.getSize());
-    	if (!multipartFile.isEmpty()) {
+    	if (!multipartFile.isEmpty() && multipartFile.getSize()<=IdeaService.MAX_ATTACHMENT_SIZE ) {
     		try {
     	    	attachmentDto= ideaService.uploadContent(attachmentDto,multipartFile.getInputStream(),requester);
 			} catch (IOException e) {
@@ -150,8 +142,12 @@ public class IdeaRestController {
     			@RequestBody AttachmentDto attachmentDto) {
         JwtUser requestingUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Account requester = accountService.findByUsername(requestingUser.getUsername());
-		attachmentDto = ideaService.prepareUpload(attachmentDto, requester);
-		return attachmentDto;
+        if (attachmentDto.getSize()<=IdeaService.MAX_ATTACHMENT_SIZE) {
+    		attachmentDto = ideaService.prepareUpload(attachmentDto, requester);
+    		return attachmentDto;
+        } else {
+        	return null;
+        }
     }
 
 

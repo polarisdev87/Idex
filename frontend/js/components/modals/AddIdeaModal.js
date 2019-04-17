@@ -353,17 +353,17 @@ class AddIdeaModal extends Component {
 
             <div className="form-group">
               <div className="files">
-             
+             {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }
               <Files
                   ref="localFiles"
                   className="files-dropzone-list"
                   onChange={this.onFilesChange}
                   onError={this.onFilesError}
                   style={{ height: '100px', width: '100%' }}
-                  accepts={['image/png', '.pdf', 'audio/*', '.txt']}
+                  accepts={['image/*', '.pdf', 'audio/*', '.txt', '.json', '.xml', '.docx', '.xml' ]}
                   multiple
-                  maxFiles={3}
-                  maxFileSize={10000000}
+                  maxFiles={10}
+                  maxFileSize={3145728}
                   minFileSize={0}
                   clickable
                 >
@@ -376,6 +376,9 @@ class AddIdeaModal extends Component {
                        ? <div className="files-list">
                          <ul>{remoteFiles.map((file) =>
                            (<li className="files-list-item" key={file.id}>
+                           
+                           
+                           		<a href={API_BASE_URI+file.preview.url} target="_blank" >
                              <div className="files-list-item-preview">
                                {file.preview.type === 'image'
                                  ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
@@ -385,12 +388,16 @@ class AddIdeaModal extends Component {
                                <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
                                <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
                              </div>
+                          	</a>
                              <div
                                id={file.id}
                                className="files-list-item-remove"
                                	onClick={this.remoteFilesRemoveOne.bind(this, file)} // eslint-disable-line
                              />
-                           </li>))}
+                             
+                             
+                             
+                             </li>))}
                          </ul>
                        </div>
                        : null
@@ -402,6 +409,8 @@ class AddIdeaModal extends Component {
                     ? <div className="files-list">
                       <ul>{localFiles.map((file) =>
                         (<li className="files-list-item" key={file.id}>
+                        
+                   		<a href={file.preview.url} target="_blank" >
                           <div className="files-list-item-preview">
                             {file.preview.type === 'image'
                               ? <img className="files-list-item-preview-image" src={(file.remote?API_BASE_URI:"")+file.preview.url} />
@@ -411,6 +420,7 @@ class AddIdeaModal extends Component {
                             <div className="files-list-item-content-item files-list-item-content-item-1">{file.name}</div>
                             <div className="files-list-item-content-item files-list-item-content-item-2">{file.sizeReadable}</div>
                           </div>
+                        	</a>
                           <div
                             id={file.id}
                             className="files-list-item-remove"

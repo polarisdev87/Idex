@@ -31,6 +31,7 @@ public class IdeaServiceImpl implements IdeaService {
 	private static final String TOP_FILTER = "Top";
 
 	private static final String UPLOADED_FOLDER = "/files/upload/";
+	
 
 	private final IdeaRepository ideaRepository;
 	private final TagRepository tagRepository;
@@ -599,15 +600,19 @@ public class IdeaServiceImpl implements IdeaService {
 	 */
 	@Override
 	public AttachmentDto prepareUpload(AttachmentDto fileDto, Account submittedBy) {
-		File file = new File();
-		file.setName(fileDto.getOriginalName());
-		file.setOriginalName(fileDto.getOriginalName());
-		file.setSize(fileDto.getSize());
-		file.setSubmittedBy(submittedBy);
-		file.setExtension(fileDto.getExtension());
-		File persistedFile = this.fileRepository.save(file);
-		fileDto.setPersistenceId(persistedFile.getId());
-		return fileDto;
+		if (fileDto.getSize()<=IdeaService.MAX_ATTACHMENT_SIZE) {
+			File file = new File();
+			file.setName(fileDto.getOriginalName());
+			file.setOriginalName(fileDto.getOriginalName());
+			file.setSize(fileDto.getSize());
+			file.setSubmittedBy(submittedBy);
+			file.setExtension(fileDto.getExtension());
+			File persistedFile = this.fileRepository.save(file);
+			fileDto.setPersistenceId(persistedFile.getId());
+			return fileDto;
+		} else {
+			return null;
+		}
 	}
 	
 
@@ -702,6 +707,16 @@ public class IdeaServiceImpl implements IdeaService {
 			is = this.attachmentDao.getImageFile(ideaId,file.getId(),file.getOriginalName());
 		}
 		return is;
+	}
+
+	@Override
+	public String getFileContentType(Long persistenceId) {
+		String returnValue=null;
+		File file = this.fileRepository.findOne(persistenceId);
+		if (file !=null) {
+			returnValue = file.getContentType();
+		}
+		return returnValue;
 	}
 
 

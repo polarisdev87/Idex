@@ -83,7 +83,7 @@ public class AttachmentDto {
     
     
     private String generateImageUrl(Long ideaId, Long fileId) {
-    	String result = "/ideas/images?ideaId=+"+Long.toString(ideaId)+"&fileId="+Long.toString(fileId);
+    	String result = "/ideas/attach?ideaId=+"+Long.toString(ideaId)+"&fileId="+Long.toString(fileId);
     	return result;
     }
     

@@ -24,7 +24,7 @@ public class AttachmentPreviewDto {
 	 */
 	String type;
 	/**
-	 * All uploaded images with remote url should be TRUE
+	 * All uploaded files with remote url should be TRUE
 	 * it is false only before (or during) uploading
 	 */
 	Boolean remote;

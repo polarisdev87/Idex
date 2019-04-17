@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface IdeaService {
 
+	public static final int MAX_ATTACHMENT_SIZE = 3145728;
+	
+	
     List<IdeaDto> getIdeas(GetIdeasDto getIdeasDto, Account requester);
     List<IdeaDto> getIdeasSummary(GetIdeasDto getIdeasDto);
     IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) throws AttachmentsNotUploadedException;
@@ -28,4 +31,11 @@ public interface IdeaService {
 	AttachmentDto uploadContent( AttachmentDto initialAttachment,InputStream inputStream, Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
 	InputStream getAttachmentImage(Long ideaId, Long persistenceId);
+	
+	/**
+	 * Gets content type of the selected file
+	 * @param persistenceId
+	 * @return
+	 */
+	String getFileContentType(Long persistenceId);
 }
