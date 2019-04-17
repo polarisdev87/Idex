@@ -7,6 +7,7 @@ import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 import AttachmentsModal from '../../components/modals/AttachmentsModal';
+import { updateCommentAttachments } from '../../actions/comments';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
 
 type Props = {
@@ -18,7 +19,9 @@ class Ideas extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     this.modalIdea = null;
+    this.modalComment = null;
     this.type = 'view'; // 'add', 'edit'
+    this.commentAttachmentType = "edit"
     dispatch(fetchIdeas());
   }
 
@@ -51,9 +54,23 @@ class Ideas extends Component {
       dispatch(addIdea(idea));
     }
     this.modalIdea = null;
+    this.modalComment = null;
     this.setState({ isOpen: false });
   }
 
+  
+  handleCommentAttachments(idea, type, comment) {
+	    console.log('handleCommentAttachments(...)');
+	    console.log(idea);
+	    const { dispatch } = this.props;
+	    if (type === 'edit') {
+	      dispatch(updateCommentAttachments(idea.id));
+	    }
+	    this.modalComment = null;
+	    this.setState({ isOpenAttachments: false });
+	  }
+  
+  
   closeModal() {
     this.setState({ isOpen: false });
   }
@@ -121,13 +138,13 @@ class Ideas extends Component {
 
   addCommentAttachmentsButtonClickHandler() {
 	    this.setState({ isOpenAttachments: true });
-	    this.modalIdea = null;
-	    this.type = 'add';
+	    this.modalComment = null;
+	    this.type = 'edit';
   }
   
-  viewCommentAttachmentsButtonClickHandler() {
+  viewCommentAttachmentsButtonClickHandler(comment) {
 	    this.setState({ isOpenAttachments: true });
-	    this.modalIdea = null;
+	    this.modalComment = comment;
 	    this.type = 'view';
   }
   
@@ -212,8 +229,11 @@ class Ideas extends Component {
           close={() => this.closeModal()}
         />
         <AttachmentsModal
-          isOpen={isOpenAttachments} idea={this.modalIdea} type={this.type}
-          handleIdea={(idea, type) => this.handleIdea(idea, type)}
+          isOpen={isOpenAttachments} 
+          idea={this.modalIdea} 
+          comment = {this.modalComment}
+          type={this.commentAttachmentType}
+          handleCommentAttachments={(idea, type) => this.handleCommentAttachments(idea, type)}
           close={() => this.closeAttachmentsModal()}
         />
       </div>

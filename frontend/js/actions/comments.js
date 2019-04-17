@@ -104,3 +104,13 @@ export function toggleAnonymous(ideaId) {
   };
 }
 
+
+export const UPDATE_COMMENT_ATTACHMENTS = 'UPDATE_COMMENT_ATTACHMENTS';
+
+export function updateCommentAttachments(ideaId) {
+	return {
+		type: UPDATE_COMMENT_ATTACHMENTS,
+		ideaId,
+	}
+}
+

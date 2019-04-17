@@ -67,7 +67,7 @@ class IdeaItem extends Component {
 
 
     render() {
-      const { idea, edit, view, vote, liked, votes, editable } = this.props;
+      const { idea, edit, view, vote, liked, votes, editable, addCommentAttachments, viewCommentAttachments } = this.props;
       const commentBoxId = `comment-container-${idea.id}`;
       const commentBoxHref = `#comment-container-${idea.id}`;
       console.log('IdeaItem.js');
@@ -85,6 +85,7 @@ class IdeaItem extends Component {
           comment={comment}
           shortDateTime={moment(comment.submittedAt).fromNow()}
           fullDateTime={(new Date(comment.submittedAt)).toString()}
+          viewCommentAttachments = {() => viewCommentAttachments()}
         />
       ));
 
@@ -97,8 +98,8 @@ class IdeaItem extends Component {
           </div>
           <div className="col-xs-1 col-sm-1 col-md-1 col-lg-1 comment-attachments">
           	<div className="avatar-container">
-          		<span onClick={this.openNewCommentAttachments} className="attachment-clip-enabled" />
-          	</div>
+          		<span onClick={() => addCommentAttachments()} className="attachment-clip-enabled" />
+  			</div>
           </div>
           <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9 comment">
             <input
