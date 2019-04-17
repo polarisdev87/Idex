@@ -21,6 +21,7 @@ class Ideas extends Component {
     this.modalIdea = null;
     this.ideaBeingCommented = null;
     this.modalComment = null;
+    this.commentText = null;
     this.type = 'view'; // 'add', 'edit'
     this.commentAttachmentType = "edit"
     dispatch(fetchIdeas());
@@ -138,10 +139,11 @@ class Ideas extends Component {
   }
 
 
-  addCommentAttachmentsButtonClickHandler(idea) {
+  addCommentAttachmentsButtonClickHandler(idea, commentText) {
 	    this.setState({ isOpenAttachments: true });
 	    this.ideaBeingCommented = idea;
 	    this.modalComment = null;
+	    this.commentText = commentText;
 	    this.commentAttachmentType = 'edit';
   }
   
@@ -204,7 +206,7 @@ class Ideas extends Component {
           editable= {item.userSession.editable}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
-          addCommentAttachments={() => this.addCommentAttachmentsButtonClickHandler(item)}
+          addCommentAttachments={(commentText) => this.addCommentAttachmentsButtonClickHandler(item, commentText)}
           viewCommentAttachments={(comment) => this.viewCommentAttachmentsButtonClickHandler(item,comment)}
         />
       )) :
@@ -238,6 +240,7 @@ class Ideas extends Component {
           isOpen={isOpenAttachments} 
           idea={this.ideaBeingCommented} 
           comment = {this.modalComment}
+          commentText = {this.commentText}
           type={this.commentAttachmentType}
           handleCommentAttachments={(idea, type) => this.handleCommentAttachments(idea, type)}
           close={() => this.closeAttachmentsModal()}

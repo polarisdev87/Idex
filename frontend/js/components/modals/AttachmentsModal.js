@@ -39,7 +39,7 @@ class AttachmentsModal extends Component {
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps');
     console.log(nextProps);
-    const { idea, type, comment } = nextProps;
+    const { idea, type, comment, commentText } = nextProps;
     console.log('idea ===  ===>', idea);
     console.log('comment ===  ===>', comment);
     this.idea = idea;
@@ -54,7 +54,7 @@ class AttachmentsModal extends Component {
           if (this.title) {
             this.title.value = idea.title;
             this.description.value = idea.description;
-            this.commentText.value = comment.text;
+            this.commentText.value = comment != null ? comment.text: commentText;
           }
         }, 500);
       } else {
