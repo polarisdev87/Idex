@@ -347,6 +347,8 @@ class AddIdeaModal extends Component {
             <div className="form-group">
             
             <AttachmentsSection allowAttachments={type != "view"} idea={idea}  
+            	localFiles = {localFiles}
+                remoteFiles = {remoteFiles}
             	remoteFilesRemoveOne={(file) => {this.remoteFilesRemoveOne(file)}} 
              	localFilesRemoveOne={(file) => {this.localFilesRemoveOne(file)}} 
             	onFilesChange = {(files) => {this.onFilesChange(files)}} 

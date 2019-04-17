@@ -114,43 +114,8 @@ class AttachmentsSection extends Component {
 
 
 function mapStateToProps(state, ownProps) {
-	  console.log('AttachmentsSection.mapStateToProps...');
-	  console.log('state');
-	  console.log(state);
-	  console.log(ownProps);
-
-	  let localFiles = [];
-	  let remoteFiles = [];
-	  if (ownProps.idea !=null) {
-	    const index = state.ideas.ideasArr.findIndex(x => x.id === ownProps.idea.id);
-	    if (index !== -1) {
-	      console.log("index != -1");
-	      const ideaFiles = state.ideas.ideasArr[index].files;
-	      if (ideaFiles !== null) {
-	        console.log("files");  
-	        console.log(localFiles);
-	        console.log(remoteFiles);
-	        console.log(ideaFiles);
-	        for (let fileIndex in ideaFiles) {
-	        	if (ideaFiles[fileIndex].remote) {
-	        		remoteFiles.push(ideaFiles[fileIndex]);
-	        	} else {
-	        		localFiles.push(ideaFiles[fileIndex]);
-	        	}
-	        }
-	      }
-	    }
-	  } else {
-		  // mode : adding an idea - ownProps.idea == null
-		  console.log("state.ideas.ideaToAdd");
-		  console.log(state.ideas.ideaToAdd);
-		  localFiles = state.ideas.ideaToAdd.files;
-		  remoteFiles = [];
-	  }
 
 	  return {
-	    localFiles,
-	    remoteFiles,
 	    ...ownProps,
 	  };
 	}
