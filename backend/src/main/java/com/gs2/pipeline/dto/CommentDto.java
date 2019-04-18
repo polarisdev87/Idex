@@ -1,6 +1,15 @@
 package com.gs2.pipeline.dto;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
+import com.gs2.pipeline.domain.CommentFile;
+import com.gs2.pipeline.domain.File;
+import com.gs2.pipeline.domain.Idea;
+import com.gs2.pipeline.domain.IdeaFile;
 
 public class CommentDto implements Comparable<CommentDto>  {
 
@@ -10,6 +19,7 @@ public class CommentDto implements Comparable<CommentDto>  {
     private Long submittedAt;
     private Boolean anonymous;
     private Boolean authorComment;
+    private List<AttachmentDto> files;    
     
     /**
      * submittedBy could be deduced from account
@@ -19,7 +29,7 @@ public class CommentDto implements Comparable<CommentDto>  {
     public CommentDto() {
     }
 
-    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt, Boolean authorComment) {
+    public CommentDto(Comment comment, Long ideaId, String submittedBy, AccountDto account, Long submittedAt, Boolean authorComment, List<AttachmentDto> files) {
 
         this.ideaId = ideaId;
         this.text = comment.getText();
@@ -28,6 +38,7 @@ public class CommentDto implements Comparable<CommentDto>  {
         this.account = account;
         this.anonymous = comment.getAnonymous();
         this.authorComment = authorComment;
+        this.files = files;
         
     }
 
@@ -87,9 +98,35 @@ public class CommentDto implements Comparable<CommentDto>  {
 		this.authorComment = authorComment;
 	}
 	
+	
+	
+	
+	public List<AttachmentDto> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<AttachmentDto> files) {
+		this.files = files;
+	}
+
 	@Override
 	public int compareTo(CommentDto comment) {
 		return this.getSubmittedAt().compareTo(comment.getSubmittedAt());
+	}
+
+	public Comment toDao(Idea idea, Account requester, Set<File> files, Map<Long, AttachmentDto> mapAttachments) {
+
+		Comment comment = new Comment(this.getText(), this.getAnonymous(), idea, requester);
+        for (File file:files) {
+        	CommentFile commentFile = new CommentFile();
+        	commentFile.setComment(comment);
+        	commentFile.setFile(file);
+        	commentFile.setType(mapAttachments.get(file.getId()).getPreview().getType());
+        	comment.addCommentFile(commentFile);
+        }
+		
+		// TODO Auto-generated method stub
+		return comment;
 	}
 
 }

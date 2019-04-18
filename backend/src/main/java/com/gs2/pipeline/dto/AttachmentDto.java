@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.gs2.pipeline.domain.CommentFile;
 import com.gs2.pipeline.domain.File;
 import com.gs2.pipeline.domain.IdeaFile;
 
@@ -28,6 +29,7 @@ public class AttachmentDto {
      */
     String url;
     Long ideaId;
+    Long commentId;
     /**
      * initial uploading time
      */
@@ -111,6 +113,26 @@ public class AttachmentDto {
         this.remote = true;
     }
     
+
+    public AttachmentDto(CommentFile commentFile) {
+    	File file = commentFile.getFile();
+        this.viewId = commentFile.getViewId();
+        this.id = "remote-files-"+Long.toString(file.getId()); 
+        this.ideaId=commentFile.getComment().getIdea().getId();
+        this.commentId = commentFile.getComment().getId();
+    	this.persistenceId=file.getId();
+        this.originalName=file.getOriginalName();
+        this.name = file.getOriginalName();
+        this.size= file.getSize();
+        this.extension= file.getExtension();
+        this.start = file.getStart();
+        this.uploadedAt = file.getUploadedAt();
+        this.cancelledAt = file.getCancelledAt();
+        this.sizeReadable = commentFile.getSizeReadable();
+        this.preview = new AttachmentPreviewDto(commentFile.getType(),generateImageUrl(commentFile.getComment().getIdea().getId(),commentFile.getFile().getId()));
+        this.remote = true;
+	}
+    
     
     public AttachmentDto(Long persistenceId, Long ideaId, String fileId, String originalName, String contentType, Long size) {
     	this(ideaId,fileId,originalName,contentType, size);
@@ -127,7 +149,9 @@ public class AttachmentDto {
     }
     
     
-    public static Set<AttachmentDto> toDto(Set<IdeaFile> ideaFiles) {
+
+
+	public static Set<AttachmentDto> toDto(Set<IdeaFile> ideaFiles) {
     	Set<AttachmentDto> attachments=new HashSet<AttachmentDto>();
     	for (IdeaFile ideaFile:ideaFiles) {
     		AttachmentDto attachmentDto = new AttachmentDto(ideaFile);
@@ -135,6 +159,18 @@ public class AttachmentDto {
     	}
     	return attachments;
     }
+    
+    
+	public static Set<AttachmentDto> toDtoFromComment(Set<CommentFile> commentFiles) {
+    	Set<AttachmentDto> attachments=new HashSet<AttachmentDto>();
+    	for (CommentFile commentFile:commentFiles) {
+    		AttachmentDto attachmentDto = new AttachmentDto(commentFile);
+    		attachments.add(attachmentDto);
+    	}
+    	return attachments;
+	}
+    
+    
     
 	public Date getLastModified() {
 		return lastModified;
@@ -282,6 +318,18 @@ public class AttachmentDto {
 	public void setRemote(Boolean remote) {
 		this.remote = remote;
 	}
+
+
+	public Long getCommentId() {
+		return commentId;
+	}
+
+
+	public void setCommentId(Long commentId) {
+		this.commentId = commentId;
+	}
+
+
 
 	
     

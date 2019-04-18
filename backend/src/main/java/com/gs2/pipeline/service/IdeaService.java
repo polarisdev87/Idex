@@ -18,7 +18,7 @@ public interface IdeaService {
     IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) throws AttachmentsNotUploadedException;
     IdeaDto vote(VoteDto voteDto, Account submittedBy) throws IdeaNotFoundException;
     List<TagDto> getPopularTags();
-    IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException;
+    IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException, AttachmentsNotUploadedException;
     /**
      * Creates persistent record in database and returns an attachmentDto with the persistenceId
      * @param fileDto

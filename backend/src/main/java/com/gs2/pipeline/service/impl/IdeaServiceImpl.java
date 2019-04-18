@@ -176,6 +176,20 @@ public class IdeaServiceImpl implements IdeaService {
 		return ideas.stream().map(idea -> idea.toDto(null, null)).collect(Collectors.toList());
 	}
 
+	
+	
+	private List<AttachmentDto> ensureFilesAreUploaded(List<AttachmentDto> initialFilesDto) throws AttachmentsNotUploadedException {
+        List<AttachmentDto> filesDto = initialFilesDto;
+        filesDto = checkUploadFilesStatus(filesDto);
+        boolean uploadedFilesReady = areUploadededFilesReady(filesDto);
+		
+		if (!uploadedFilesReady) {
+			throw new AttachmentsNotUploadedException("attachments not uploaded:"+filesDto.toString());
+		}
+		return filesDto;
+	}
+	
+	
 	/**
 	 * Insert or updates an idea To update the idea the user should be authorized
 	 */
@@ -183,13 +197,7 @@ public class IdeaServiceImpl implements IdeaService {
 	@Transactional(rollbackFor = Exception.class)
 	public IdeaDto upsert(IdeaDto ideaDto, Account upsertedBy) throws AttachmentsNotUploadedException {
 
-        List<AttachmentDto> filesDto = ideaDto.getFiles();
-        filesDto = checkUploadFilesStatus(filesDto);
-        boolean uploadedFilesReady = areUploadededFilesReady(filesDto);
-		
-		if (!uploadedFilesReady) {
-			throw new AttachmentsNotUploadedException("attachments not uploaded:"+filesDto.toString());
-		}
+        List<AttachmentDto> filesDto =ensureFilesAreUploaded(ideaDto.getFiles()); 
 		
 		Set<File> files = upsertInitialFiles(filesDto);
 		Map<Long,AttachmentDto> mapViews = new HashMap<Long,AttachmentDto>();
@@ -264,11 +272,20 @@ public class IdeaServiceImpl implements IdeaService {
 	 * Returns exception if idea id does not exist
 	 * 
 	 * On success. returns the idea in IdeaDto format with the added comment
+	 * @throws AttachmentsNotUploadedException 
 	 */
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException {
+	public IdeaDto comment(CommentDto commentDto, Account requester) throws IdeaNotFoundException, AttachmentsNotUploadedException {
 
+        List<AttachmentDto> filesDto =ensureFilesAreUploaded(commentDto.getFiles()); 
+		
+		Set<File> files = upsertInitialFiles(filesDto);
+		Map<Long,AttachmentDto> mapViews = new HashMap<Long,AttachmentDto>();
+		for (AttachmentDto fileDto:filesDto) {
+			mapViews.put(fileDto.getPersistenceId(),fileDto);
+		}
+		
 		if (commentDto == null || commentDto.getIdeaId() == null || commentDto.getIdeaId() <= 0) {
 			throw new IdeaNotFoundException("Unable to comment because no Idea id specified.");
 		}
@@ -279,7 +296,8 @@ public class IdeaServiceImpl implements IdeaService {
 			throw new IdeaNotFoundException("Unable to find idea with id: " + commentDto.getIdeaId());
 		}
 
-		Comment comment = new Comment(commentDto.getText(), commentDto.getAnonymous(), idea, requester);
+		
+		Comment comment = commentDto.toDao(idea, requester, files, mapViews);
 
 		commentRepository.save(comment);
 

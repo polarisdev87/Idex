@@ -163,7 +163,9 @@ public class IdeaDto {
             				getSubmittedBy(authorComment), 
             				new AccountDto(authorComment,true,comment.getAnonymous()), 
             				comment.getSubmittedAt().getTime(),
-            				!comment.getAnonymous() && idea.getSubmittedBy().equals(authorComment)));
+            				!comment.getAnonymous() && idea.getSubmittedBy().equals(authorComment),
+            				new ArrayList<AttachmentDto>(AttachmentDto.toDtoFromComment(comment.getCommentFiles()))
+            				));
         }
         
         Collections.sort(commentDtos);

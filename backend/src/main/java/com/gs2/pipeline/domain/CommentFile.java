@@ -14,6 +14,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+/**
+ * Relation between comment and file
+ * each record identifies an upload a user made for a specific comment.
+ * 
+ * 
+ * 
+ * @author Jose Guastavino for idex
+ *
+ */
 @Entity
 @Table(name = "comment_file")
 @AssociationOverrides({
@@ -26,7 +35,6 @@ public class CommentFile {
 	@EmbeddedId
 	private CommentFileId primaryKey = new CommentFileId();
 
-    
     @ManyToOne
     @JoinColumn(name = "submitted_by", nullable = true)
     private Account submittedBy;
@@ -34,7 +42,22 @@ public class CommentFile {
     @Column(name = "submitted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
+    
+    /**
+     * Frontend session id : TODO:Analyze to remove from backend model 
+     */
+    @Column(name = "view_id")
+    private String viewId;
 
+    @Column
+    private String type;
+
+    @Column
+    private String url;
+    
+    @Column
+    String sizeReadable;
+    
 	
     public CommentFileId getPrimaryKey() {
 		return primaryKey;
@@ -78,6 +101,38 @@ public class CommentFile {
 	public void setSubmittedAt(Date submittedAt) {
 		this.submittedAt = submittedAt;
 	}
+
+	public String getViewId() {
+		return viewId;
+	}
+
+	public void setViewId(String viewId) {
+		this.viewId = viewId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getSizeReadable() {
+		return sizeReadable;
+	}
+
+	public void setSizeReadable(String sizeReadable) {
+		this.sizeReadable = sizeReadable;
+	}
     
-    
+	
 }

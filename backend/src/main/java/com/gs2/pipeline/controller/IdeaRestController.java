@@ -228,10 +228,8 @@ public class IdeaRestController {
     }
 
     @RequestMapping(value = "/comment", method = RequestMethod.POST)
-    public IdeaDto comment(@RequestBody CommentDto commentDto) throws IdeaNotFoundException {
-
+    public IdeaDto comment(@RequestBody CommentDto commentDto) throws IdeaNotFoundException, AttachmentsNotUploadedException {
     	Account requester = getRequester();
-
         return ideaService.comment(commentDto, requester);
     }
 

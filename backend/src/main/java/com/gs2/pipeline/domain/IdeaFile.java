@@ -14,13 +14,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.gs2.pipeline.dto.AttachmentDto;
-import com.gs2.pipeline.dto.IdeaDto;
 
 
 /**
  * Relation between idea and file
- * each record identifies an upload a user made for a specific idea or comment.
+ * each record identifies an upload a user made for a specific idea 
  * 
  * 
  * 
@@ -35,8 +33,6 @@ import com.gs2.pipeline.dto.IdeaDto;
     @AssociationOverride(name = "primaryKey.file",
         joinColumns = @JoinColumn(name = "file_id")) })
 public class IdeaFile {
-
-	
 	
 	@EmbeddedId
 	private IdeaFileId primaryKey = new IdeaFileId();
@@ -48,17 +44,16 @@ public class IdeaFile {
     @Column(name = "submitted_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
-
     
     /**
      * Frontend session id : TODO:Analyze to remove from backend model 
      */
     @Column(name = "view_id")
     private String viewId;
-    
-    
+
     @Column
     private String type;
+
     @Column
     private String url;
     
@@ -141,7 +136,5 @@ public class IdeaFile {
 		this.sizeReadable = sizeReadable;
 	}
     
-
-	
 	
 }
