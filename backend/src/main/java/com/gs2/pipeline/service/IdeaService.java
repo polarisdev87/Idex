@@ -30,7 +30,7 @@ public interface IdeaService {
 	boolean areUploadededFilesReady(List<AttachmentDto> files);
 	AttachmentDto uploadContent( AttachmentDto initialAttachment,InputStream inputStream, Account requester);
 	FilesToRemoveDto removeUploadingFile(FilesToRemoveDto attachmentDto, Account requester);
-	InputStream getAttachment(Long ideaId, Long persistenceId, Account requester);
+	InputStream getAttachment(Long ideaId, Long persistenceId);
 	
 	/**
 	 * Gets content type of the selected file

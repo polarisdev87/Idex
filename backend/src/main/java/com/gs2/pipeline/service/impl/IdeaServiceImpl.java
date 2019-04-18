@@ -762,7 +762,7 @@ public class IdeaServiceImpl implements IdeaService {
 	 * ideaId it is interesting as parameter as it is used for user restrictions 
 	 */
 	@Override
-	public InputStream getAttachment(Long ideaId, Long persistenceId, Account requester) {
+	public InputStream getAttachment(Long ideaId, Long persistenceId) {
 		return this.getAttachment(persistenceId);
 	}
 	

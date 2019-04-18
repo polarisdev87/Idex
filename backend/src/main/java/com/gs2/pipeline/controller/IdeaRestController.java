@@ -92,10 +92,9 @@ public class IdeaRestController {
 			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
 
     	
-    	Account requester = getRequester();
     	
     	String fileContentType = ideaService.getFileContentType(persistenceId);
-    	InputStream in = ideaService.getAttachment(ideaId,persistenceId,requester);
+    	InputStream in = ideaService.getAttachment(ideaId,persistenceId);
         response.setContentType(fileContentType);
         IOUtils.copy(in, response.getOutputStream());
     }
