@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
 import CommonButton from '../buttons/CommonButton';
-import { changeFiles, removeRemoteFile } from '../../actions/files';
+import { changeFiles } from '../../actions/files';
 import AttachmentsSection from '../attachments/AttachmentsSection';
 
 const modalStyle = {
@@ -229,22 +229,6 @@ class AddIdeaModal extends Component {
     console.log(`error code ${error.code}: ${error.message}`);
   }
 
-  /**
-   * It only removes the file from the visual model
-  */
-  localFilesRemoveOne = (file) => {
-    console.log('localFilesRemoveOne');
-    console.log(file);
-    this.refs.localFiles.removeFile(file);
-  }
-
-  
-  remoteFilesRemoveOne = (file) => {
-	    const { dispatch, idea } = this.props;
-	    console.log('remoteFilesRemoveOne');
-	    dispatch(removeRemoteFile(idea.id, file));
-  }
-  
   
   render() {
     console.log('AddIdeaModal.render()');
@@ -349,8 +333,6 @@ class AddIdeaModal extends Component {
             <AttachmentsSection allowAttachments={type != "view"} idea={idea}  
             	localFiles = {localFiles}
                 remoteFiles = {remoteFiles}
-            	remoteFilesRemoveOne={(file) => {this.remoteFilesRemoveOne(file)}} 
-             	localFilesRemoveOne={(file) => {this.localFilesRemoveOne(file)}} 
             	onFilesChange = {(files) => {this.onFilesChange(files)}} 
              	onFilesError = {(error, file) => {this.onFilesError(error, file)}} 
             />

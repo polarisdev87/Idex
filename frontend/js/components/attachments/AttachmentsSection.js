@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Files from 'react-files';
 import { API_BASE_URI } from '../../const';
+import { removeRemoteFile } from '../../actions/files';
 
 
 type Props = {
@@ -16,6 +17,22 @@ class AttachmentsSection extends Component {
 	  
     state = {
 	}
+    
+    /**
+     * It only removes the file from the visual model
+    */
+    localFilesRemoveOne = (file) => {
+      console.log('localFilesRemoveOne');
+      console.log(file);
+      this.refs.localFiles.removeFile(file);
+    }
+
+    
+    remoteFilesRemoveOne = (file) => {
+  	    const { dispatch, idea } = this.props;
+  	    console.log('remoteFilesRemoveOne');
+  	    dispatch(removeRemoteFile(idea.id, file));
+    }
     
 
     
@@ -66,7 +83,7 @@ class AttachmentsSection extends Component {
                                    <div
                                    id={file.id}
                                    className="files-list-item-remove"
-                                   	onClick={() => remoteFilesRemoveOne(file)} // eslint-disable-line
+                                   	onClick={() => this.remoteFilesRemoveOne(file)} // eslint-disable-line
                                  />
                                    </div>
                              	}
@@ -97,7 +114,7 @@ class AttachmentsSection extends Component {
                                    <div
                                    id={file.id}
                                    className="files-list-item-remove"
-                                   	onClick={() => localFilesRemoveOne(file)} // eslint-disable-line
+                                   	onClick={() => this.localFilesRemoveOne(file)} // eslint-disable-line
                                  />
                            </li>))}
                          </ul>

@@ -148,22 +148,6 @@ class CommentAttachmentsModal extends Component {
     console.log(`error code ${error.code}: ${error.message}`);
   }
 
-  /**
-   * It only removes the file from the visual model
-  */
-  localFilesRemoveOne = (file) => {
-    console.log('localFilesRemoveOne');
-    console.log(file);
-    this.refs.localFiles.removeFile(file);
-  }
-
-  
-  remoteFilesRemoveOne = (file) => {
-	    const { dispatch, idea } = this.props;
-	    console.log('remoteFilesRemoveOne');
-	    dispatch(removeRemoteFileOnNewComment(idea.id, file));
-  }
-  
   
   /*
   filesRemoveAll = () => {
@@ -236,8 +220,6 @@ class CommentAttachmentsModal extends Component {
             	idea={idea}
             	localFiles = {localFiles}
             	remoteFiles = {remoteFiles}
-        		remoteFilesRemoveOne={(file) => {} }
-         		localFilesRemoveOne={(file) => {this.localFilesRemoveOne(file)}} 
         		onFilesChange = {(files) => {this.onFilesChange(files)}} 
          		onFilesError = {(error, file) => {this.onFilesError(error, file)}} 
             />
