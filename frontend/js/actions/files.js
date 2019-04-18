@@ -495,10 +495,12 @@ export function removeFilesOnNewComment(ideaId, files) {
 	      .then(response => response.json().then(body => ({ body, response })))
 	      .then(({ body, response }) => {
 	        if (!response.ok) {
+	          console.log("response");	
+	          console.log(response);	
 	          dispatch(removeFilesOnNewCommentError(`Failed to upload file. ${body.error}`));
 	          return Promise.reject('Failed to remove file');
 	        }
-	        console.log('removeFiles -> body');
+	        console.log('removeFilesOnNewComment -> body');
 	        console.log(body);
 	        dispatch(removeFilesOnNewCommentSuccess(body, removeFilesList));
 	        return true;
