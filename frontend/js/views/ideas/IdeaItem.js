@@ -9,6 +9,7 @@ import Comment from './Comment';
 import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment, toggleAnonymous } from '../../actions/comments';
 import { toggleVote } from '../../actions/ideas';
+import { areAllAttachmentsUploaded } from '../../actions/files';
 
 
 type Props = {
@@ -39,18 +40,29 @@ class IdeaItem extends Component {
 
   handleAddCommentKeyPress = e => {
     if (e.key === 'Enter') {
-      const { dispatch, idea } = this.props;
+      const { dispatch, idea, commentsToAdd } = this.props;
       console.log("IdeaItem.handleAddCommentKeyPress");
       console.log(idea);
-
-      dispatch(addComment({
-        ideaId: idea.id,
-        text: e.target.value,
-        sumittedBy: '',
-        submittedAt: '',
-        anonymous: idea.anonymousMode,
-      }));
-      this.commentInput.value = '';
+      let files = [];
+      let comment = {
+    	        ideaId: idea.id,
+    	        text: e.target.value,
+    	        sumittedBy: '',
+    	        submittedAt: '',
+    	        anonymous: idea.anonymousMode,
+    	      }; 
+      const index = commentsToAdd.findIndex(x => x.ideaId === idea.id);
+      if (index != -1) {
+    	  files = commentsToAdd[index].files;
+   	  };
+   	  comment.files = files;
+   	  if (!areAllAttachmentsUploaded(comment)) {
+   		  alert("wait until all attachments are uploaded");
+   	  } else {
+   	      dispatch(addComment(comment));
+   	      this.commentInput.value = '';
+   	  }
+   	  
     }
   }
 
@@ -174,7 +186,7 @@ class IdeaItem extends Component {
 function mapStateToProps(state) {
   return {
     commentsErrorMessage: state.ideas.commentsErrorMessage,
-    
+    commentsToAdd: state.ideas.commentsToAdd,
   };
 }
 

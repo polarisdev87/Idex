@@ -8,6 +8,7 @@ import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 import CommentAttachmentsModal from '../../components/modals/CommentAttachmentsModal';
 import { updateCommentAttachments } from '../../actions/comments';
+import { areAllAttachmentsUploaded } from '../../actions/files';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
 
 type Props = {
@@ -83,20 +84,6 @@ class Ideas extends Component {
   }
 
   
-  areAllAttachmentsUploaded(idea) {
-    console.log("areAllAttachmentsUploaded");
-    console.log(idea);
-    let result = true;
-    if (idea.files != null) {
-      const pendingUpload = idea.files.filter(file => file.persistenceId != null && file.cancelledAt == null && file.uploadedAt == null);
-      console.log("pendingUpload");
-      console.log(pendingUpload);
-      result = pendingUpload.length == 0;
-    }
-    console.log(result);
-    return result;
-  }
-
   validateIdea(idea) {
     let errorMessage = '';
     if (idea.title.length === 0) {
@@ -128,7 +115,7 @@ class Ideas extends Component {
     }
 
     // TODO: make a retry behavior when finishing editing or adding ideas
-    if (!this.areAllAttachmentsUploaded(idea)) {
+    if (!areAllAttachmentsUploaded(idea)) {
       errorMessage += 'Wait until all attachments are uploaded.\n';
     }
     if (errorMessage.endsWith('\n')) {

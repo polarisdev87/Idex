@@ -1,6 +1,25 @@
 import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
 
 
+
+
+export function areAllAttachmentsUploaded(idea) {
+    console.log("areAllAttachmentsUploaded");
+    console.log(idea);
+    let result = true;
+    if (idea.files != null) {
+      const pendingUpload = idea.files.filter(file => file.persistenceId != null && file.cancelledAt == null && file.uploadedAt == null);
+      console.log("pendingUpload");
+      console.log(pendingUpload);
+      result = pendingUpload.length == 0;
+    }
+    console.log(result);
+    return result;
+  }
+
+
+
+
 /**
  * Identify all files that aren't in oldFiles
  */
@@ -130,7 +149,7 @@ export function uploadFile(ideaId, htmlFormFile) {
       size: htmlFormFile.size,
       id: htmlFormFile.id,
       name: htmlFormFile.name,
-      sizeReadeable: htmlFormFile.sizeReadeable, 
+      sizeReadable: htmlFormFile.sizeReadable, 
     };
     config = {
       headers: {
@@ -188,7 +207,7 @@ export function uploadFileOnNewComment(ideaId, htmlFormFile) {
 	      size: htmlFormFile.size,
 	      id: htmlFormFile.id,
 	      name: htmlFormFile.name,
-	      sizeReadeable: htmlFormFile.sizeReadeable, 
+	      sizeReadable: htmlFormFile.sizeReadable, 
 	    };
 	    config = {
 	      headers: {
