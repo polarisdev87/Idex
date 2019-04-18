@@ -101,6 +101,7 @@ public class Comment {
     @OneToMany(mappedBy = "primaryKey.comment")    
     private Set<CommentFile> commentFiles = new HashSet<CommentFile>();
     
+    
     public Set<CommentFile> getCommentFiles() {
         return commentFiles;
     }    

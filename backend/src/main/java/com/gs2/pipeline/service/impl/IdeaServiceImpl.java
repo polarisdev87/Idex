@@ -414,8 +414,16 @@ public class IdeaServiceImpl implements IdeaService {
 		idea.setStage("Incubation");
 		idea.setVotes(0L);
 		idea.setComments(new HashSet<>());
+		
+		idea = ideaRepository.save(idea);
+		
+		for (IdeaFile ideaFile:idea.getIdeaFiles() ) {
+			ideaFile.setIdea(idea);
+			ideaFileRepository.save(ideaFile);
+		}
+		
 
-		return ideaRepository.save(idea).toDto(false, insertedBy);
+		return idea.toDto(false, insertedBy);
 	}
 
 	private IdeaDto update(Idea existing, IdeaDto updatedIdeaDto, Account updatedBy, Set<Tag> tags, Set<File> files, Map<Long,AttachmentDto> mapViews) {
