@@ -299,7 +299,15 @@ public class IdeaServiceImpl implements IdeaService {
 		
 		Comment comment = commentDto.toDao(idea, requester, files, mapViews);
 
-		commentRepository.save(comment);
+		comment = commentRepository.save(comment);
+		
+		
+		
+		for (CommentFile commentFile:comment.getCommentFiles() ) {
+			commentFile.setComment(comment);
+			commentFileRepository.save(commentFile);
+		}
+		
 
 		idea.getComments().add(comment);
 
