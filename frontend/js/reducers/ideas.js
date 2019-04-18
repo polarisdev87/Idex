@@ -337,7 +337,7 @@ export function ideas(state = {
         console.log(state);
         console.log(action);
         
-        const index = state.commentsToAdd.findIndex(x => x.id === action.ideaId);
+        const index = state.commentsToAdd.findIndex(x => x.ideaId === action.ideaId);
         let comment = {};
         let newCommentsToAdd = state.commentsToAdd;
         if (index == -1) {
@@ -372,7 +372,9 @@ export function ideas(state = {
       console.log(action);
 
       
-      const index = state.commentsToAdd.findIndex(x => x.id === action.ideaId);
+      const index = state.commentsToAdd.findIndex(x => x.ideaId === action.ideaId);
+      console.log("index");
+      console.log(index);
       let comment = {};
       if (index == -1) {
     	comment = {ideaId: action.ideaId, files: [action.htmlFormFile]}
@@ -386,14 +388,19 @@ export function ideas(state = {
          });
       } else  {
         comment = state.commentsToAdd[index];
-
+        console.log("comment");
+        console.log(comment);
         comment = updateFileOnElement(comment, action.htmlFormFile, action.uploadedFileMeta) 
+        console.log("comment");
+        console.log(comment);
             
         const newCommentsToAdd = [
            ...state.commentsToAdd.slice(0, index),
            comment,
            ...state.commentsToAdd.slice(index + 1),
         ];
+        console.log("newCommentsToAdd");
+        console.log(newCommentsToAdd);
         return Object.assign({}, state, {
            commentsToAdd: newCommentsToAdd,
         });

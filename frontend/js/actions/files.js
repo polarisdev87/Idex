@@ -5,22 +5,20 @@ import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
  * Identify all files that aren't in oldFiles
  */
 function getFilesToAdd(oldFiles, files) {
-	console.log("getFilesToAdd(...)"); 
-	console.log(oldFiles); 
-	console.log(files); 
   const gotOldFiles = oldFiles == null ? [] : oldFiles;
-  const newArray = files.filter((el) => gotOldFiles.indexOf(el) < 0);
+  const newArray = files.filter((el) => {
+	  const oldEl = gotOldFiles.filter((el1) => {
+		  return el1.id == el.id} )
+	  return oldEl.length==0;
+  });
   return newArray;
 }
 
 /**
- * Identify all files that aren't in files and was in oldFiles
+ * Identify all oldfiles that aren't in files and was in oldFiles
  */
 function getFilesToRemove(oldFiles, files) {
-  const gotFiles = files == null ? [] : files;
-  const gotOldFiles = oldFiles == null ? [] : oldFiles;
-  const newArray = gotOldFiles.filter((el) => gotFiles.indexOf(el) < 0);
-  return newArray;
+	return getFilesToAdd(files, oldFiles);
 }
 
 
@@ -58,7 +56,7 @@ export function changeFilesOnNewComment(dispatch, ideaId, oldFiles, files) {
 	  // remove all old files
 	  // upload file
 
-	  console.log('changeFies(...)');
+	  console.log('changeFilesOnNewComment(...)');
 	  console.log(oldFiles);
 	  const filesToAdd = getFilesToAdd(oldFiles, files);
 	  const filesToRemove = getFilesToRemove(oldFiles, files);
