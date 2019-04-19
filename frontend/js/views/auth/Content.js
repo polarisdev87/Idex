@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from "react-router";
 
 import AuthInput from '../../components/inputs/AuthInput';
 import CommonButton from '../../components/buttons/CommonButton';
@@ -140,6 +141,7 @@ class Content extends Component {
           <div className="item-container alert alert-danger">
             {loginErrorMessage}
           </div>
+          <Link to="/login/reset">Forgot password?</Link>
           <div className="item-container">
             <CommonButton title="Login" className="auth-button" onClick={() => this.loginButtonClickHandler()} />
           </div>

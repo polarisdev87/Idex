@@ -10,6 +10,7 @@ import Users from './views/Users';
 import Auth from './views/auth';
 import Ideas from './views/ideas';
 import Admin from './views/admin';
+import ResetPassword from './views/auth/ResetPassword';
 
 const publicPath = '/';
 
@@ -42,6 +43,7 @@ export default class Routes extends Component {
           <IndexRoute path="" component={Auth} onEnter={requireNotAuth} />
 
           <Route path="/auth" component={Auth} onEnter={requireNotAuth} />
+          <Route path="/login/reset" component={ResetPassword} onEnter={requireNotAuth} />
           {/* <Route path="/login" component={LoginFull} onEnter={requireNotAuth} />
           <Route path="/register" component={Register} /> */}
           <Route path="/users" component={Users} onEnter={requireAuth} />

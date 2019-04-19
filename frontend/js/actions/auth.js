@@ -21,6 +21,15 @@ export const REGISTRATION_SUCCESS = 'REGISTRATION_SUCCESS';
 export const REGISTRATION_FAILURE = 'REGISTRATION_FAILURE';
 export const REGISTRATION_CLEAR_ERRORS = 'REGISTRATION_CLEAR_ERRORS';
 
+export const FORGOT_PASSWORD_REQUEST = 'FORGOT_PASSWORD_REQUEST';
+export const FORGOT_PASSWORD_SUCCESS = 'FORGOT_PASSWORD_SUCCESS';
+export const FORGOT_PASSWORD_FAILURE = 'FORGOT_PASSWORD_FAILURE';
+
+export const RESET_PASSWORD_REQUEST = 'RESET_PASSWORD_REQUEST';
+export const RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS';
+export const RESET_PASSWORD_FAILURE = 'RESET_PASSWORD_FAILURE';
+
+
 function requestLogin() {
   return {
     type: LOGIN_REQUEST,
@@ -41,6 +50,15 @@ function loginError(message) {
     message,
   };
 }
+
+
+function forgotPasswordError(message) {
+	  return {
+	    type: FORGOT_PASSWORD_FAILURE,
+	    message,
+	  };
+	}
+
 
 function removeLoginErrors() {
   return {
@@ -77,6 +95,13 @@ export function handleLoginError(message) {
     dispatch(loginError(message));
   };
 }
+
+export function handleForgotPasswordError(message) {
+	  return dispatch => {
+	    dispatch(forgotPasswordError(message));
+	  };
+	}
+
 
 export function loginUser(creds) {
   const payload = {
@@ -230,3 +255,118 @@ export function registerUser(creds) {
       });
   };
 }
+
+
+
+/** ------------------------------------------------------------- **/
+/** Forget Password Actions **/
+/** ------------------------------------------------------------- **/
+
+export function forgotPassword(payload) {
+	console.log("forgotPassword(...)");
+	console.log(payload);
+	const config = {
+			    method: 'POST',
+			    headers: { 'Content-Type': 'application/json' },
+			    body: JSON.stringify(payload),
+			  };
+	return dispatch => {
+		dispatch(forgotPasswordRequest(payload.username, payload.email));
+		fetch(`${API_BASE_URI}/auth/forgot`, config)
+	      .then(response => response.json().then(body => ({ body, response })))
+	      .then(({ body, response }) => {
+	        if (!response.ok) {
+	          // If there was a problem, we want to
+	          // dispatch the error condition
+	          dispatch(forgotPasswordError(body.error));
+	          return Promise.reject(body.error);
+	        }
+	        dispatch(forgotPasswordSuccess(body));
+	        return true;
+	      }).catch(err => {
+	        dispatch(forgotPasswordError(err));
+	        console.log("Error: ", err);
+	      });
+	}
+} 
+
+
+
+
+function forgotPasswordSuccess(email) {
+	console.log("forgotPasswordSuccess");
+	  return {
+	    type: FORGOT_PASSWORD_SUCCESS,
+	    email: email,
+	  };
+	}
+
+
+function forgotPasswordRequest(username,email) {
+	console.log("forgotPasswordRequest");
+	  return {
+	    type: FORGOT_PASSWORD_REQUEST,
+	    email,
+	    username,
+	  };
+	}
+
+
+export function resetPassword(email, password, passwordConfirmation, code) {
+	  let payload = {
+			    email,
+			    password,
+			    passwordConfirmation,
+			    code,
+			  };
+
+	const config = {
+			    method: 'POST',
+			    headers: { 'Content-Type': 'application/json' },
+			    body: JSON.stringify(payload),
+			  };
+	return dispatch => {
+		dispatch(resetPasswordRequest(email));
+		fetch(`${API_BASE_URI}/auth/reset`, config)
+	      .then(response => response.json().then(body => ({ body, response })))
+	      .then(({ body, response }) => {
+	        if (!response.ok) {
+	          // If there was a problem, we want to
+	          // dispatch the error condition
+	          dispatch(resetPasswordError(body.error));
+	          return Promise.reject(body.error);
+	        }
+	        dispatch(resetPasswordSuccess());
+	        return true;
+	      }).catch(err => {
+	        dispatch(resetPasswordError(err));
+	        console.log("Error: ", err);
+	      });
+	}
+} 
+
+
+
+export function resetPasswordError(message) {
+	  return {
+	    type: RESET_PASSWORD_FAILURE,
+	    message: message,
+	  };
+	}
+
+
+
+function resetPasswordSuccess() {
+	  return {
+	    type: RESET_PASSWORD_SUCCESS,
+	  };
+	}
+
+
+function resetPasswordRequest() {
+	  return {
+	    type: RESET_PASSWORD_REQUEST,
+	  };
+	}
+
+

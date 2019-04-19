@@ -34,8 +34,6 @@ public class IdeaRestController {
     /**
      * time in seconds to wait for uploading files after finish editing
      */
-    private static final int UPLOAD_SESSION_TIMEOUT = 600;
-    private static final int UPLOAD_RETRY_INTERVAL_IN_MS = 500;
 
     @Autowired
     public IdeaRestController(

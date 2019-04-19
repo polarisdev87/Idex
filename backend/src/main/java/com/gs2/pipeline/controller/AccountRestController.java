@@ -6,6 +6,8 @@ import com.gs2.pipeline.config.security.jwt.JwtTokenUtil;
 import com.gs2.pipeline.config.security.jwt.JwtUser;
 import com.gs2.pipeline.domain.AuthorityName;
 import com.gs2.pipeline.dto.AccountCreationDto;
+import com.gs2.pipeline.dto.ForgotPasswordDto;
+import com.gs2.pipeline.dto.ResetPasswordDto;
 import com.gs2.pipeline.exception.DuplicateUsernameException;
 import com.gs2.pipeline.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,5 +100,29 @@ public class AccountRestController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+    
+    @RequestMapping(value = "${account.forgot.path}", method = RequestMethod.POST)
+    
+    public ForgotPasswordDto forgotPassword(@RequestBody ForgotPasswordDto forgotPasswordDto) throws AuthenticationException {
+
+    	ForgotPasswordDto result = accountService.forgotPassword(forgotPasswordDto);
+    	
+        return result;
+    }
+    
+    @RequestMapping(value = "${account.reset.path}", method = RequestMethod.POST)
+    public ResetPasswordDto resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) throws AuthenticationException {
+
+    	ResetPasswordDto result = accountService.resetPassword(resetPasswordDto);
+    	
+        return result;
+    }
+    
+    
+    
+    		
+    		
+    		
+    		
 
 }

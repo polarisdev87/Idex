@@ -5,6 +5,8 @@ import com.gs2.pipeline.domain.AuthorityName;
 import com.gs2.pipeline.dto.AccountCreationDto;
 import com.gs2.pipeline.dto.AccountDto;
 import com.gs2.pipeline.dto.AccountUpdateDto;
+import com.gs2.pipeline.dto.ForgotPasswordDto;
+import com.gs2.pipeline.dto.ResetPasswordDto;
 import com.gs2.pipeline.exception.AccountNotFoundException;
 import com.gs2.pipeline.exception.DuplicateUsernameException;
 import com.gs2.pipeline.exception.UnauthorizedException;
@@ -20,4 +22,6 @@ public interface AccountService {
     List<AccountDto> findAll();
     Account update(AccountUpdateDto accountUpdateDto, Account updateRequester) throws AccountNotFoundException, UnauthorizedException, DuplicateUsernameException;
     void delete(Set<Long> userIds, Account deletionRequester) throws UnauthorizedException;
+	ForgotPasswordDto forgotPassword(ForgotPasswordDto forgotPasswordDto);
+	ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto);
 }

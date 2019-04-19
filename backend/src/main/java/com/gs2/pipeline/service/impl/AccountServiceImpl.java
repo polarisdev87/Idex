@@ -6,6 +6,8 @@ import com.gs2.pipeline.domain.AuthorityName;
 import com.gs2.pipeline.dto.AccountCreationDto;
 import com.gs2.pipeline.dto.AccountDto;
 import com.gs2.pipeline.dto.AccountUpdateDto;
+import com.gs2.pipeline.dto.ForgotPasswordDto;
+import com.gs2.pipeline.dto.ResetPasswordDto;
 import com.gs2.pipeline.exception.AccountNotFoundException;
 import com.gs2.pipeline.exception.DuplicateUsernameException;
 import com.gs2.pipeline.exception.UnauthorizedException;
@@ -150,4 +152,17 @@ public class AccountServiceImpl implements AccountService {
 
          return authorities;
     }
+
+	@Override
+	public ForgotPasswordDto forgotPassword(ForgotPasswordDto forgotPasswordDto) {
+		// TODO Auto-generated method stub
+		forgotPasswordDto.setSent(true);
+		return forgotPasswordDto;
+	}
+
+	@Override
+	public ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto) {
+		resetPasswordDto.setConfirmed(true);
+		return resetPasswordDto;
+	}
 }
