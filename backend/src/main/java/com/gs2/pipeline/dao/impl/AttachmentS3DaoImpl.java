@@ -23,20 +23,8 @@ import com.gs2.pipeline.domain.IdeaFile;
 import com.gs2.pipeline.dto.UploadDto;
 
 @Repository
-public class AttachmentS3DaoImpl implements AttachmentDao {
+public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements AttachmentDao {
 
-    private static String API_KEY;
-
-    private static String API_SECRET;
-	
-	
-    private static AWSCredentials credentials;
-    
-
-    private static String REGION_NAME;
-    private static Regions REGION;
-    
-    
     private static String BUCKET_NAME;
     
     /**
@@ -55,23 +43,6 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
   		  .withRegion(REGION)
   		  .build();   
   */  
-    @Value("${pipeline.s3.api.secret}")
-    private void setApiSecret(String apiSecret) {
-    	API_SECRET = apiSecret;
-    }
-    
-    @Value("${pipeline.s3.api.key}")
-    private void setApiKey(String apiKey) {
-    	API_KEY = apiKey;
-    }
-    
-
-// 	Ireland Region
-    @Value("${pipeline.s3.bucket.region}")
-    private void setRegionName(String regionName) {
-    	REGION_NAME = regionName;
-    }
-    
     @Value("${pipeline.s3.bucket.name}")
     private void setBucketName(String bucketName) {
     	BUCKET_NAME = bucketName;
@@ -110,14 +81,9 @@ public class AttachmentS3DaoImpl implements AttachmentDao {
     
     private AmazonS3 getS3Client() {
     	if (s3client == null ) {
-        	if (REGION == null) {
-        		REGION = Regions.fromName(REGION_NAME);
-                credentials = new BasicAWSCredentials(
-                        API_KEY, 
-                        API_SECRET
-                      );    		
-        	}
-            s3client = AmazonS3ClientBuilder.standard().withRegion(REGION).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+    		AWSCredentials myCredentials = getCredentials();
+            s3client = AmazonS3ClientBuilder.standard().withRegion(getRegion())
+            		.withCredentials(new AWSStaticCredentialsProvider(myCredentials)).build();
     	}
         return s3client;
     }
