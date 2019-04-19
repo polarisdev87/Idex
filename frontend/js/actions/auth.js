@@ -52,7 +52,7 @@ function loginError(message) {
 }
 
 
-function forgotPasswordError(message) {
+export function forgotPasswordError(message) {
 	  return {
 	    type: FORGOT_PASSWORD_FAILURE,
 	    message,
@@ -95,13 +95,6 @@ export function handleLoginError(message) {
     dispatch(loginError(message));
   };
 }
-
-export function handleForgotPasswordError(message) {
-	  return dispatch => {
-	    dispatch(forgotPasswordError(message));
-	  };
-	}
-
 
 export function loginUser(creds) {
   const payload = {
@@ -275,6 +268,10 @@ export function forgotPassword(payload) {
 		fetch(`${API_BASE_URI}/auth/forgot`, config)
 	      .then(response => response.json().then(body => ({ body, response })))
 	      .then(({ body, response }) => {
+	    	  console.log("body");
+	    	  console.log(body);
+	    	  console.log("response");
+	    	  console.log(response);
 	        if (!response.ok) {
 	          // If there was a problem, we want to
 	          // dispatch the error condition
@@ -312,21 +309,17 @@ function forgotPasswordRequest(username,email) {
 	}
 
 
-export function resetPassword(email, password, passwordConfirmation, code) {
-	  let payload = {
-			    email,
-			    password,
-			    passwordConfirmation,
-			    code,
-			  };
-
+export function resetPassword(payload) {
+	
+	console.log("resetPassword(...)");
+	console.log(payload);
 	const config = {
 			    method: 'POST',
 			    headers: { 'Content-Type': 'application/json' },
 			    body: JSON.stringify(payload),
 			  };
 	return dispatch => {
-		dispatch(resetPasswordRequest(email));
+		dispatch(resetPasswordRequest(payload));
 		fetch(`${API_BASE_URI}/auth/reset`, config)
 	      .then(response => response.json().then(body => ({ body, response })))
 	      .then(({ body, response }) => {

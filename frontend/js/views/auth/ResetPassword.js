@@ -64,18 +64,18 @@ export class ResetPassword extends Component {
 	validateResetForm(confirmPasswordData) {
 	    let errorMessage = '';
 
-	    let correctEmail= this.validateEmail(confirmPasswordData.email);
 	    
-	    if (!correctEmail) {
-	      errorMessage += 'Not valid email.\n';
-	    }
+	    if (confirmPasswordData.username.length < 4 || confirmPasswordData.username.length > 50) {
+		      errorMessage += 'Username must be 4-50 characters.\n';
+		    }
 	    
 	    const correctCode = confirmPasswordData.code.length >0;
 	    if (!correctCode) {
 		      errorMessage += 'Not valid code.\n';
 	    }
 
-	    const correctPassword = confirmPasswordData.password.length >0;
+	    
+	    const correctPassword = confirmPasswordData.password.length >=4 && confirmPasswordData.password.length<=100 ;
 	    if (!correctPassword) {
 		      errorMessage += 'Not valid password.\n';
 	    }
@@ -103,14 +103,11 @@ export class ResetPassword extends Component {
 	
 	
 	handleSendCodeClick() {
-		console.log('handleSendCodeClick');
 		const { dispatch } = this.props;
 		const username = this.loginUsername;
 		const email = this.email;
 		const forgotPasswordData = { username: username.value.trim(), email: email.value.trim() };
 		const errorMessage = this.validateCodeForm(forgotPasswordData);
-		console.log(errorMessage);
-		console.log("errorMessage");
 		if (errorMessage.length > 0) {
 		      dispatch(forgotPasswordError(errorMessage));
 		      return;
@@ -120,15 +117,14 @@ export class ResetPassword extends Component {
 	
 	
 	handleConfirmClick() {
-		console.log('handleConfirmClick');
 		const { dispatch } = this.props;
 		const code = this.code.value;
-		const email = this.email.value;
+		const username = this.loginUsername.value;
 		const password = this.password.value;
 		const confirmPassword = this.confirmPassword.value;
 		
 		const confirmPasswordData = {
-				email,
+				username,
 	    		password,
 	    		code,	
 	    		confirmPassword,
@@ -143,9 +139,6 @@ export class ResetPassword extends Component {
 	
 
 	renderRequestCodeForm(forgotPasswordErrorMessage) {
-		console.log("renderRequestCodeForm");
-		console.log(this.props);
-		console.log(forgotPasswordErrorMessage);
 		return (
  
 				<section className="panel">
@@ -180,16 +173,13 @@ export class ResetPassword extends Component {
 
 
 	renderConfirmationForm(errorMessage) {
-		console.log("renderConfirmationForm");
-		console.log(this);
-		
 		return (
 				
 				<div>
 				<section className="panel">
 
 				<div className="item-container">
-	            <input ref={el => { this.email = el; }} className="auth-input" placeholder="email" type="email" />
+	            <input ref={el => { this.loginUsername = el; }} className="auth-input" placeholder="User Name" type="text" />
 				</div>
 
 				<div className="item-container">
@@ -245,11 +235,7 @@ export class ResetPassword extends Component {
 
 	render() {
 		
-		console.log("ResetPassword.render()");
-		console.log(this.props);
 		const {errorMessage} = this.props;
-		console.log("errorMessage");
-		console.log(errorMessage);
 		
 		
 		return (

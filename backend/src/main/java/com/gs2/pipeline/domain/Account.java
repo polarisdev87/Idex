@@ -61,6 +61,16 @@ public class Account {
             joinColumns = {@JoinColumn(name = "account_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")})
     private Set<Authority> authorities;
+    
+    
+    
+    @Column(name = "reset_code", length = 50)
+    private String resetCode;
+    
+    
+    @Column(name = "reset_code_date")
+    private Date resetCodeDate;
+    
 
     public Long getId() {
         return id;
@@ -135,8 +145,28 @@ public class Account {
     public void setLastPasswordResetDate(Date lastPasswordResetDate) {
         this.lastPasswordResetDate = lastPasswordResetDate;
     }
+    
+    
+    
+    
 
-    public boolean hasAuthority(AuthorityName authorityName) {
+    public String getResetCode() {
+		return resetCode;
+	}
+
+	public void setResetCode(String resetCode) {
+		this.resetCode = resetCode;
+	}
+
+	public Date getResetCodeDate() {
+		return resetCodeDate;
+	}
+
+	public void setResetCodeDate(Date resetCodeDate) {
+		this.resetCodeDate = resetCodeDate;
+	}
+
+	public boolean hasAuthority(AuthorityName authorityName) {
 
         for(Authority authority : authorities) {
             if(authority.getName() == authorityName) {

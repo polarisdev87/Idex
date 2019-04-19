@@ -14,6 +14,7 @@ import com.gs2.pipeline.exception.UnauthorizedException;
 import com.gs2.pipeline.repository.AccountRepository;
 import com.gs2.pipeline.repository.AuthorityRepository;
 import com.gs2.pipeline.service.AccountService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final AuthorityRepository authorityRepository;
+	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     @Autowired
     public AccountServiceImpl(PasswordEncoder passwordEncoder,
@@ -153,16 +155,82 @@ public class AccountServiceImpl implements AccountService {
          return authorities;
     }
 
+
+    public static String generateRandomResetCode(int count) {
+    	StringBuilder builder = new StringBuilder();
+    	while (count-- != 0) {
+    		int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+    		builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+    	}
+    	return builder.toString();
+    }
+    
+    
 	@Override
-	public ForgotPasswordDto forgotPassword(ForgotPasswordDto forgotPasswordDto) {
-		// TODO Auto-generated method stub
-		forgotPasswordDto.setSent(true);
-		return forgotPasswordDto;
+	public ForgotPasswordDto askForResetPasswordCode(ForgotPasswordDto forgotPasswordDto) throws UnauthorizedException {
+		Account account = findByUsername(forgotPasswordDto.getUsername());
+		if (account != null) {
+			if (account.getEmail().equals(forgotPasswordDto.getEmail())) {
+				String resetCode = generateRandomResetCode(8).toLowerCase();
+				account.setResetCode(resetCode);
+				account.setResetCodeDate(new Date());
+				this.accountRepository.save(account);
+				
+				// TODO: Send mail
+				
+				
+				forgotPasswordDto.setSent(true);
+				return forgotPasswordDto;
+			}
+		}
+		throw new UnauthorizedException("email and username don't match");
 	}
 
+	private boolean passwordIsValid(String password) {
+		return password!=null && password.length()>=4 && password.length()<=100;
+	}
+	
 	@Override
-	public ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto) {
-		resetPasswordDto.setConfirmed(true);
-		return resetPasswordDto;
+	public ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto) throws UnauthorizedException {
+		Account account = findByUsername(resetPasswordDto.getUsername());
+		if (account != null) {
+			if (account.getResetCodeDate()!= null) {
+				long startTime = account.getResetCodeDate().getTime();
+				long endTime = (new Date()).getTime();
+				long diffTime = endTime - startTime;
+				long diffDays = diffTime / (1000 * 60 * 60 * 24);				
+				if (diffDays <=1) {
+					String newPassword = resetPasswordDto.getPassword();
+					if (passwordIsValid(newPassword)) {
+						if (newPassword.equals(resetPasswordDto.getConfirmPassword())) {
+							if (account.getResetCode()!=null) {
+								if (account.getResetCode().equals(resetPasswordDto.getCode())) {
+									account.setResetCode("");
+									account.setResetCodeDate(null);
+							        account.setPassword(passwordEncoder.encode(newPassword));
+									this.accountRepository.save(account);
+									resetPasswordDto.setConfirmed(true);
+									return resetPasswordDto;
+								} else {
+									throw new UnauthorizedException("Wrong code. Send the last received reset code");
+								}
+							} else {
+								throw new UnauthorizedException("Internal error on reset code. Please, submit forgot password form");
+							}
+						} else {
+							throw new UnauthorizedException("'Passwords don't match.");
+						}
+					} else {
+						throw new UnauthorizedException("'Password must be between 4-100 characters.");
+					}
+				} else {
+					throw new UnauthorizedException("Please, Submit forgot password form again - reset code too old");
+				}
+			} else {
+				throw new UnauthorizedException("You should first submit forgot password form");
+			}
+		}
+		throw new UnauthorizedException("Invalid credentials");
+		
 	}
 }

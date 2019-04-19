@@ -22,6 +22,6 @@ public interface AccountService {
     List<AccountDto> findAll();
     Account update(AccountUpdateDto accountUpdateDto, Account updateRequester) throws AccountNotFoundException, UnauthorizedException, DuplicateUsernameException;
     void delete(Set<Long> userIds, Account deletionRequester) throws UnauthorizedException;
-	ForgotPasswordDto forgotPassword(ForgotPasswordDto forgotPasswordDto);
-	ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto);
+	ForgotPasswordDto askForResetPasswordCode(ForgotPasswordDto forgotPasswordDto) throws UnauthorizedException;
+	ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto) throws UnauthorizedException;
 }

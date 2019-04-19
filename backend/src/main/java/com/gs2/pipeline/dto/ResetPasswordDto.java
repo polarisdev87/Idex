@@ -4,7 +4,7 @@ public class ResetPasswordDto {
 	
 	String username;
 	String password;
-	String passwordConfirmation;
+	String confirmPassword;
 	String code;
 	Boolean confirmed;
 	
@@ -21,11 +21,12 @@ public class ResetPasswordDto {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getPasswordConfirmation() {
-		return passwordConfirmation;
+
+	public String getConfirmPassword() {
+		return confirmPassword;
 	}
-	public void setPasswordConfirmation(String passwordConfirmation) {
-		this.passwordConfirmation = passwordConfirmation;
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
 	}
 	public String getCode() {
 		return code;
