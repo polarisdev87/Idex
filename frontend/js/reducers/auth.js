@@ -15,7 +15,7 @@ export function auth(state = {
   isAuthenticated: !!localStorage.getItem(ID_TOKEN_KEY),
   role: 'ROLE_NONE',
   resetPassword: {
-      codeSent: true,
+      codeSent: false,
       confirmed: false,
       isConfirming: false,
       isSendingCode: false,
