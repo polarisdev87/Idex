@@ -1,5 +1,7 @@
 package com.gs2.pipeline.dao.impl;
 
+import org.springframework.stereotype.Repository;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
@@ -11,6 +13,8 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.gs2.pipeline.dao.MailDao;
 
+
+@Repository
 public class MailAwsSesDaoImpl extends AbstractAwsDaoImpl implements MailDao{
 
 	  // The configuration set to use for this email. If you do not want to use a

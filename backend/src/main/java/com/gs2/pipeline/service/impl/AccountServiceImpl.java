@@ -1,5 +1,6 @@
 package com.gs2.pipeline.service.impl;
 
+import com.gs2.pipeline.dao.MailDao;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Authority;
 import com.gs2.pipeline.domain.AuthorityName;
@@ -16,6 +17,7 @@ import com.gs2.pipeline.repository.AuthorityRepository;
 import com.gs2.pipeline.service.AccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,19 +26,26 @@ import java.util.*;
 @Service
 public class AccountServiceImpl implements AccountService {
 
+	
+	private static String MAIL_FROM;
+	
+	
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final AuthorityRepository authorityRepository;
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private final MailDao mailDao;
 
     @Autowired
     public AccountServiceImpl(PasswordEncoder passwordEncoder,
                               AccountRepository accountRepository,
-                              AuthorityRepository authorityRepository) {
+                              AuthorityRepository authorityRepository,
+                              MailDao mailDao) {
 
         this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
         this.authorityRepository = authorityRepository;
+        this.mailDao = mailDao;
     }
 
     @Override
@@ -44,6 +53,14 @@ public class AccountServiceImpl implements AccountService {
 
         return accountRepository.findOne(id);
     }
+    
+    
+    
+    
+    @Value("${pipeline.ses.mail.from}")
+    private void setMailFrom(String mailFrom) {
+    	MAIL_FROM = mailFrom;
+    }    
 
     @Override
     public Account findByUsername(String username) {
@@ -175,10 +192,10 @@ public class AccountServiceImpl implements AccountService {
 				account.setResetCode(resetCode);
 				account.setResetCodeDate(new Date());
 				this.accountRepository.save(account);
+				sendResetPasswordMail(account.getFirstName(), account.getEmail(), resetCode);
 				
-				// TODO: Send mail
 				
-				
+
 				forgotPasswordDto.setSent(true);
 				return forgotPasswordDto;
 			}
@@ -205,10 +222,20 @@ public class AccountServiceImpl implements AccountService {
 						if (newPassword.equals(resetPasswordDto.getConfirmPassword())) {
 							if (account.getResetCode()!=null) {
 								if (account.getResetCode().equals(resetPasswordDto.getCode())) {
+									
+									
+									
+									
+									
 									account.setResetCode("");
 									account.setResetCodeDate(null);
 							        account.setPassword(passwordEncoder.encode(newPassword));
 									this.accountRepository.save(account);
+									
+									
+									
+									
+									
 									resetPasswordDto.setConfirmed(true);
 									return resetPasswordDto;
 								} else {
@@ -231,6 +258,24 @@ public class AccountServiceImpl implements AccountService {
 			}
 		}
 		throw new UnauthorizedException("Invalid credentials");
+		
+	}
+
+	private void sendResetPasswordMail(String firstName, String email, String code) {
+		
+		String from = MAIL_FROM;
+		
+		System.out.println("mail from "+MAIL_FROM);
+		String to = email;
+		String subject = "IDEX - Reset your password";
+		String htmlBody = "";
+		String textBody = "Hi "+firstName+":\n"+
+				"You recently requested to reset your pipeline password.\n "+
+				"This is the code to enter in the reset password form: "+code+"\n"+
+				"After insertint the code type your new password.\n"+
+				"This code will be active only 24 hours\n";
+		
+		this.mailDao.sendMail(from, to, subject, htmlBody, textBody);
 		
 	}
 }

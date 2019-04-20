@@ -46,6 +46,8 @@ public abstract class AbstractAwsDaoImpl {
 	public AWSCredentials getCredentials() {
 		if (REGION == null) {
 			REGION = Regions.fromName(REGION_NAME);
+		}
+		if (credentials == null)  {
 	        credentials = new BasicAWSCredentials(
 	                API_KEY, 
 	                API_SECRET
