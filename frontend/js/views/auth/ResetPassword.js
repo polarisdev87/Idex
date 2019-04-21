@@ -42,10 +42,6 @@ export class ResetPassword extends Component {
 	validateCodeForm(forgotPasswordData) {
 		    let errorMessage = '';
 
-		    if (forgotPasswordData.username.length < 4 || forgotPasswordData.username.length > 50) {
-		      errorMessage += 'Username must be 4-50 characters.\n';
-		    }
-
 		    let correctEmail= this.validateEmail(forgotPasswordData.email);
 		    
 		    if (!correctEmail) {
@@ -64,14 +60,9 @@ export class ResetPassword extends Component {
 	validateResetForm(confirmPasswordData) {
 	    let errorMessage = '';
 
-	    
-	    if (confirmPasswordData.username.length < 4 || confirmPasswordData.username.length > 50) {
-		      errorMessage += 'Username must be 4-50 characters.\n';
-		    }
-	    
-	    const correctCode = confirmPasswordData.code.length >0;
+	    const correctCode = confirmPasswordData.resetString.length >0;
 	    if (!correctCode) {
-		      errorMessage += 'Not valid code.\n';
+		      errorMessage += 'Not valid link.\n';
 	    }
 
 	    
@@ -106,7 +97,7 @@ export class ResetPassword extends Component {
 		const { dispatch } = this.props;
 		const username = this.loginUsername;
 		const email = this.email;
-		const forgotPasswordData = { username: username.value.trim(), email: email.value.trim() };
+		const forgotPasswordData = { email: email.value.trim() };
 		const errorMessage = this.validateCodeForm(forgotPasswordData);
 		if (errorMessage.length > 0) {
 		      dispatch(forgotPasswordError(errorMessage));
@@ -117,17 +108,18 @@ export class ResetPassword extends Component {
 	
 	
 	handleConfirmClick() {
-		const { dispatch } = this.props;
-		const code = this.code.value;
-		const username = this.loginUsername.value;
+		console.log("handleConfirmClick");
+		console.log(this.props);
+		const { dispatch} = this.props;
+		
+		const codeString = this.props.params.codeString
 		const password = this.password.value;
 		const confirmPassword = this.confirmPassword.value;
 		
 		const confirmPasswordData = {
-				username,
 	    		password,
-	    		code,	
 	    		confirmPassword,
+	    		resetString:codeString,
 		};
 		const errorMessages = this.validateResetForm(confirmPasswordData);
 		if (errorMessages != "") {
@@ -144,10 +136,6 @@ export class ResetPassword extends Component {
 				<section className="panel">
 
 				<div className="item-container">
-	            <input ref={el => { this.loginUsername = el; }} className="auth-input" placeholder="User Name" type="text" />
-				</div>
-
-				<div className="item-container">
 	            <input ref={el => { this.email = el; }} className="auth-input" placeholder="email" type="email" />
 				</div>
 
@@ -157,15 +145,13 @@ export class ResetPassword extends Component {
 	            	</div>
 		        	
 		        }  
-	            
-				
 
-		          <div className="item-container">
-		            <CommonButton title="Send Confirmation" className="auth-button" onClick={() => this.handleSendCodeClick()} />
-		          </div>
+	          <div className="item-container">
+	            <CommonButton title="Send Confirmation" className="auth-button" onClick={() => this.handleSendCodeClick()} />
+	          </div>
 				
 				
-				</section>
+			</section>
 		);
 	}
 
@@ -178,19 +164,6 @@ export class ResetPassword extends Component {
 				<div>
 				<section className="panel">
 
-				<div className="item-container">
-	            <input ref={el => { this.loginUsername = el; }} className="auth-input" placeholder="User Name" type="text" />
-				</div>
-
-				<div className="item-container">
-	            <input ref={el => { this.code = el; }} className="auth-input" placeholder="Confirmation Code" type="text" />
-				</div>
-				<div className="item-container">
-				<HelpBlock>
-				Please check your email for the confirmation
-				code.
-				</HelpBlock>
-				</div>
         	    <div className="item-container">
         	    	<input ref={el => { this.password = el; }} className="auth-input obfuscate" placeholder="Password" type="text" />
         	    </div>
@@ -219,6 +192,25 @@ export class ResetPassword extends Component {
 		);
 	}
 
+
+	renderSentSuccessMessage() {
+		console.log("renderSentSuccessMessage()");
+		const { email } = this.props;
+		console.log(email);
+		return (
+				<div className="success">
+				<Glyphicon glyph="ok" />
+					<p>The recover password mail was sent. Change the password following the provided link in {email}</p>
+					<p>
+					<Link to="/auth">
+					Click here to login when done.
+					</Link>
+					</p>
+					</div>
+		);
+	}
+	
+	
 	renderSuccessMessage() {
 		return (
 				<div className="success">
@@ -234,17 +226,29 @@ export class ResetPassword extends Component {
 	}
 
 	render() {
-		
+		console.log("ResetPassword.render()");
+		console.log(this.props);
 		const {errorMessage} = this.props;
+		const codeString = this.props.params.codeString;
+		const askForResetPassword = (typeof codeString === 'undefined');
+		console.log("this.props.params.codeString");
+		console.log(this.props.params.codeString);
 		
-		
+		console.log("askForResetPassword");
+		console.log(askForResetPassword);
+		console.log("this.props.codeSent");
+		console.log(this.props.codeSent);
 		return (
 				<div className="ResetPassword">
-				{!this.props.codeSent
-					? this.renderRequestCodeForm(errorMessage)
-					: !this.props.confirmed
-							? this.renderConfirmationForm(errorMessage)
-							: this.renderSuccessMessage()}
+				
+				{askForResetPassword
+					? !this.props.codeSent
+							? this.renderRequestCodeForm(errorMessage)
+							: this.renderSentSuccessMessage()
+				    : !this.props.confirmed
+				    	? this.renderConfirmationForm(errorMessage)
+				    	:this.renderSuccessMessage()
+				}
 				</div>
 		);
 	}
@@ -259,6 +263,7 @@ function mapStateToProps(state) {
 		isConfirming: state.auth.resetPassword.isConfirming,
 		isSendingCode: state.auth.resetPassword.isSendingCode,
 		errorMessage: state.auth.resetPassword.errorMessage,
+		resetString : state.auth.resetPassword.resetString,
 	};
 }
 

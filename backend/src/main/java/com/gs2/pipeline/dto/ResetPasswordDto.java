@@ -5,7 +5,7 @@ public class ResetPasswordDto {
 	String username;
 	String password;
 	String confirmPassword;
-	String code;
+	String resetString;
 	Boolean confirmed;
 	
 	
@@ -28,11 +28,11 @@ public class ResetPasswordDto {
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
-	public String getCode() {
-		return code;
+	public String getResetString() {
+		return resetString;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setResetString(String resetString) {
+		this.resetString = resetString;
 	}
 	public Boolean getConfirmed() {
 		return confirmed;

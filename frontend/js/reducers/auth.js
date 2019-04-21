@@ -20,6 +20,7 @@ export function auth(state = {
       isConfirming: false,
       isSendingCode: false,
       errorMessage: "",
+      resetString:"",
   }
 }, action) {
   switch (action.type) {
@@ -60,6 +61,7 @@ export function auth(state = {
         return Object.assign({}, state, {
         	  resetPassword: {
         	      codeSent: false,
+        	      resetString: "",
         	      confirmed: false,
         	      isConfirming: false,
         	      isSendingCode: false,
@@ -69,17 +71,20 @@ export function auth(state = {
     case FORGOT_PASSWORD_SUCCESS:
         return Object.assign({}, state, {
         	  resetPassword: {
-        	      codeSent: true,
+        	      codeSent: action.sent,
+        	      resetString: "",
         	      confirmed: false,
         	      isConfirming: false,
         	      isSendingCode: false,
         	      errorMessage: "",
+        	      email: action.email,
         	  }
         });
     case FORGOT_PASSWORD_FAILURE:
         return Object.assign({}, state, {
         	  resetPassword: {
         	      codeSent: false,
+        	      resetString: "",
         	      confirmed: false,
         	      isConfirming: false,
         	      isSendingCode: false,
@@ -101,6 +106,7 @@ export function auth(state = {
         	  resetPassword: {
         	      codeSent: true,
         	      confirmed: true,
+        	      resetString: "",
         	      isConfirming: false,
         	      isSendingCode: false,
         	      errorMessage: "",

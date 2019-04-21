@@ -28,6 +28,7 @@ public class AccountServiceImpl implements AccountService {
 
 	
 	private static String MAIL_FROM;
+	private final static int RESET_STRING_LENGTH = 50;
 	
 	
     private final PasswordEncoder passwordEncoder;
@@ -36,6 +37,24 @@ public class AccountServiceImpl implements AccountService {
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private final MailDao mailDao;
 
+	
+		
+    @Value("${pipeline.frontend.host}")
+	private String FRONTEND_HOST;
+    
+    
+    @Value("${frontend.reset.path}")
+	private String FRONTEND_RESET_PATH;
+	
+
+    private String generateResetPasswordLink(String codeString) {
+    	return FRONTEND_HOST+FRONTEND_RESET_PATH+"/"+codeString;
+    }
+    
+    private String generateHomeLink() {
+    	return FRONTEND_HOST+"/";
+    }
+    
     @Autowired
     public AccountServiceImpl(PasswordEncoder passwordEncoder,
                               AccountRepository accountRepository,
@@ -62,6 +81,15 @@ public class AccountServiceImpl implements AccountService {
     	MAIL_FROM = mailFrom;
     }    
 
+
+    
+    private Account findByLowerCaseEmail(String email) {
+
+        return accountRepository.findByEmail(email.toLowerCase());
+    }
+    
+    
+    
     @Override
     public Account findByUsername(String username) {
 
@@ -173,34 +201,38 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    public static String generateRandomResetCode(int count) {
-    	StringBuilder builder = new StringBuilder();
-    	while (count-- != 0) {
-    		int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
-    		builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+    public String generateRandomResetString(int count) {
+    	boolean generated = false;
+    	String result = null; 
+    	while (!generated) {
+        	StringBuilder builder = new StringBuilder();
+        	while (count-- != 0) {
+        		int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+        		builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        	}
+        	result = builder.toString();
+        	Account account = accountRepository.findByResetString(result);
+        	generated = account == null;
     	}
-    	return builder.toString();
+    	return result; 
     }
     
     
 	@Override
 	public ForgotPasswordDto askForResetPasswordCode(ForgotPasswordDto forgotPasswordDto) throws UnauthorizedException {
-		Account account = findByUsername(forgotPasswordDto.getUsername());
+		Account account = findByLowerCaseEmail(forgotPasswordDto.getEmail());
 		if (account != null) {
-			if (account.getEmail().equals(forgotPasswordDto.getEmail())) {
-				String resetCode = generateRandomResetCode(8).toLowerCase();
-				account.setResetCode(resetCode);
-				account.setResetCodeDate(new Date());
-				this.accountRepository.save(account);
-				sendResetPasswordMail(account.getFirstName(), account.getEmail(), resetCode);
-				
-				
-
-				forgotPasswordDto.setSent(true);
+				String resetString = generateRandomResetString(RESET_STRING_LENGTH).toLowerCase();
+				account.setResetString(resetString);
+				account.setResetStringDate(new Date());
+				boolean mailSent = sendResetPasswordMail(account.getFirstName(), account.getEmail(), resetString);
+				if (mailSent) {
+					this.accountRepository.save(account);
+				}
+				forgotPasswordDto.setSent(mailSent);
 				return forgotPasswordDto;
-			}
 		}
-		throw new UnauthorizedException("email and username don't match");
+		throw new UnauthorizedException("email does not correspond to a valid user");
 	}
 
 	private boolean passwordIsValid(String password) {
@@ -209,73 +241,99 @@ public class AccountServiceImpl implements AccountService {
 	
 	@Override
 	public ResetPasswordDto resetPassword(ResetPasswordDto resetPasswordDto) throws UnauthorizedException {
-		Account account = findByUsername(resetPasswordDto.getUsername());
-		if (account != null) {
-			if (account.getResetCodeDate()!= null) {
-				long startTime = account.getResetCodeDate().getTime();
-				long endTime = (new Date()).getTime();
-				long diffTime = endTime - startTime;
-				long diffDays = diffTime / (1000 * 60 * 60 * 24);				
-				if (diffDays <=1) {
-					String newPassword = resetPasswordDto.getPassword();
-					if (passwordIsValid(newPassword)) {
-						if (newPassword.equals(resetPasswordDto.getConfirmPassword())) {
-							if (account.getResetCode()!=null) {
-								if (account.getResetCode().equals(resetPasswordDto.getCode())) {
-									
-									
-									
-									
-									
-									account.setResetCode("");
-									account.setResetCodeDate(null);
-							        account.setPassword(passwordEncoder.encode(newPassword));
-									this.accountRepository.save(account);
-									
-									
-									
-									
-									
-									resetPasswordDto.setConfirmed(true);
-									return resetPasswordDto;
-								} else {
-									throw new UnauthorizedException("Wrong code. Send the last received reset code");
-								}
+		if (resetPasswordDto.getResetString()!=null) {
+			Account account = accountRepository.findByResetString(resetPasswordDto.getResetString());
+			if (account != null) {
+				if (account.getResetStringDate()!= null) {
+					long startTime = account.getResetStringDate().getTime();
+					long endTime = (new Date()).getTime();
+					long diffTime = endTime - startTime;
+					long diffDays = diffTime / (1000 * 60 * 60 * 24);				
+					if (diffDays <=1) {
+						String newPassword = resetPasswordDto.getPassword();
+						if (passwordIsValid(newPassword)) {
+							if (newPassword.equals(resetPasswordDto.getConfirmPassword())) {
+								account.setResetString("");
+								account.setResetStringDate(null);
+						        account.setPassword(passwordEncoder.encode(newPassword));
+						        account.setLastPasswordResetDate(new Date());
+								this.accountRepository.save(account);
+								resetPasswordDto.setConfirmed(true);
+								boolean mailSent = sendChangedPasswordMail(account.getFirstName(), account.getEmail());
+								return resetPasswordDto;
 							} else {
-								throw new UnauthorizedException("Internal error on reset code. Please, submit forgot password form");
+								throw new UnauthorizedException("'Passwords don't match.");
 							}
 						} else {
-							throw new UnauthorizedException("'Passwords don't match.");
+							throw new UnauthorizedException("'Password must be between 4-100 characters.");
 						}
 					} else {
-						throw new UnauthorizedException("'Password must be between 4-100 characters.");
+						throw new UnauthorizedException("Please, Submit forgot password form again - expired action");
 					}
 				} else {
-					throw new UnauthorizedException("Please, Submit forgot password form again - reset code too old");
+					throw new UnauthorizedException("You should first submit forgot password form");
 				}
-			} else {
-				throw new UnauthorizedException("You should first submit forgot password form");
 			}
+			
+		} else {
+			throw new UnauthorizedException("Internal error on reset code. Please, submit forgot password form");
 		}
 		throw new UnauthorizedException("Invalid credentials");
 		
 	}
 
-	private void sendResetPasswordMail(String firstName, String email, String code) {
+	private boolean sendResetPasswordMail(String firstName, String email, String codeString) {
 		
 		String from = MAIL_FROM;
 		
 		System.out.println("mail from "+MAIL_FROM);
 		String to = email;
-		String subject = "IDEX - Reset your password";
-		String htmlBody = "";
+		String subject = "Pipeline - Reset your password";
+		String htmlBody = "Hi "+firstName+":\n<br />" + 
+				"You recently requested to reset your pipeline password.\n <br />" + 
+				"Follow this link to change your password: <a href=\""+generateResetPasswordLink(codeString)+"\">Reset password</a>\n <br />" + 
+				"After inserting the code type your new password.\n <br />"+ 
+				"This code will be active only 24 hours\n <br />";
 		String textBody = "Hi "+firstName+":\n"+
 				"You recently requested to reset your pipeline password.\n "+
-				"This is the code to enter in the reset password form: "+code+"\n"+
-				"After insertint the code type your new password.\n"+
+				"This is the code to enter in the reset password form: "+codeString+"\n"+
+				"After inserting the code type your new password.\n"+
 				"This code will be active only 24 hours\n";
 		
-		this.mailDao.sendMail(from, to, subject, htmlBody, textBody);
-		
+		String mailId = this.mailDao.sendMail(from, to, subject, htmlBody, textBody);
+		boolean result = mailId!=null && !mailId.equals("");
+		return result;
 	}
+
+
+	/**
+	 * Send changed password as warning in case other person asked and achieved to reset your password
+	 * @param firstName
+	 * @param email
+	 * @param codeString
+	 * @return
+	 */
+	private boolean sendChangedPasswordMail(String firstName, String email) {
+		
+		String from = MAIL_FROM;
+		
+		System.out.println("mail from "+MAIL_FROM);
+		String to = email;
+		String subject = "Pipeline - Password Changed Successfully";
+		String htmlBody = "Hi "+firstName+":\n+" + 
+				"You recently requested to reset your pipeline password.\n" + 
+				"Follow this link to enter pipeline using your new password: <a href=\""+generateHomeLink()+"\">Welcome to pipeline</a>\n" + 
+				"If you didn't ask to change your password contact your administrator.\n"; 
+		String textBody = "Hi "+firstName+":\n+" + 
+				"You recently requested to reset your pipeline password.\n" + 
+				"Enter pipeline using your new password\n" + 
+				"If you didn't ask to change your password contact your administrator.\n" ;
+		
+		String mailId = this.mailDao.sendMail(from, to, subject, htmlBody, textBody);
+		boolean result = mailId!=null && !mailId.equals("");
+		return result;
+	}
+
+
+
 }

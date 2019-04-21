@@ -64,12 +64,12 @@ public class Account {
     
     
     
-    @Column(name = "reset_code", length = 50)
-    private String resetCode;
+    @Column(name = "reset_string", length = 200)
+    private String resetString;
     
     
-    @Column(name = "reset_code_date")
-    private Date resetCodeDate;
+    @Column(name = "reset_string_date")
+    private Date resetStringDate;
     
 
     public Long getId() {
@@ -150,20 +150,20 @@ public class Account {
     
     
 
-    public String getResetCode() {
-		return resetCode;
+    public String getResetString() {
+		return resetString;
 	}
 
-	public void setResetCode(String resetCode) {
-		this.resetCode = resetCode;
+	public void setResetString(String resetString) {
+		this.resetString = resetString;
 	}
 
-	public Date getResetCodeDate() {
-		return resetCodeDate;
+	public Date getResetStringDate() {
+		return resetStringDate;
 	}
 
-	public void setResetCodeDate(Date resetCodeDate) {
-		this.resetCodeDate = resetCodeDate;
+	public void setResetStringDate(Date resetStringDate) {
+		this.resetStringDate = resetStringDate;
 	}
 
 	public boolean hasAuthority(AuthorityName authorityName) {

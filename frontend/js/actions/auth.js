@@ -256,33 +256,34 @@ export function registerUser(creds) {
 /** ------------------------------------------------------------- **/
 
 export function forgotPassword(payload) {
-	console.log("forgotPassword(...)");
-	console.log(payload);
 	const config = {
 			    method: 'POST',
 			    headers: { 'Content-Type': 'application/json' },
 			    body: JSON.stringify(payload),
 			  };
 	return dispatch => {
-		dispatch(forgotPasswordRequest(payload.username, payload.email));
+		dispatch(forgotPasswordRequest(payload.email));
 		fetch(`${API_BASE_URI}/auth/forgot`, config)
 	      .then(response => response.json().then(body => ({ body, response })))
 	      .then(({ body, response }) => {
-	    	  console.log("body");
-	    	  console.log(body);
-	    	  console.log("response");
-	    	  console.log(response);
 	        if (!response.ok) {
+	        	console.log("forgotPassword.error");
+	        	console.log(body.error);
 	          // If there was a problem, we want to
 	          // dispatch the error condition
 	          dispatch(forgotPasswordError(body.error));
 	          return Promise.reject(body.error);
 	        }
-	        dispatch(forgotPasswordSuccess(body));
+	        console.log("forgotPassword.body");
+	        console.log(body);
+	        if (body.sent) {
+	        	dispatch(forgotPasswordSuccess(body));
+	        } else {
+		        dispatch(forgotPasswordError("The request could not be processed. Error sending mail. Ask the administrator."));
+	        }
 	        return true;
 	      }).catch(err => {
 	        dispatch(forgotPasswordError(err));
-	        console.log("Error: ", err);
 	      });
 	}
 } 
@@ -290,29 +291,25 @@ export function forgotPassword(payload) {
 
 
 
-function forgotPasswordSuccess(email) {
-	console.log("forgotPasswordSuccess");
+function forgotPasswordSuccess(response) {
 	  return {
 	    type: FORGOT_PASSWORD_SUCCESS,
-	    email: email,
+	    email: response.email,
+	    sent: response.sent,
+	    
 	  };
 	}
 
 
-function forgotPasswordRequest(username,email) {
-	console.log("forgotPasswordRequest");
+function forgotPasswordRequest(email) {
 	  return {
 	    type: FORGOT_PASSWORD_REQUEST,
 	    email,
-	    username,
 	  };
 	}
 
 
 export function resetPassword(payload) {
-	
-	console.log("resetPassword(...)");
-	console.log(payload);
 	const config = {
 			    method: 'POST',
 			    headers: { 'Content-Type': 'application/json' },
@@ -333,7 +330,6 @@ export function resetPassword(payload) {
 	        return true;
 	      }).catch(err => {
 	        dispatch(resetPasswordError(err));
-	        console.log("Error: ", err);
 	      });
 	}
 } 
