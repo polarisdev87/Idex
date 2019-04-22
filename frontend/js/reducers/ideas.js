@@ -10,6 +10,10 @@ import {
   CHANGE_PROFIT,
   CHANGE_IMPLEMENTATION_TTM,
   SET_DEFAULT_FILTER,
+  OPEN_IDEA_MODAL,
+  CLOSE_IDEA_MODAL,
+  OPEN_ATTACHMENT_MODAL,
+  CLOSE_ATTACHMENT_MODAL,
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
@@ -149,7 +153,9 @@ export function ideas(state = {
       profitMax: 999999,
       implementationTTMMin: 0,
       implementationTTMMax: 999999,
-  }
+  },
+  isOpen: false,
+  isOpenAttachments: false,
 }, action) {
 	 console.log("IDEAS REDUCER...");
 	 console.log(action);
@@ -568,6 +574,27 @@ export function ideas(state = {
     			{
     			filter: newFilter,
     			});
+    case OPEN_IDEA_MODAL:
+    	return Object.assign({}, state, 
+    			{
+    			isOpen: true,
+    			});
+    case CLOSE_IDEA_MODAL:
+    	return Object.assign({}, state, 
+    			{
+    			isOpen: false,
+    			});
+    case OPEN_ATTACHMENT_MODAL:
+    	return Object.assign({}, state, 
+    			{
+    		isOpenAttachments: true,
+    			});
+    case CLOSE_ATTACHMENT_MODAL:
+    	return Object.assign({}, state, 
+    			{
+    		isOpenAttachments: false,
+    			});
+    	
   default:
     return state;
 }

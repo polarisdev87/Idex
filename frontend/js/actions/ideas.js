@@ -447,4 +447,37 @@ export function setDefaultFilter() {
 		  };
 }
 
+export const OPEN_IDEA_MODAL = 'OPEN_IDEA_MODAL';
+
+export function openIdeaModal() {
+	return {
+		    type: OPEN_IDEA_MODAL,
+		  };
+}
+
+export const CLOSE_IDEA_MODAL = 'CLOSE_IDEA_MODAL';
+
+export function closeIdeaModal() {
+	return {
+		    type: CLOSE_IDEA_MODAL,
+		  };
+}
+
+
+export const OPEN_ATTACHMENT_MODAL = 'OPEN_ATTACHMENT_MODAL';
+
+export function openAttachmentModal() {
+	return {
+		    type: OPEN_ATTACHMENT_MODAL,
+		  };
+}
+
+export const CLOSE_ATTACHMENT_MODAL = 'CLOSE_ATTACHMENT_MODAL';
+
+export function closeAttachmentModal() {
+	return {
+		    type: CLOSE_ATTACHMENT_MODAL,
+		  };
+}
+
 

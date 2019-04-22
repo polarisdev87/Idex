@@ -9,7 +9,9 @@ import AddIdeaModal from '../../components/modals/AddIdeaModal';
 import CommentAttachmentsModal from '../../components/modals/CommentAttachmentsModal';
 import { updateCommentAttachments } from '../../actions/comments';
 import { areAllAttachmentsUploaded } from '../../actions/files';
-import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
+import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError,
+	openIdeaModal, closeIdeaModal,
+	openAttachmentModal, closeAttachmentModal} from '../../actions/ideas';
 
 type Props = {
   dispatch: any;
@@ -29,11 +31,6 @@ class Ideas extends Component {
   }
 
   props: Props;
-
-  state = {
-    isOpen: false,
-    isOpenAttachments: false,
-  }
 
   handleIdea(idea, type) {
     console.log('handleIdea(...)');
@@ -59,7 +56,7 @@ class Ideas extends Component {
     this.modalIdea = null;
     this.ideaBeingCommented = null;
     this.modalComment = null;
-    this.setState({ isOpen: false });
+    dispatch(closeIdeaModal());
   }
 
   
@@ -71,16 +68,18 @@ class Ideas extends Component {
 	      dispatch(updateCommentAttachments(idea.id));
 	    }
 	    this.modalComment = null;
-	    this.setState({ isOpenAttachments: false });
+	    dispatch(closeAttachmentModal());
 	  }
   
   
   closeModal() {
-    this.setState({ isOpen: false });
+	    const { dispatch } = this.props;
+	    dispatch(closeIdeaModal());
   }
 
   closeAttachmentsModal() {
-	    this.setState({ isOpenAttachments: false });
+	    const { dispatch } = this.props;
+	    dispatch(closeAttachmentModal());
   }
 
   
@@ -127,51 +126,48 @@ class Ideas extends Component {
 
 
   addCommentAttachmentsButtonClickHandler(idea, commentText) {
-	    this.setState({ isOpenAttachments: true });
+	  const {dispatch} = this.props;
 	    this.ideaBeingCommented = idea;
 	    this.modalComment = null;
 	    this.commentText = commentText;
 	    this.commentAttachmentType = 'edit';
+	    dispatch(openAttachmentModal());
   }
   
   viewCommentAttachmentsButtonClickHandler(idea,comment) {
-	    this.setState({ isOpenAttachments: true });
+	  const {dispatch} = this.props;
 	    this.ideaBeingCommented = idea;
 	    this.modalComment = comment;
 	    this.commentAttachmentType = 'view';
+	    dispatch(openAttachmentModal());
   }
   
   addIdeaButtonClickHandler() {
-    this.setState({ isOpen: true });
+	  const {dispatch} = this.props;
     this.modalIdea = null;
     this.ideaBeingCommented = null;
     this.type = 'add';
+    dispatch(openIdeaModal());
   }
 
   editIdeaButtonClickHandler(idea) {
-    this.setState({
-      isOpen: true,
-    });
+	  const {dispatch} = this.props;
     this.modalIdea = idea;
     this.ideaBeingCommented = null;
     this.type = 'edit';
-    console.log('index.editbutton.edit type ===>', this.type);
+    dispatch(openIdeaModal());
   }
 
   viewIdeaClickHandler(idea) {
-    this.setState({
-      isOpen: true,
-    });
+	  const {dispatch} = this.props;
     this.modalIdea = idea;
     this.ideaBeingCommented = null;
     this.type = 'view';
-    console.log('index.view button view type ===>', this.type);
+    dispatch(openIdeaModal());
   }
 
   render() {
-    console.log('index.js.render()');
-    console.log(this.props);
-    const { isOpen, isOpenAttachments } = this.state;
+    const { isOpen, isOpenAttachments } = this.props;
     const {
       ideas: {
         ideasErrorMessage,
@@ -242,6 +238,8 @@ function mapStateToProps(state) {
     ideas: state.ideas,
     ideasArr: state.ideas.ideasArr,
     ideaToAdd: state.ideas.ideaToAdd,
+    isOpen: state.ideas.isOpen,
+    isOpenAttachments: state.ideas.isOpenAttachments,
   };
 }
 
