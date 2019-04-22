@@ -267,3 +267,35 @@ export function getPopularTags() {
 }
 
 
+
+export const CLOSE_GRAPH_MODAL = 'CLOSE_GRAPH_MODAL';
+
+export function closeGraphModal() {
+	  return {
+		    type: CLOSE_GRAPH_MODAL,
+		  };
+	
+}
+
+export const OPEN_GRAPH_MODAL = 'OPEN_GRAPH_MODAL';
+
+export function openGraphModal() {
+	  return {
+		    type: OPEN_GRAPH_MODAL,
+		  };
+	
+}
+
+
+
+export const SET_GRAPH_TAGS = 'SET_GRAPH_TAGS';
+
+export function setGraphTags(tags) {
+	console.log("setGraphTags(tags)");
+	  return {
+		    type: SET_GRAPH_TAGS,
+		    tags,
+		  };
+	
+}
+

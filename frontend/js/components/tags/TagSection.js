@@ -20,7 +20,6 @@ class TagSection extends Component {
 
   state = {
     inputValue: '',
-    optionalMarks: [],
   }
 
   handleChange(tags) {
@@ -66,7 +65,7 @@ class TagSection extends Component {
 
   render() {
     const {
-      placeholder, type, className, partialFullSwitch, popularTags,
+      placeholder, type, className, partialFullSwitch, popularTags, tags,
     } = this.props;
     console.log("TagSection.js");
     console.log(popularTags);
@@ -76,7 +75,7 @@ class TagSection extends Component {
         <div className="select-label label-base-base">Select Tags:</div>
         <div className="input-container display-tag-container">
           <TagsInput
-            value={this.props.tags}
+            value={tags}
             onChange={::this.handleChange}
             renderLayout={(a, b) => this.defaultRenderLayout(a, b, partialFullSwitch)}
           />
@@ -86,7 +85,7 @@ class TagSection extends Component {
           <div className="top-tag-wrapper">
             {popularTags && popularTags.map((topTag) => <div className="top-tag" key={topTag.name}>{topTag.name}</div>)}
           </div>
-          {this.props.tags.length > 0 &&
+          {tags.length > 0 &&
           <div />
 
           }
@@ -107,9 +106,10 @@ class TagSection extends Component {
 }
 
 
-function mapStateToProps(state) {
+function mapStateToProps(state,ownProps) {
   return {
     popularTags: state.admin.popularTags,
+    ...ownProps,
   };
 }
 

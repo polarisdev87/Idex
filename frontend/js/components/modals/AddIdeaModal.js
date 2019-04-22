@@ -104,6 +104,7 @@ class AddIdeaModal extends Component {
    * @param {*} anonymousMode
    */
   handleIdea(type, anonymousMode) {
+	  console.log("handleIdea");
     const {
       id, tags, stage, mainTag,
     } = this.state;

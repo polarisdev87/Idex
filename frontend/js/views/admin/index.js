@@ -27,6 +27,9 @@ import {
   setMaxImplementationRange,
   setGraphIdeasToShow,
   setGraphCurrentIdea,
+  closeGraphModal,
+  openGraphModal,
+  setGraphTags,
 } from '../../actions/admin';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 
@@ -54,7 +57,6 @@ class Admin extends Component {
 
   state = {
     tags: [],
-    isOpen: false,
   };
 
 
@@ -82,23 +84,25 @@ class Admin extends Component {
   handleIdea(idea) {
     this.modalIdeaIndex = -1;
     this.ideasToShow = [];
+    const {dispatch} = this.props;
+	dispatch(closeGraphModal());
+    
   }
 
   closeModal() {
-    this.setState({ isOpen: false });
+	  const {dispatch} = this.props;
+	  dispatch(closeGraphModal());
   }
 
 
   viewIdeaClickHandler(idea, ideasToShow) {
 	 const {dispatch} = this.props;
 	 dispatch(setGraphCurrentIdea(idea));
-    this.modalIdeaIndex = 0;
-    this.ideasToShow = ideasToShow;
-    this.type = 'view';
-    console.log('view type ===>', this.type);
-    this.setState({
-      isOpen: true,
-    });
+     this.modalIdeaIndex = 0;
+     this.ideasToShow = ideasToShow;
+     this.type = 'view';
+     console.log('view type ===>', this.type);
+     dispatch(openGraphModal());
   }
 
 
@@ -147,10 +151,6 @@ class Admin extends Component {
     const {
       tags,
     } = this.state;
-
-    console.log("applyFilters");
-    console.log(submittedAtMsMin);
-    console.log(submittedAtMsMax);
 
     dispatch(fetchIdeasForBubbleGraph(
       submittedAtMsMin,
@@ -423,10 +423,9 @@ class Admin extends Component {
       maxImplementationRange,
       ideasToShow,
       currentIdea,
+      isOpen,
     } = this.props;
-
-    const { isOpen } = this.state;
-
+    
     const defaultOption = this.prepareOptions(ideasSummary);
 
     return (
@@ -591,26 +590,26 @@ class Admin extends Component {
 }
 
 function mapStateToProps(state) {
-	console.log("state.admin.ideasToShow");
-	console.log(state.admin.ideasToShow);
-  return {
-    partialFullSwitch: state.admin.partialFullSwitch,
-    submittedAtMsMin: state.admin.submittedAtMsMin,
-    submittedAtMsMax: state.admin.submittedAtMsMax,
-    minVotesRange: state.admin.minVotesRange,
-    maxVotesRange: state.admin.maxVotesRange,
-    minProfitRange: state.admin.minProfitRange,
-    maxProfitRange: state.admin.maxProfitRange,
-    minImplementationRange: state.admin.minImplementationRange,
-    maxImplementationRange: state.admin.maxImplementationRange,
-    tags: state.admin.tags,
-    ideasSummary: state.admin.ideasSummary,
-    bubbleData: state.admin.bubbleData,
-    startDate: state.admin.startDate,
-    endDate: state.admin.endDate,
-    ideasToShow: state.admin.ideasToShow,
-    currentIdea: state.admin.currentIdea,
-  };
+  const result = {
+		    partialFullSwitch: state.admin.partialFullSwitch,
+		    submittedAtMsMin: state.admin.submittedAtMsMin,
+		    submittedAtMsMax: state.admin.submittedAtMsMax,
+		    minVotesRange: state.admin.minVotesRange,
+		    maxVotesRange: state.admin.maxVotesRange,
+		    minProfitRange: state.admin.minProfitRange,
+		    maxProfitRange: state.admin.maxProfitRange,
+		    minImplementationRange: state.admin.minImplementationRange,
+		    maxImplementationRange: state.admin.maxImplementationRange,
+		    tags: state.admin.tags,
+		    ideasSummary: state.admin.ideasSummary,
+		    bubbleData: state.admin.bubbleData,
+		    startDate: state.admin.startDate,
+		    endDate: state.admin.endDate,
+		    ideasToShow: state.admin.ideasToShow,
+		    currentIdea: state.admin.currentIdea,
+		    isOpen : state.admin.isOpen,
+		  };
+  return result
 }
 
 function mapDispatchToProps(dispatch) {

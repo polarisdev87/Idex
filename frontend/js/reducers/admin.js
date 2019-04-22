@@ -18,6 +18,9 @@ import {
   GET_POPULAR_TAGS_FAILURE,
   SET_GRAPH_IDEAS_TO_SHOW,
   SET_GRAPH_CURRENT_IDEA,
+  CLOSE_GRAPH_MODAL,
+  OPEN_GRAPH_MODAL,
+  SET_GRAPH_TAGS,
 } from '../actions/admin';
 
 const moment = require('moment');
@@ -49,8 +52,6 @@ function getColorList(tagsCount) {
   const colorList = chroma.bezier(['#ffd54f', '#aed581'])
     .scale()
     .colors(tagsCount);
-  console.log('colorList');
-  console.log(colorList);
   return colorList;
 }
 
@@ -86,8 +87,6 @@ function generateTagColorMap(items) {
 }
 
 function prepareGraph(ideasSummary, radiusUnit) {
-  console.log('prepareGraph');
-  console.log(ideasSummary);
   /* Build bubbleData from ideasSummary
 
     x-axis : implementation Months
@@ -164,6 +163,7 @@ export function admin(state = {
   isFetchingpPopularTags: false,
   popularTagsErrorMessage: undefined,
   currentIdea: {},
+  isOpen: false, 
 }, action) {
   console.log('admin reducer');
   console.log(action.type);
@@ -263,6 +263,22 @@ export function admin(state = {
     case SET_GRAPH_CURRENT_IDEA:
         return Object.assign({}, state, {
             currentIdea: action.idea,
+          });
+    case CLOSE_GRAPH_MODAL:
+        return Object.assign({}, state, {
+            isOpen: false,
+          });
+    case OPEN_GRAPH_MODAL:
+        return Object.assign({}, state, {
+            isOpen: true,
+          });
+    case OPEN_GRAPH_MODAL:
+        return Object.assign({}, state, {
+            isOpen: true,
+          });
+    case SET_GRAPH_TAGS:
+        return Object.assign({}, state, {
+            tags: action.tags,
           });
     default:
       return state;
