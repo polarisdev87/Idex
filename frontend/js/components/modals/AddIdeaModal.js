@@ -46,9 +46,9 @@ class AddIdeaModal extends Component {
           mainTag = idea.tags.indexOf(idea.category);
         }
         this.setState({
-          stage: idea.stage,
           tags: idea.tags,
           mainTag,
+          stage: idea.stage,
           isEditMode: true,
           id: idea.id,
         });
@@ -378,8 +378,6 @@ function mapStateToProps(state, ownProps) {
     }
   } else {
 	  // mode : adding an idea - ownProps.idea == null
-	  console.log("state.ideas.ideaToAdd");
-	  console.log(state.ideas.ideaToAdd);
 	  localFiles = state.ideas.ideaToAdd.files;
 	  remoteFiles = [];
   }

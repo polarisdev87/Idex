@@ -5,7 +5,11 @@ import {
   TOGGLE_FILTER_FULL_PARTIAL,
   UPDATE_IDEA_SUCCESS,
   ADD_IDEA_SUCCESS,
-  TOGGLE_VOTE_SUCCESS
+  TOGGLE_VOTE_SUCCESS,
+  CHANGE_VOTES,
+  CHANGE_PROFIT,
+  CHANGE_IMPLEMENTATION_TTM,
+  SET_DEFAULT_FILTER,
 } from '../actions/ideas';
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
@@ -138,6 +142,14 @@ export function ideas(state = {
 	  files: [],
   },
   commentsToAdd: [],
+  filter: {
+      votesMin: 0,
+      votesMax: 999999,
+      profitMin: 0,
+      profitMax: 999999,
+      implementationTTMMin: 0,
+      implementationTTMMax: 999999,
+  }
 }, action) {
 	 console.log("IDEAS REDUCER...");
 	 console.log(action);
@@ -480,8 +492,6 @@ export function ideas(state = {
         return state;
     }
     case UPLOAD_FILE_ON_NEW_COMMENT_CONTENT_SUCCESS: {
-        console.log('reducer:UPLOAD_FILE_ON_NEW_COMMENT_CONTENT_SUCCESS');
-        
         const index = state.commentsToAdd.findIndex(x => x.ideaId === action.ideaId);
         if (index != -1) {
             let comment = state.commentsToAdd[index];
@@ -521,6 +531,43 @@ export function ideas(state = {
           });
         }
       }
+    case CHANGE_VOTES: {
+    	let newFilter = Object.assign({},state.filter, {
+    		votesMin: action.votesMin,
+    		votesMax: action.votesMax,
+    	});
+    	return Object.assign({}, state, {
+    		filter:newFilter,
+    	})};
+    case CHANGE_PROFIT: {
+    	let newFilter = Object.assign({},state.filter, {
+    		profitMin: action.profitMin,
+    		profitMax: action.profitMax,
+    	});
+    	return Object.assign({}, state, {
+    		filter:newFilter,
+    	})};
+    case CHANGE_IMPLEMENTATION_TTM: {
+    	let newFilter = Object.assign({},state.filter, {
+    		implementationTTMMin: action.implementationTTMMin,
+    		implementationTTMMax: action.implementationTTMMax,
+    	});
+    	return Object.assign({}, state, {
+    		filter:newFilter,
+    	})};
+    case SET_DEFAULT_FILTER:
+    	let newFilter = Object.assign({},state.filter, {
+  	      votesMin: 0,
+	      votesMax: 999999,
+	      profitMin: 0,
+	      profitMax: 999999,
+	      implementationTTMMin: 0,
+	      implementationTTMMax: 999999,
+    	});
+    	return Object.assign({}, state, 
+    			{
+    			filter: newFilter,
+    			});
   default:
     return state;
 }

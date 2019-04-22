@@ -402,3 +402,49 @@ function toggleVoteSuccess(idea) {
   };
 }
 
+
+export const CHANGE_VOTES = 'CHANGE_VOTES';
+
+export function changeVotes(votesMin, votesMax) {
+	console.log("action.changeVotes(...)");
+	console.log(votesMin);
+	console.log(votesMax);
+	return {
+		    type: CHANGE_VOTES,
+		    votesMin,
+		    votesMax,
+		  };
+}
+
+
+export const CHANGE_PROFIT = 'CHANGE_PROFIT';
+
+export function changeProfit(profitMin, profitMax) {
+	return {
+		    type: CHANGE_PROFIT,
+		    profitMin,
+		    profitMax,
+		  };
+}
+
+
+export const CHANGE_IMPLEMENTATION_TTM = 'CHANGE_IMPLEMENTATION_TTM';
+
+export function changeImplementationTTM(implementationTTMMin, implementationTTMMax) {
+	return {
+		    type: CHANGE_IMPLEMENTATION_TTM,
+		    implementationTTMMin,
+		    implementationTTMMax,
+		  };
+}
+
+
+export const SET_DEFAULT_FILTER = 'SET_DEFAULT_FILTER';
+
+export function setDefaultFilter() {
+	return {
+		    type: SET_DEFAULT_FILTER,
+		  };
+}
+
+

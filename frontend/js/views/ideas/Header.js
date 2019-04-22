@@ -8,7 +8,11 @@ import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
-import { toggleFilterFullPartial } from '../../actions/ideas';
+import { toggleFilterFullPartial, 
+	changeVotes, 
+	changeImplementationTTM, 
+	changeProfit, 
+	setDefaultFilter} from '../../actions/ideas';
 
 
 const moment = require('moment');
@@ -31,6 +35,10 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
+    
+    
+    const {dispatch} = props;
+    dispatch(setDefaultFilter());
 
     this.state = this.getDefaultState();
 
@@ -43,6 +51,8 @@ class Header extends Component {
   }
 
   getDefaultState() {
+    const {dispatch} = this.props;
+    dispatch(setDefaultFilter());
     return {
       filterText: `Top - ${this.topTypeFilters.pastDay} (Default)`,
       stagesSelected: {
@@ -53,12 +63,6 @@ class Header extends Component {
         cancelled: false,
       },
       tags: [],
-      votesMin: 0,
-      votesMax: 999999,
-      profitMin: 0,
-      profitMax: 999999,
-      implementationTimeMin: 0,
-      implementationTimeMax: 999999,
     };
   }
 
@@ -103,52 +107,59 @@ class Header extends Component {
   }
 
 
-  changeVotesMin(value) {
-    const votesMax = value > this.state.votesMax ? value : this.state.votesMax;
-    this.setState({ votesMin: value, votesMax });
+  handleChangeVotesMin(value) {
+	  const {dispatch, votesMax} = this.props;
+	  dispatch(changeVotes(value,votesMax)); 
   }
 
-  changeVotesMax(value) {
-    const votesMin = value < this.state.votesMin ? value : this.state.votesMin;
-    this.setState({ votesMax: value, votesMin });
-  }
-
-
-  changeProfitMin(value) {
-    const profitMax = value > this.state.profitMax ? value : this.state.profitMax;
-    this.setState({ profitMin: value, profitMax });
-  }
-
-  changeProfitMax(value) {
-    const profitMin = value < this.state.profitMin ? value : this.state.profitMin;
-    this.setState({ profitMax: value, profitMin });
+  handleChangeVotesMax(value) {
+	  const {dispatch, votesMin} = this.props;
+	  console.log("handleChangeVotesMax");
+	  console.log(votesMin);
+	  console.log(value);
+	  dispatch(changeVotes(votesMin, value)); 
   }
 
 
-  changeImplementationTimeMin(value) {
-    const implementationTimeMax = value > this.state.implementationTimeMax ? value : this.state.implementationTimeMax;
-    this.setState({ implementationTimeMin: value, implementationTimeMax });
+  handleChangeProfitMin(value) {
+	  const {dispatch, profitMax} = this.props;
+	  dispatch(changeProfit(value,profitMax)); 
   }
 
-  changeImplementationTimeMax(value) {
-    const implementationTimeMin = value < this.state.implementationTimeMin ? value : this.state.implementationTimeMin;
-    this.setState({ implementationTimeMax: value, implementationTimeMin });
+  handleChangeProfitMax(value) {
+	  const {dispatch, profitMin} = this.props;
+	  dispatch(changeProfit(profitMin, value)); 
+  }
+
+
+  handleChangeImplementationTTMMin(value) {
+	  const {dispatch, implementationTTMMax} = this.props;
+	  dispatch(changeImplementationTTM(value,implementationTTMMax)); 
+  }
+
+
+  
+  handleChangeImplementationTTMMax(value) {
+	  const {dispatch, implementationTTMMin} = this.props;
+	  dispatch(changeImplementationTTM(implementationTTMMin, value)); 
   }
 
 
   applyFilters() {
-    console.log('this', this);
     const {
       filterText,
       stagesSelected,
-      implementationTimeMin,
-      implementationTimeMax,
-      votesMin,
-      votesMax,
-      profitMin,
-      profitMax,
       tags,
     } = this.state;
+    
+    const {
+    	votesMin,
+    	votesMax,
+    	profitMin,
+    	profitMax,
+    	implementationTTMMin,
+    	implementationTTMMax,
+    } = this.props;
 
     const stages = [];
 
@@ -182,14 +193,16 @@ class Header extends Component {
       votesMax,
       profitMin,
       profitMax,
-      implementationTimeMin,
-      implementationTimeMax,
+      implementationTTMMin,
+      implementationTTMMax,
       tags
     );
   }
 
   clearFilters() {
-    this.setState(this.getDefaultState());
+	    const {dispatch} = this.props;
+	    this.setState(this.getDefaultState());	    
+	    dispatch(setDefaultFilter());
   }
 
   setFilterText(filterText) {
@@ -224,8 +237,15 @@ class Header extends Component {
 
 
   render() {
-    const { addIdeaButtonClick, partialFullSwitch } = this.props;
+    const { addIdeaButtonClick, partialFullSwitch, implementationTTMMin, implementationTTMMax, votesMin, votesMax, profitMin, profitMax } = this.props;
     const { stagesSelected, implementedFilterSelected } = this.state;
+    console.log("Header.render()");
+    console.log(this.props);
+    console.log(this.state);
+    console.log("votesMin");
+    console.log(votesMin);
+    console.log("votesMax");
+    console.log(votesMax);
 
 
     return (
@@ -334,10 +354,10 @@ class Header extends Component {
               {/* Expected Time To Market */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <TimeToMarketFilterSection
-                  min={this.state.implementationTimeMin}
-                  max={this.state.implementationTimeMax}
-                  changeMin={(value) => this.changeImplementationTimeMin(value)}
-                  changeMax={(value) => this.changeImplementationTimeMax(value)}
+                  min={implementationTTMMin}
+                  max={implementationTTMMax}
+                  changeMin={(value) => this.handleChangeImplementationTTMMin(value)}
+                  changeMax={(value) => this.handleChangeImplementationTTMMax(value)}
                 />
               </div>
 
@@ -345,20 +365,20 @@ class Header extends Component {
               {/* Votes Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <VotesFilterSection
-                  min={this.state.votesMin}
-                  max={this.state.votesMax}
-                  changeMin={(value) => this.changeVotesMin(value)}
-                  changeMax={(value) => this.changeVotesMax(value)}
+                  min={votesMin}
+                  max={votesMax}
+                  changeMin={(value) => this.handleChangeVotesMin(value)}
+                  changeMax={(value) => this.handleChangeVotesMax(value)}
                 />
               </div>
 
               {/* Profit Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <ProfitFilterSection
-                  min={this.state.profitMin}
-                  max={this.state.profitMax}
-                  changeMin={(value) => this.changeProfitMin(value)}
-                  changeMax={(value) => this.changeProfitMax(value)}
+                  min={profitMin}
+                  max={profitMax}
+                  changeMin={(value) => this.handleChangeProfitMin(value)}
+                  changeMax={(value) => this.handleChangeProfitMax(value)}
                 />
               </div>
             </div>
@@ -380,8 +400,17 @@ class Header extends Component {
 }
 
 function mapStateToProps(state) {
+	console.log("Header.mapStateToProps");
+	console.log(state);
   return {
     partialFullSwitch: state.ideas.partialFullSwitch,
+    votesMin: state.ideas.filter.votesMin,
+    votesMax: state.ideas.filter.votesMax,
+    profitMin: state.ideas.filter.profitMin,
+    profitMax: state.ideas.filter.profitMax,
+    implementationTTMMin: state.ideas.filter.implementationTTMMin,
+    implementationTTMMax: state.ideas.filter.implementationTTMMax,
+    
   };
 }
 

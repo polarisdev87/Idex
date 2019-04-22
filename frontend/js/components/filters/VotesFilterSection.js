@@ -14,6 +14,8 @@ class VotesFilterSection extends Component {
   props: Props;
 
   render() {
+	  console.log("VotesFilterSection.render()");
+	  console.log(this.props);
     return (
   		<div className="form-group">
           <div className="input-container">
