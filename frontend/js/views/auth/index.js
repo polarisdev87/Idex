@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import Tabs from './Tabs';
 import Content from './Content';
+import {setActiveTab} from '../../actions/auth';
 
 const tabData = [
   { name: 'Login', isActive: true },
@@ -14,23 +15,29 @@ const tabData = [
 
 class Auth extends Component {
 
-  state = {
-    activeTab: tabData[0],
-  };
+	  componentDidMount() {
+		    const { dispatch } = this.props;
+		    dispatch(setActiveTab(tabData[0]));
+		  }
 
+	
+	
   handleClick = (tab) => {
-    this.setState({ activeTab: tab });
+	  const {dispatch} = this.props;
+	  dispatch(setActiveTab(tab));
   };
 
   render() {
+	  
+	const {activeTab} = this.props;
     return (
       <div className="container">
         <div className="auth-container">
           <p className="auth-title no-margin-b">Log in to your IDEX Account</p>
           <p className="auth-sub-title">Your  account is your portal to all things! </p>
           <div className="tab-container">
-            <Tabs activeTab={this.state.activeTab} changeTab={this.handleClick} tabData={tabData} />
-            <Content activeTab={this.state.activeTab} tabData={tabData} />
+            <Tabs activeTab={activeTab} changeTab={this.handleClick} tabData={tabData} />
+            <Content activeTab={activeTab} tabData={tabData} />
           </div>
         </div>
       </div>
@@ -40,7 +47,8 @@ class Auth extends Component {
 }
 
 function mapStateToProps(state) {
-  return {};
+	
+  return {activeTab: state.auth.activeTab};
 }
 
 function mapDispatchToProps(dispatch) {

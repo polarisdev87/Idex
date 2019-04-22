@@ -3,7 +3,8 @@ import {
   LOGOUT_SUCCESS, CLEAR_LOGIN_ERRORS,
   SET_ROLE,
   FORGOT_PASSWORD_REQUEST,FORGOT_PASSWORD_SUCCESS,FORGOT_PASSWORD_FAILURE,
-  RESET_PASSWORD_REQUEST, RESET_PASSWORD_SUCCESS, RESET_PASSWORD_FAILURE
+  RESET_PASSWORD_REQUEST, RESET_PASSWORD_SUCCESS, RESET_PASSWORD_FAILURE,
+  SET_ACTIVE_TAB,
 } from '../actions/auth';
 
 
@@ -21,6 +22,10 @@ export function auth(state = {
       isSendingCode: false,
       errorMessage: "",
       resetString:"",
+  },
+  activeTab: {
+	  name: "Login",
+	  isActive: true,
   }
 }, action) {
   switch (action.type) {
@@ -122,6 +127,10 @@ export function auth(state = {
         	      isSendingCode: false,
         	      errorMessage: action.message,
         	  }
+        });
+    case SET_ACTIVE_TAB:
+        return Object.assign({}, state, {
+        	activeTab: action.tab,
         });
     default:
       return state;

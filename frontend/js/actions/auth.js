@@ -30,6 +30,10 @@ export const RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS';
 export const RESET_PASSWORD_FAILURE = 'RESET_PASSWORD_FAILURE';
 
 
+export const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
+
+
+
 function requestLogin() {
   return {
     type: LOGIN_REQUEST,
@@ -358,4 +362,10 @@ function resetPasswordRequest() {
 	  };
 	}
 
+export function setActiveTab(tab) {
+	  return {
+	    type: SET_ACTIVE_TAB,
+	    tab: tab,
+	  };
+	}
 

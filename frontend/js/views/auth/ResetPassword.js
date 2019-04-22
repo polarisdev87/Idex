@@ -24,13 +24,6 @@ export class ResetPassword extends Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-				code: "",
-				email: "",
-				password: "",
-				username: "",
-				confirmPassword: "",
-		};
 	}
 	
 	  validateEmail(email) {
@@ -85,14 +78,6 @@ export class ResetPassword extends Component {
 		
 	}
 
-	handleChange = event => {
-		this.setState({
-			[event.target.id]: event.target.value
-		});
-	};
-
-	
-	
 	handleSendCodeClick() {
 		const { dispatch } = this.props;
 		const username = this.loginUsername;
@@ -194,9 +179,7 @@ export class ResetPassword extends Component {
 
 
 	renderSentSuccessMessage() {
-		console.log("renderSentSuccessMessage()");
 		const { email } = this.props;
-		console.log(email);
 		return (
 				<div className="success">
 				<Glyphicon glyph="ok" />
