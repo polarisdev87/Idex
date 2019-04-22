@@ -4,6 +4,9 @@ import { findDOMNode } from 'react-dom';
 import $ from 'jquery';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import {I18n} from 'react-redux-i18n';
+
+
 import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
@@ -255,10 +258,10 @@ class Header extends Component {
         <div className="nav-container">
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-              <button type="button" className="btn btn-link" data-toggle="collapse" href="#collapse-container-body">Filter</button>
+              <button type="button" className="btn btn-link" data-toggle="collapse" href="#collapse-container-body">{I18n.t('ideas.filter.title')}</button>
             </div>
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-              <button type="button" className="btn btn-link btn-right" onClick={() => addIdeaButtonClick()}>Add Idea</button>
+              <button type="button" className="btn btn-link btn-right" onClick={() => addIdeaButtonClick()}>{I18n.t('ideas.filter.addIdea')}</button>
             </div>
           </div>
         </div>
@@ -280,42 +283,42 @@ class Header extends Component {
             <div className="row">
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
-                  Stage
+                 {I18n.t('ideas.filter.stage.title')}
                 </div>
                 <div className="">
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any} onChange={() => this.checkStageBox('any')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Any Stage (default)
+                      {I18n.t('ideas.filter.stage.anyStage')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.incubation} onChange={() => this.checkStageBox('incubation')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Incubation
+                      {I18n.t('ideas.filter.stage.incubation')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.prototyping} onChange={() => this.checkStageBox('prototyping')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Prototyping
+                      {I18n.t('ideas.filter.stage.Prototyping')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.launched} onChange={() => this.checkStageBox('launched')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Launched
+                      {I18n.t('ideas.filter.stage.Launched')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled} onChange={() => this.checkStageBox('cancelled')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Cancelled
+                      {I18n.t('ideas.filter.stage.Cancelled')}
                     </label>
                   </div>
                 </div>
@@ -324,7 +327,7 @@ class Header extends Component {
               {/* Sort by section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
-                  Sort by:
+                {I18n.t('ideas.filter.sortBy')}
                 </div>
                 <div className="dropdown-container">
                   <ul className="nav site-nav">
@@ -387,10 +390,10 @@ class Header extends Component {
             {/* Base Section */}
             <div className="result-container">
               <div className="label-base-base">
-                <span>{ this.props.numIdeas } Results</span>
+                <span>{ this.props.numIdeas } {I18n.t('ideas.filter.results')}</span>
               </div>
-              <button type="button" className="btn btn-link label-base-base" onClick={this.applyFilters.bind(this)} >Apply Filters</button>
-              <button type="button" className="btn btn-link label-base-base" onClick={this.clearFilters.bind(this)} >Clear Filters</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={this.applyFilters.bind(this)} >{I18n.t('ideas.filter.applyFilters')}</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={this.clearFilters.bind(this)} >{I18n.t('ideas.filter.clearFilters')}</button>
             </div>
           </div>
         </div>

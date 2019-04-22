@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Files from 'react-files';
 import { API_BASE_URI } from '../../const';
 import { removeRemoteFile } from '../../actions/files';
+import {I18n} from 'react-redux-i18n';
 
 
 type Props = {
@@ -56,7 +57,7 @@ class AttachmentsSection extends Component {
                      minFileSize={0}
                      clickable
                    >
-                    Drop files here or click to upload
+                 {I18n.t('ideas.modal.dropArea')}
                    </Files>
                  }
                     

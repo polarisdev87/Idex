@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import Modal from 'react-modal';
 import TagsInput from 'react-tagsinput';
 import Files from 'react-files';
+import {I18n} from 'react-redux-i18n';
 import CommonButton from '../buttons/CommonButton';
 import { changeFilesOnNewComment } from '../../actions/files';
 import { API_BASE_URI } from '../../const';
@@ -133,13 +134,13 @@ class CommentAttachmentsModal extends Component {
     console.log('render - type ===>', type);
     const renderTitle = () => {
       if (type === 'view') {
-        return <span>View Comment Attachments</span>;
+        return <span>{I18n.t('ideas.modal.viewCommentAttachments')}</span>;
       } else {
-        return <span>Edit Comment Attachments</span>;
+        return <span>{I18n.t('ideas.modal.editCommentAttachments')}</span>;
       }
     };
     const renderButtonTitle = () => {
-       return <span>Close</span>;
+       return <span>{I18n.t('ideas.modal.close')}</span>;
     };
     const allowAttachments = type !== "view";
     return (
@@ -158,21 +159,21 @@ class CommentAttachmentsModal extends Component {
           </div>
           <div className="modal-body">
             <div className="form-group">
-              <label className="label">Idea Title</label>
+              <label className="label">{I18n.t('ideas.modal.title')}</label>
               <div className="input-container">
                 <input readOnly ref={el => { this.title = el; }} className="form-control" type="text" />
               </div>
             </div>
 
             <div className="form-group">
-              <label className="label">Idea Description</label>
+              <label className="label">{I18n.t('ideas.modal.description')}</label>
               <div className="input-container">
                 <textarea readOnly ref={el => { this.description = el; }} className="form-control" type="text" />
               </div>
             </div>
 
             <div className="form-group">
-            <label className="label">Comment</label>
+            <label className="label">{I18n.t('ideas.modal.comment')}</label>
             <div className="input-container">
               <textarea readOnly ref={el => { this.commentText = el; }} className="form-control" type="text" />
             </div>

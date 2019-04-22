@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import TagsInput from 'react-tagsinput';
 import Toggle from 'react-bootstrap-toggle';
 import { connect } from 'react-redux';
+import {I18n} from 'react-redux-i18n';
 import { getPopularTags } from '../../actions/admin';
+
 type Props = {
   placeholder: '',
   type: 'text',
@@ -72,7 +74,7 @@ class TagSection extends Component {
     const { inputValue } = this.state;
     return (
       <div className="form-group tag-container">
-        <div className="select-label label-base-base">Select Tags:</div>
+        <div className="select-label label-base-base">{I18n.t('tags.selectTags')}</div>
         <div className="input-container display-tag-container">
           <TagsInput
             value={tags}
@@ -81,7 +83,7 @@ class TagSection extends Component {
           />
         </div>
         <div className="top-tag-container">
-          <div className="label-sm-base trending-label">Top Trending Tags:</div>
+          <div className="label-sm-base trending-label">{I18n.t('tags.topTrendingTags')}</div>
           <div className="top-tag-wrapper">
             {popularTags && popularTags.map((topTag) => <div className="top-tag" key={topTag.name}>{topTag.name}</div>)}
           </div>
@@ -94,7 +96,7 @@ class TagSection extends Component {
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
               <input
-                type="text" className="form-control search-input" placeholder="Search tags ....." ref={el => { this.searchTag = el; }}
+                type="text" className="form-control search-input" placeholder={I18n.t('tags.searchTags')} ref={el => { this.searchTag = el; }}
                 onKeyPress={this.handleKeyPress}
               />
             </div>

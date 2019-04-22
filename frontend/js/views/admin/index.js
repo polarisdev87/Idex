@@ -6,6 +6,8 @@ import DatePicker from 'react-datepicker';
 import { Bubble } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import {I18n} from 'react-redux-i18n';
+
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -436,13 +438,13 @@ class Admin extends Component {
           <div className="header">
             <div className="row">
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <div className="label-base-base">Ideas Statistics</div>
+                <div className="label-base-base">{I18n.t('admin.title')}</div>
               </div>
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6 filter-btn">
                 <button
                   type="button" className="btn btn-link base-btn" onClick={(x) =>
                     this.applyFilters()}
-                >Filter Ideas
+                >{I18n.t('admin.filterIdeas')}
                 </button>
               </div>
             </div>
@@ -463,7 +465,7 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Submission Date:
+                      {I18n.t('admin.submissionDate')}
                       </div>
                     </div>
                     <div className="row row-content">
@@ -474,7 +476,7 @@ class Admin extends Component {
                         />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      	{I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <DatePicker
@@ -488,22 +490,22 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Vote Range (circles size):
+                      {I18n.t('admin.votes')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minVotesRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minVotesRange}
                           onChange={(x) => { this.setMinVotesRange(x); }}
                         />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxVotesRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxVotesRange}
                           onChange={(x) => { this.setMaxVotesRange(x); }}
                         />
                       </div>
@@ -515,22 +517,22 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Profit Range (y-axis):
+                      {I18n.t('admin.profit')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minProfitRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minProfitRange}
                           onChange={(x) => { this.setMinProfitRange(x); }}
                         />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxProfitRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxProfitRange}
                           onChange={(x) => { this.setMaxProfitRange(x); }}
                         />
                       </div>
@@ -540,22 +542,22 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Implementation Months (x-axis):
+                      {I18n.t('admin.implementation')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Minimum" value={minImplementationRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minImplementationRange}
                           onChange={(x) => { this.setMinImplementationRange(x); }}
                         />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <input
-                          type="text" className="form-control data-section-input" placeholder="Maximum" value={maxImplementationRange}
+                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxImplementationRange}
                           onChange={(x) => { this.setMaxImplementationRange(x); }}
                         />
                       </div>

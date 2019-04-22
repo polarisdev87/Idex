@@ -7,6 +7,8 @@ import TagsInput from 'react-tagsinput';
 import CommonButton from '../buttons/CommonButton';
 import { changeFiles } from '../../actions/files';
 import AttachmentsSection from '../attachments/AttachmentsSection';
+import {I18n} from 'react-redux-i18n';
+
 
 const modalStyle = {
   overlay: {
@@ -235,19 +237,19 @@ class AddIdeaModal extends Component {
     
     const renderTitle = () => {
       if (type === 'view') {
-        return <span>View Idea</span>;
+        return <span>{I18n.t('ideas.modal.viewIdea')}</span>;
       } else if (type === 'edit') {
-        return <span>Edit Idea</span>;
+        return <span>{I18n.t('ideas.modal.editIdea')}</span>;
       }
-      return <span>Add Idea</span>;
+      return <span>{I18n.t('ideas.modal.addIdea')}</span>;
     };
     const renderButtonTitle = () => {
       if (type === 'view') {
-        return <span>Close Idea</span>;
+        return <span>{I18n.t('ideas.modal.finishView')}</span>;
       } else if (type === 'edit') {
-        return <span>Edit Idea</span>;
+        return <span>{I18n.t('ideas.modal.finishEdit')}</span>;
       }
-      return <span>Add Idea</span>;
+      return <span>{I18n.t('ideas.modal.finishAdd')}</span>;
     };
     const allowAttachments = type !== "view";
     return (
@@ -270,14 +272,14 @@ class AddIdeaModal extends Component {
           </div>
           <div className="modal-body">
             <div className="form-group">
-              <label className="label">Idea Title</label>
+              <label className="label">{I18n.t('ideas.modal.title')}</label>
               <div className="input-container">
                 <input ref={el => { this.title = el; }} className="form-control" type="text" />
               </div>
             </div>
 
             <div className="form-group">
-              <label className="label">Idea Description</label>
+              <label className="label">{I18n.t('ideas.modal.description')}</label>
               <div className="input-container">
                 <textarea ref={el => { this.description = el; }} className="form-control" type="text" />
               </div>
@@ -286,7 +288,7 @@ class AddIdeaModal extends Component {
             <div className="form-group">
               <div className="row">
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Expected Time to Market:</label>
+                  <label className="label">{I18n.t('ideas.modal.expectedTimeToMarket')}</label>
                   <div className="input-container">
                     <input ref={el => { this.expectedTtm = el; }} className="form-control" type="text" />
                   </div>
@@ -297,7 +299,7 @@ class AddIdeaModal extends Component {
             <div className="form-group">
               <div className="row">
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Expected Cost to implement:</label>
+                  <label className="label">{I18n.t('ideas.modal.cost')}</label>
                   <div className="input-container">
                     <input ref={el => { this.expectedCostInCents = el; }} className="form-control" type="text" />
                   </div>
@@ -308,7 +310,7 @@ class AddIdeaModal extends Component {
             <div className="form-group">
               <div className="row">
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                  <label className="label">Expected Profit:</label>
+                  <label className="label">{I18n.t('ideas.modal.profit')}</label>
                   <div className="input-container">
                     <input ref={el => { this.expectedProfitInCents = el; }} className="form-control" type="text" />
                   </div>
@@ -317,7 +319,7 @@ class AddIdeaModal extends Component {
             </div>
 
             <div className="form-group">
-              <label className="label">Tags {type !== 'view' && <span> (Click on tag to set as main)</span>}</label>
+              <label className="label">{I18n.t('ideas.modal.tags')} {type !== 'view' && <span> {I18n.t('ideas.modal.clickTags')}</span>}</label>
               <div className="input-container">
                 {/* <input ref={el => { this.tags = el; }} className="form-control" type="text" /> */}
                 <TagsInput value={this.state.tags} onChange={::this.handleChange} renderTag={(parProps) => this.renderTagWithMainFlag(parProps, this)} />

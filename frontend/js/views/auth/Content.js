@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from "react-router";
+import {I18n} from 'react-redux-i18n';
 
 import AuthInput from '../../components/inputs/AuthInput';
 import CommonButton from '../../components/buttons/CommonButton';
@@ -133,17 +134,17 @@ class Content extends Component {
       (
         <section className="panel">
           <div className="item-container">
-            <input ref={el => { this.loginUsername = el; }} className="auth-input" placeholder="User Name" type="text" />
+            <input ref={el => { this.loginUsername = el; }} className="auth-input" placeholder={I18n.t('auth.userName')} type="text" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.loginPassword = el; }} className="auth-input" placeholder="Password" type="password" />
+            <input ref={el => { this.loginPassword = el; }} className="auth-input" placeholder={I18n.t('auth.password')} type="password" />
           </div>
           <div className="item-container alert alert-danger">
             {loginErrorMessage}
           </div>
-          <Link to="/login/reset">Forgot password?</Link>
+          <Link to="/login/reset">{I18n.t('auth.forgot')}</Link>
           <div className="item-container">
-            <CommonButton title="Login" className="auth-button" onClick={() => this.loginButtonClickHandler()} />
+            <CommonButton title={I18n.t('auth.loginButton')} className="auth-button" onClick={() => this.loginButtonClickHandler()} />
           </div>
         </section>
       ) :
@@ -152,29 +153,29 @@ class Content extends Component {
       (
         <section className="panel">
           <div className="item-container inline-item">
-            <input ref={el => { this.registerFirstName = el; }} className="auth-input" placeholder="First Name" type="text" />
-            <input ref={el => { this.registerLastName = el; }} className="auth-input" placeholder="Last Name" type="text" />
+            <input ref={el => { this.registerFirstName = el; }} className="auth-input" placeholder={I18n.t('auth.firstName')} type="text" />
+            <input ref={el => { this.registerLastName = el; }} className="auth-input" placeholder={I18n.t('auth.lastName')} type="text" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.registerEmail = el; }} className="auth-input" placeholder="Email" type="email" />
+            <input ref={el => { this.registerEmail = el; }} className="auth-input" placeholder={I18n.t('auth.email')} type="email" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.registerConfirmEmail = el; }} className="auth-input" placeholder="Confirm Email" type="email" />
+            <input ref={el => { this.registerConfirmEmail = el; }} className="auth-input" placeholder={I18n.t('auth.confirmEmail')} type="email" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.registerUsername = el; }} className="auth-input" placeholder="User Name" type="text" />
+            <input ref={el => { this.registerUsername = el; }} className="auth-input" placeholder={I18n.t('auth.userName')} type="text" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.registerPassword = el; }} className="auth-input" placeholder="Password" type="password" />
+            <input ref={el => { this.registerPassword = el; }} className="auth-input" placeholder={I18n.t('auth.password')} type="password" />
           </div>
           <div className="item-container">
-            <input ref={el => { this.registerConfirmPassword = el; }} className="auth-input" placeholder="Confirm Password" type="password" />
+            <input ref={el => { this.registerConfirmPassword = el; }} className="auth-input" placeholder={I18n.t('auth.confirmPassword')} type="password" />
           </div>
           <div className="item-container alert alert-danger">
             {registerErrorMessage}
           </div>
           <div className="item-container">
-            <CommonButton title="Register" className="auth-button" onClick={() => this.registerButtonClickHandler()} />
+            <CommonButton title={I18n.t('auth.registerButton')} className="auth-button" onClick={() => this.registerButtonClickHandler()} />
           </div>
         </section>
       ) :

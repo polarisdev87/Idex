@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import PropTypes from 'prop-types';
+
 import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
@@ -12,6 +13,8 @@ import { areAllAttachmentsUploaded } from '../../actions/files';
 import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError,
 	openIdeaModal, closeIdeaModal,
 	openAttachmentModal, closeAttachmentModal} from '../../actions/ideas';
+	
+	
 
 type Props = {
   dispatch: any;
@@ -33,8 +36,6 @@ class Ideas extends Component {
   props: Props;
 
   handleIdea(idea, type) {
-    console.log('handleIdea(...)');
-    console.log(idea);
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);

@@ -10,6 +10,7 @@ import CircleIconButton from '../../components/buttons/CircleIconButton';
 import { addComment, toggleAnonymous } from '../../actions/comments';
 import { toggleVote } from '../../actions/ideas';
 import { areAllAttachmentsUploaded } from '../../actions/files';
+import {I18n} from 'react-redux-i18n';
 
 
 type Props = {
@@ -115,7 +116,7 @@ class IdeaItem extends Component {
           </div>
           <div className="col-xs-9 col-sm-9 col-md-9 col-lg-9 comment">
             <input
-              type="text" className="form-control comment-input" placeholder="Add a Comment ....." ref={el => { this.commentInput = el; }}
+              type="text" className="form-control comment-input" placeholder={I18n.t('ideas.item.addAComment')} ref={el => { this.commentInput = el; }}
               onKeyPress={this.handleAddCommentKeyPress}
             />
           </div>
@@ -157,15 +158,15 @@ class IdeaItem extends Component {
             </div>
           </div>
           <div className="footer-container">
-            <div className="footer-item label-sm-gray">{votes.toString()} Votes</div>
+            <div className="footer-item label-sm-gray">{votes.toString()} {I18n.t('ideas.item.votes')}</div>
             <div className="footer-item label-sm-gray">{ (idea.comments === undefined || idea.comments == null) ?
               '' :
-              idea.comments.length.toString()} Comments
+              idea.comments.length.toString()} {I18n.t('ideas.item.comments')}
             </div>
-            <div className="footer-item label-sm-gray">Cost: {idea.expectedCostInCents}</div>
-            <div className="footer-item label-sm-gray">Time: {idea.expectedTtm} Months</div>
+            <div className="footer-item label-sm-gray">{I18n.t('ideas.item.cost')} {idea.expectedCostInCents}</div>
+            <div className="footer-item label-sm-gray">{I18n.t('ideas.item.time')} {idea.expectedTtm} {I18n.t('ideas.item.months')}</div>
             <div className="footer-item bottom-item label-sm-gray">
-              <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>Add Comment</button>
+              <button type="button" className="btn btn-link btn-right" data-toggle="collapse" href={commentBoxHref}>{I18n.t('ideas.item.addComment')}</button>
             </div>
           </div>
 

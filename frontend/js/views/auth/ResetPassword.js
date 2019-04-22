@@ -6,8 +6,7 @@ import React, { Component } from "react";
 import { Link } from "react-router";
 import { connect } from 'react-redux';
 import { forgotPassword,  forgotPasswordError, resetPassword, resetPasswordError} from '../../actions/auth';
-
-
+import {I18n} from 'react-redux-i18n';
 
 import {
 	HelpBlock,
@@ -38,7 +37,7 @@ export class ResetPassword extends Component {
 		    let correctEmail= this.validateEmail(forgotPasswordData.email);
 		    
 		    if (!correctEmail) {
-		      errorMessage += 'Not valid email.\n';
+		      errorMessage += I18n.t('auth.error.notValidEmail');
 		    }
 
 		    if (errorMessage.endsWith('\n')) {
@@ -55,18 +54,18 @@ export class ResetPassword extends Component {
 
 	    const correctCode = confirmPasswordData.resetString.length >0;
 	    if (!correctCode) {
-		      errorMessage += 'Not valid link.\n';
+		      errorMessage += I18n.t('auth.error.notValidLink');
 	    }
 
 	    
 	    const correctPassword = confirmPasswordData.password.length >=4 && confirmPasswordData.password.length<=100 ;
 	    if (!correctPassword) {
-		      errorMessage += 'Not valid password.\n';
+		      errorMessage += I18n.t('auth.error.notValidPassword');
 	    }
 
 	    const passwordsMatch = confirmPasswordData.password === confirmPasswordData.confirmPassword;
 	    if (!passwordsMatch) {
-		      errorMessage += "Passwords don't match.\n";
+		      errorMessage += I18n.t('auth.error.passwordsDontMatch');
 	    }
 	    
 
@@ -121,7 +120,7 @@ export class ResetPassword extends Component {
 				<section className="panel">
 
 				<div className="item-container">
-	            <input ref={el => { this.email = el; }} className="auth-input" placeholder="email" type="email" />
+	            <input ref={el => { this.email = el; }} className="auth-input" placeholder={I18n.t('auth.email')} type="email" />
 				</div>
 
 		        {!(typeof forgotPasswordErrorMessage == 'undefined' || forgotPasswordErrorMessage=="") &&
@@ -132,7 +131,7 @@ export class ResetPassword extends Component {
 		        }  
 
 	          <div className="item-container">
-	            <CommonButton title="Send Confirmation" className="auth-button" onClick={() => this.handleSendCodeClick()} />
+	            <CommonButton title={I18n.t('auth.sendConfirmation')} className="auth-button" onClick={() => this.handleSendCodeClick()} />
 	          </div>
 				
 				
@@ -150,11 +149,11 @@ export class ResetPassword extends Component {
 				<section className="panel">
 
         	    <div className="item-container">
-        	    	<input ref={el => { this.password = el; }} className="auth-input obfuscate" placeholder="Password" type="text" />
+        	    	<input ref={el => { this.password = el; }} className="auth-input obfuscate" placeholder={I18n.t('auth.password')} type="text" />
         	    </div>
 				
 				<div className="item-container">
-	                <input ref={el => { this.confirmPassword = el; }}  className="auth-input obfuscate" placeholder="Confirm Password" type="text" />
+	                <input ref={el => { this.confirmPassword = el; }}  className="auth-input obfuscate" placeholder={I18n.t('auth.confirmPassword')} type="text" />
 				</div>
 				
 				
