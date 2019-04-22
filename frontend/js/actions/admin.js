@@ -184,6 +184,13 @@ export function setGraphIdeasToShow(ideas) {
 		  };
 } 
 
+export const SET_GRAPH_CURRENT_IDEA = 'SET_GRAPH_CURRENT_IDEA';
+export function setGraphCurrentIdea(idea) {
+	  return {
+		    type: SET_GRAPH_CURRENT_IDEA,
+		    idea,
+		  };
+} 
 
 
 

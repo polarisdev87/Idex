@@ -17,6 +17,7 @@ import {
   GET_POPULAR_TAGS_SUCCESS,
   GET_POPULAR_TAGS_FAILURE,
   SET_GRAPH_IDEAS_TO_SHOW,
+  SET_GRAPH_CURRENT_IDEA,
 } from '../actions/admin';
 
 const moment = require('moment');
@@ -162,6 +163,7 @@ export function admin(state = {
   popularTags: [],
   isFetchingpPopularTags: false,
   popularTagsErrorMessage: undefined,
+  currentIdea: {},
 }, action) {
   console.log('admin reducer');
   console.log(action.type);
@@ -257,6 +259,10 @@ export function admin(state = {
     case SET_GRAPH_IDEAS_TO_SHOW:
         return Object.assign({}, state, {
             ideasToShow: action.ideas,
+          });
+    case SET_GRAPH_CURRENT_IDEA:
+        return Object.assign({}, state, {
+            currentIdea: action.idea,
           });
     default:
       return state;

@@ -224,7 +224,7 @@ class AddIdeaModal extends Component {
   
   render() {
     const {
-      isOpen, idea, close, type, localFiles, remoteFiles,ideas,
+      isOpen, idea, close, type, localFiles, remoteFiles,ideas, nextIdea, previousIdea,
     } = this.props;
     console.log('type ===>', type);
     console.log(idea);
@@ -261,8 +261,8 @@ class AddIdeaModal extends Component {
         <div className="idea-modal-container">
           <div className="modal-header">
           {multipleIdeas && <span>
-          <button className="btn btn-default" onClick={() => close()}>&lt;</button>
-          <button className="btn btn-default" onClick={() => close()}>&gt;</button>
+          <button className="btn btn-default" onClick={() => previousIdea()}>&lt;</button>
+          <button className="btn btn-default" onClick={() => nextIdea()}>&gt;</button>
           </span>}
             {renderTitle()}
             <button className="btn btn-default btn-close" onClick={() => close()}>X</button>
@@ -364,13 +364,8 @@ function mapStateToProps(state, ownProps) {
   if (ownProps.idea !=null) {
     const index = state.ideas.ideasArr.findIndex(x => x.id === ownProps.idea.id);
     if (index !== -1) {
-      console.log("index != -1");
       const ideaFiles = state.ideas.ideasArr[index].files;
       if (ideaFiles !== null) {
-        console.log("files");  
-        console.log(localFiles);
-        console.log(remoteFiles);
-        console.log(ideaFiles);
         for (let fileIndex in ideaFiles) {
         	if (ideaFiles[fileIndex].remote) {
         		remoteFiles.push(ideaFiles[fileIndex]);

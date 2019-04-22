@@ -26,6 +26,7 @@ import {
   setMinImplementationRange,
   setMaxImplementationRange,
   setGraphIdeasToShow,
+  setGraphCurrentIdea,
 } from '../../actions/admin';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 
@@ -36,7 +37,6 @@ class Admin extends Component {
     this.displayIdea = this.displayIdea.bind(this);
     this.showTooltipLabel = this.showTooltipLabel.bind(this);
     this.prepareIdeasToShow = this.prepareIdeasToShow.bind(this);
-    this.modalIdea = null;
     this.modalIdeaIndex = -1;
     this.ideasToShow = [];
   }
@@ -44,7 +44,6 @@ class Admin extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    this.modalIdea = null;
     this.modalIdeaIndex = -1;
     this.ideasToShow = [];
     this.type = 'view'; // 'add', 'edit' not being used
@@ -59,12 +58,30 @@ class Admin extends Component {
   };
 
 
+  handleNextIdea(idea) {
+	  console.log("nextIdea");
+	  const {dispatch} = this.props;
+	  this.modalIdeaIndex ++;
+	  if (this.modalIdeaIndex >= this.ideasToShow.length) {
+		  this.modalIdeaIndex = 0;
+	  }
+	  dispatch(setGraphCurrentIdea(this.ideasToShow[this.modalIdeaIndex]));
+  }
+
+  handlePreviousIdea() {
+	  const {dispatch} = this.props;
+	  console.log("previousIdea");
+	  this.modalIdeaIndex --;
+	  if (this.modalIdeaIndex < 0 ) {
+		  this.modalIdeaIndex = this.ideasToShow.length-1;
+	  }
+	  dispatch(setGraphCurrentIdea(this.ideasToShow[this.modalIdeaIndex]));
+  }
+
+  
   handleIdea(idea) {
-    const { dispatch } = this.props;
-    this.modalIdea = null;
     this.modalIdeaIndex = -1;
     this.ideasToShow = [];
-    this.setState({ isOpen: false });
   }
 
   closeModal() {
@@ -73,7 +90,8 @@ class Admin extends Component {
 
 
   viewIdeaClickHandler(idea, ideasToShow) {
-    this.modalIdea = idea;
+	 const {dispatch} = this.props;
+	 dispatch(setGraphCurrentIdea(idea));
     this.modalIdeaIndex = 0;
     this.ideasToShow = ideasToShow;
     this.type = 'view';
@@ -293,6 +311,12 @@ class Admin extends Component {
 	  return datasetLabel+" "+idea.title+" (Votes:"+idea.votes+")";
   }
 
+
+  setIdeasToShow(idea) {
+	    const { dispatch } = this.props;
+	    dispatch(setGraphCurrentIdea(idea));
+  }
+	  
   
   setIdeasToShow(ideas) {
     const { dispatch } = this.props;
@@ -372,11 +396,6 @@ class Admin extends Component {
     const element = chartGraph.getElementAtEvent(clickEvent);
     const elements = chartGraph.getElementsAtEvent(clickEvent);
     const dataset = chartGraph.getDatasetAtEvent(clickEvent);
-    console.log("displayIdea(...)");
-    console.log("ideasToShow");
-    console.log(ideasToShow);
-    
-
     // If you click on at least 1 element ...
     if (element.length > 0) {
       // Logs it
@@ -403,6 +422,7 @@ class Admin extends Component {
       minImplementationRange,
       maxImplementationRange,
       ideasToShow,
+      currentIdea,
     } = this.props;
 
     const { isOpen } = this.state;
@@ -554,10 +574,10 @@ class Admin extends Component {
             <div>
               <AddIdeaModal
                 isOpen={isOpen} 
-                idea={this.modalIdea}
-                ideas = {this.ideasToShow}
+                idea={currentIdea}
+                ideas = {ideasToShow}
                 nextIdea = {() => this.handleNextIdea()}
-                prevIdea = {() => this.handlePrevIdea()}
+                previousIdea = {() => this.handlePreviousIdea()}
                 type={this.type}
                 handleIdea={(idea, type) => this.handleIdea(idea, type)}
                 close={() => this.closeModal()}
@@ -589,6 +609,7 @@ function mapStateToProps(state) {
     startDate: state.admin.startDate,
     endDate: state.admin.endDate,
     ideasToShow: state.admin.ideasToShow,
+    currentIdea: state.admin.currentIdea,
   };
 }
 
