@@ -37,12 +37,16 @@ class Admin extends Component {
     this.showTooltipLabel = this.showTooltipLabel.bind(this);
     this.prepareIdeasToShow = this.prepareIdeasToShow.bind(this);
     this.modalIdea = null;
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
   }
 
 
   componentDidMount() {
     const { dispatch } = this.props;
     this.modalIdea = null;
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
     this.type = 'view'; // 'add', 'edit' not being used
     this.applyFilters();
   }
@@ -58,6 +62,8 @@ class Admin extends Component {
   handleIdea(idea) {
     const { dispatch } = this.props;
     this.modalIdea = null;
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
     this.setState({ isOpen: false });
   }
 
@@ -66,8 +72,10 @@ class Admin extends Component {
   }
 
 
-  viewIdeaClickHandler(idea) {
+  viewIdeaClickHandler(idea, ideasToShow) {
     this.modalIdea = idea;
+    this.modalIdeaIndex = 0;
+    this.ideasToShow = ideasToShow;
     this.type = 'view';
     console.log('view type ===>', this.type);
     this.setState({
@@ -293,8 +301,6 @@ class Admin extends Component {
   
   prepareIdeasToShow(tooltipItems,data) {
 	  
-	  console.log("prepareIdeasToShow");
-	  console.log(tooltipItems);
       const { ideasSummary } = this.props;
       let selectedIdeas = [];
       for (let tooltipIndex in tooltipItems) {
@@ -303,8 +309,6 @@ class Admin extends Component {
           const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
           selectedIdeas.push(idea);
       }
-	  console.log("selectedIdeas");
-	  console.log(selectedIdeas);
 	  this.setIdeasToShow(selectedIdeas)
 	  return "";
 	  }
@@ -381,7 +385,7 @@ class Admin extends Component {
       // data gives you `x`, `y` and `r` values
       const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
       const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
-      this.viewIdeaClickHandler(idea);
+      this.viewIdeaClickHandler(idea, ideasToShow);
     }
   }
 
@@ -549,7 +553,12 @@ class Admin extends Component {
             </div>
             <div>
               <AddIdeaModal
-                isOpen={isOpen} idea={this.modalIdea} type={this.type}
+                isOpen={isOpen} 
+                idea={this.modalIdea}
+                ideas = {this.ideasToShow}
+                nextIdea = {() => this.handleNextIdea()}
+                prevIdea = {() => this.handlePrevIdea()}
+                type={this.type}
                 handleIdea={(idea, type) => this.handleIdea(idea, type)}
                 close={() => this.closeModal()}
               />

@@ -36,8 +36,6 @@ type Props = {
 
 class AddIdeaModal extends Component {
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps');
-    console.log(nextProps);
     const { idea, type } = nextProps;
     console.log('idea ===  ===>', idea);
     this.idea = idea;
@@ -106,9 +104,6 @@ class AddIdeaModal extends Component {
    * @param {*} anonymousMode
    */
   handleIdea(type, anonymousMode) {
-    console.log('AddIdeaModal -> handleIdea(type)');
-    console.log(type);
-    console.log(this.props.localFiles);
     const {
       id, tags, stage, mainTag,
     } = this.state;
@@ -162,22 +157,15 @@ class AddIdeaModal extends Component {
 
 
   setTagAsMain(evt, key) {
-    console.log('setTagAsMain');
-    console.log(key);
     if (this.isRemoving) {
-      console.log('isRemoving');
       this.isRemoving = false;
     } else {
-      console.log('NOT isRemoving');
       this.setState({ mainTag: key });
     }
   }
 
 
   onRemoveTag(key, classThis, onRemoveFunction) {
-    console.log('onRemoveTag');
-    console.log(key);
-    console.log(classThis);
     let currentMainTag = classThis.state.mainTag;
     onRemoveFunction(key);
     if (key <= currentMainTag) {
@@ -217,9 +205,6 @@ class AddIdeaModal extends Component {
   * Upload files as soon as they are dragged and dropped
   */
   onFilesChange = (files) => {
-    console.log('onFilesChange');
-    console.log(this.props);
-    console.log(files);
     const { dispatch, idea, remoteFiles, localFiles, type } = this.props;
 
     let newFiles = [];
@@ -228,9 +213,6 @@ class AddIdeaModal extends Component {
     if (type === "edit") {
         changeFiles(dispatch, idea.id, idea.files, newFiles);
     } else {
-    	console.log("onFilesChange : adding attachment");
-    	console.log(localFiles);
-    	console.log(files);
     	changeFiles(dispatch, -1, localFiles, files);
     }
   }
@@ -241,16 +223,15 @@ class AddIdeaModal extends Component {
 
   
   render() {
-    console.log('AddIdeaModal.render()');
-    console.log(this.props);
     const {
-      isOpen, idea, close, type, localFiles, remoteFiles,
+      isOpen, idea, close, type, localFiles, remoteFiles,ideas,
     } = this.props;
     console.log('type ===>', type);
     console.log(idea);
-    console.log("localFiles");
-    console.log(localFiles);
     const { isEditMode } = this.state;
+    
+    const multipleIdeas = !(typeof ideas == "undefined" || ideas == null || ideas.length<=1);
+    
     const renderTitle = () => {
       if (type === 'view') {
         return <span>View Idea</span>;
@@ -279,6 +260,10 @@ class AddIdeaModal extends Component {
       >
         <div className="idea-modal-container">
           <div className="modal-header">
+          {multipleIdeas && <span>
+          <button className="btn btn-default" onClick={() => close()}>&lt;</button>
+          <button className="btn btn-default" onClick={() => close()}>&gt;</button>
+          </span>}
             {renderTitle()}
             <button className="btn btn-default btn-close" onClick={() => close()}>X</button>
           </div>
