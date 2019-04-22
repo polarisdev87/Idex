@@ -15,7 +15,8 @@ import {
   SET_MAX_IMPLEMENTATION_RANGE_ADMIN,
   GET_POPULAR_TAGS_REQUEST,
   GET_POPULAR_TAGS_SUCCESS,
-  GET_POPULAR_TAGS_FAILURE
+  GET_POPULAR_TAGS_FAILURE,
+  SET_GRAPH_IDEAS_TO_SHOW,
 } from '../actions/admin';
 
 const moment = require('moment');
@@ -133,6 +134,7 @@ export function admin(state = {
     dimensionNames: ['ttm', 'profit', 'votes', 'tag'],
     items: [],
   },
+  ideasToShow : [],
   bubbleData: {
     labels: '',
     datasets: [
@@ -252,6 +254,10 @@ export function admin(state = {
         popularTagsErrorMessage: action.message,
         popularTags: [],
       });
+    case SET_GRAPH_IDEAS_TO_SHOW:
+        return Object.assign({}, state, {
+            ideasToShow: action.ideas,
+          });
     default:
       return state;
   }

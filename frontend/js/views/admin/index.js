@@ -12,6 +12,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import InfoBox from '../../components/InfoBox';
 import TagSection from '../../components/tags/TagSection';
 
+
+
 import {
   fetchIdeasForBubbleGraph,
   setStartDate,
@@ -23,6 +25,7 @@ import {
   setMaxProfitRange,
   setMinImplementationRange,
   setMaxImplementationRange,
+  setGraphIdeasToShow,
 } from '../../actions/admin';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
 
@@ -32,6 +35,7 @@ class Admin extends Component {
     super(props);
     this.displayIdea = this.displayIdea.bind(this);
     this.showTooltipLabel = this.showTooltipLabel.bind(this);
+    this.prepareIdeasToShow = this.prepareIdeasToShow.bind(this);
     this.modalIdea = null;
   }
 
@@ -88,6 +92,7 @@ class Admin extends Component {
   }
 
 
+  
   handleChange(date) {
     const { dispatch } = this.props;
     dispatch(setStartDate(date));
@@ -262,7 +267,8 @@ class Admin extends Component {
       tooltips: {
     	  mode: 'point',
     	  callbacks: {
-    		  label: this.showTooltipLabel
+    		  label: this.showTooltipLabel, 
+    		  afterFooter: this.prepareIdeasToShow,
     	  }
       },
       onClick: this.displayIdea,
@@ -274,16 +280,35 @@ class Admin extends Component {
 
   showTooltipLabel(tooltipItem,data) {
     const { ideasSummary } = this.props;
-	  console.log("tooltipItem");
-	  console.log(tooltipItem);
-	  console.log(data);
       const datasetLabel = data.datasets[tooltipItem.datasetIndex].label;
       const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
-      console.log("idea");
-      console.log(idea);
-	  
 	  return datasetLabel+" "+idea.title+" (Votes:"+idea.votes+")";
   }
+
+  
+  setIdeasToShow(ideas) {
+    const { dispatch } = this.props;
+    dispatch(setGraphIdeasToShow(ideas));
+  }
+  
+  prepareIdeasToShow(tooltipItems,data) {
+	  
+	  console.log("prepareIdeasToShow");
+	  console.log(tooltipItems);
+      const { ideasSummary } = this.props;
+      let selectedIdeas = [];
+      for (let tooltipIndex in tooltipItems) {
+    	  const datasetIndex= tooltipItems[tooltipIndex].datasetIndex;
+          const datasetLabel = data.datasets[datasetIndex].label;
+          const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+          selectedIdeas.push(idea);
+      }
+	  console.log("selectedIdeas");
+	  console.log(selectedIdeas);
+	  this.setIdeasToShow(selectedIdeas)
+	  return "";
+	  }
+  
   
   onPartialFullToggle() {
     const { dispatch } = this.props;
@@ -338,42 +363,27 @@ class Admin extends Component {
   }
   
   displayIdea(clickEvent, chartElement) {
-	  console.log("displayIdea");
     const chartGraph = chartElement[0]._chart;
-
-    const { ideasSummary } = this.props;
+    const { ideasSummary,ideasToShow } = this.props;
     const element = chartGraph.getElementAtEvent(clickEvent);
-    console.log("element");
-    console.log(element);
     const elements = chartGraph.getElementsAtEvent(clickEvent);
-    console.log("elements");
-    console.log(elements);
-    console.log("chartGraph")
-    console.log(chartGraph)
-    console.log("chartElement");
-    console.log(chartElement);
     const dataset = chartGraph.getDatasetAtEvent(clickEvent);
-    console.log("dataset");
-    console.log(dataset);
+    console.log("displayIdea(...)");
+    console.log("ideasToShow");
+    console.log(ideasToShow);
     
 
     // If you click on at least 1 element ...
     if (element.length > 0) {
       // Logs it
-
       // Here we get the data linked to the clicked bubble ...
       const datasetLabel = chartGraph.config.data.datasets[element[0]._datasetIndex].label;
-      console.log("datasetLabel");
-      console.log(datasetLabel);
       // data gives you `x`, `y` and `r` values
       const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
-
-
       const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
       this.viewIdeaClickHandler(idea);
     }
   }
-
 
   render() {
     const {
@@ -388,15 +398,12 @@ class Admin extends Component {
       maxProfitRange,
       minImplementationRange,
       maxImplementationRange,
+      ideasToShow,
     } = this.props;
 
     const { isOpen } = this.state;
 
     const defaultOption = this.prepareOptions(ideasSummary);
-    console.log("bubbleData");
-    console.log(bubbleData);
-    console.log("defaultOption");
-    console.log(defaultOption);
 
     return (
       <div className="container admin-container">
@@ -555,6 +562,8 @@ class Admin extends Component {
 }
 
 function mapStateToProps(state) {
+	console.log("state.admin.ideasToShow");
+	console.log(state.admin.ideasToShow);
   return {
     partialFullSwitch: state.admin.partialFullSwitch,
     submittedAtMsMin: state.admin.submittedAtMsMin,
@@ -570,6 +579,7 @@ function mapStateToProps(state) {
     bubbleData: state.admin.bubbleData,
     startDate: state.admin.startDate,
     endDate: state.admin.endDate,
+    ideasToShow: state.admin.ideasToShow,
   };
 }
 

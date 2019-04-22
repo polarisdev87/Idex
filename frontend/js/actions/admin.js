@@ -176,6 +176,15 @@ export function setMaxImplementationRange(value) {
 }
 
 
+export const SET_GRAPH_IDEAS_TO_SHOW = 'SET_GRAPH_IDEAS_TO_SHOW';
+export function setGraphIdeasToShow(ideas) {
+	  return {
+		    type: SET_GRAPH_IDEAS_TO_SHOW,
+		    ideas,
+		  };
+} 
+
+
 
 
 export const GET_POPULAR_TAGS_REQUEST = 'GET_POPULAR_TAGS_REQUEST';
