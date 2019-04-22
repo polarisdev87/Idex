@@ -144,6 +144,16 @@ class AddIdeaModal extends Component {
    */
   handleChange(tags) {
     let { mainTag } = this.state;
+    // check if last element is in previous position
+    if (tags.length>1) {
+    	const element = tags[tags.length-1];
+    	const pos = tags.indexOf(element);
+    	if (pos < tags.length-1) {
+    		tags.pop();
+    		alert("Removing duplicated added tag");
+    	}
+    }
+    // set main tag
     if (tags.length === 1) {
       mainTag = 0;
     }
