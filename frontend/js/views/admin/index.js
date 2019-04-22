@@ -31,6 +31,7 @@ class Admin extends Component {
   constructor(props) {
     super(props);
     this.displayIdea = this.displayIdea.bind(this);
+    this.showTooltipLabel = this.showTooltipLabel.bind(this);
     this.modalIdea = null;
   }
 
@@ -206,6 +207,8 @@ class Admin extends Component {
   }
 
   prepareOptions(ideasSummary) {
+	  console.log("prepareOptions");
+	  console.log(ideasSummary);
     let widthRange = {min:0, max:100, increment:20};
     let heightRange = {min:0, max:100, increment:20};
     if (ideasSummary.items.length > 0) {
@@ -256,12 +259,32 @@ class Admin extends Component {
           },
         }],
       },
+      tooltips: {
+    	  mode: 'point',
+    	  callbacks: {
+    		  label: this.showTooltipLabel
+    	  }
+      },
       onClick: this.displayIdea,
+      onElementsClick: this.trackIdeas,
     };
     return defaultOption;
   }
 
 
+  showTooltipLabel(tooltipItem,data) {
+    const { ideasSummary } = this.props;
+	  console.log("tooltipItem");
+	  console.log(tooltipItem);
+	  console.log(data);
+      const datasetLabel = data.datasets[tooltipItem.datasetIndex].label;
+      const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+      console.log("idea");
+      console.log(idea);
+	  
+	  return datasetLabel+" "+idea.title+" (Votes:"+idea.votes+")";
+  }
+  
   onPartialFullToggle() {
     const { dispatch } = this.props;
     dispatch(toggleFilterFullPartialAdmin());
@@ -302,11 +325,37 @@ class Admin extends Component {
    * on this method this is chart
    */
 
+  
+  hoverIdeas(elem) {
+	  console.log("hoverIdeas");
+	  console.log(elem);
+	  
+  }
+  
+  trackIdeas(elems,other) {
+	  console.log("trackIdeas");
+	  console.log(elems);
+  }
+  
   displayIdea(clickEvent, chartElement) {
+	  console.log("displayIdea");
     const chartGraph = chartElement[0]._chart;
 
     const { ideasSummary } = this.props;
     const element = chartGraph.getElementAtEvent(clickEvent);
+    console.log("element");
+    console.log(element);
+    const elements = chartGraph.getElementsAtEvent(clickEvent);
+    console.log("elements");
+    console.log(elements);
+    console.log("chartGraph")
+    console.log(chartGraph)
+    console.log("chartElement");
+    console.log(chartElement);
+    const dataset = chartGraph.getDatasetAtEvent(clickEvent);
+    console.log("dataset");
+    console.log(dataset);
+    
 
     // If you click on at least 1 element ...
     if (element.length > 0) {
@@ -314,6 +363,8 @@ class Admin extends Component {
 
       // Here we get the data linked to the clicked bubble ...
       const datasetLabel = chartGraph.config.data.datasets[element[0]._datasetIndex].label;
+      console.log("datasetLabel");
+      console.log(datasetLabel);
       // data gives you `x`, `y` and `r` values
       const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
 
@@ -342,6 +393,10 @@ class Admin extends Component {
     const { isOpen } = this.state;
 
     const defaultOption = this.prepareOptions(ideasSummary);
+    console.log("bubbleData");
+    console.log(bubbleData);
+    console.log("defaultOption");
+    console.log(defaultOption);
 
     return (
       <div className="container admin-container">
