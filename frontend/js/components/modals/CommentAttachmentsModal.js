@@ -27,7 +27,7 @@ const modalStyle = {
 
 type Props = {
   isOpen: boolean;
-  handleCommentAttachments: (idea, isEditMode) => {},
+  handleCommentAttachments: (idea, anonymousMode) => {},
   close: () => {},
   dispatch: any,
   idea: any,
@@ -41,19 +41,12 @@ type Props = {
  */
 class CommentAttachmentsModal extends Component {
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps');
-    console.log(nextProps);
     const { idea, type, comment, commentText } = nextProps;
     console.log('idea ===  ===>', idea);
     console.log('comment ===  ===>', comment);
     this.idea = idea;
     if (type === 'view' || type === 'edit') {
       if (idea !== undefined && idea !== null) {
-        this.setState({
-          stage: idea.stage,
-          isEditMode: true,
-          id: idea.id,
-        });
         setTimeout(() => {
           if (this.title) {
             this.title.value = idea.title;
@@ -61,13 +54,7 @@ class CommentAttachmentsModal extends Component {
             this.commentText.value = comment != null ? comment.text: commentText;
           }
         }, 500);
-      } else {
-        this.setState({
-          stage: 'Launched',
-          isEditMode: false,
-          id: null,
-        });
-      }
+      } 
     }
     // if (idea !== undefined && idea !== null) {
 
@@ -79,11 +66,6 @@ class CommentAttachmentsModal extends Component {
   props: Props;
 
   isRemoving= false;
-
-  state = {
-    isEditMode: false,
-    stage: 'Launched',
-  }
 
 
   afterOpenModal() {
@@ -100,27 +82,23 @@ class CommentAttachmentsModal extends Component {
    * @param {*} anonymousMode
    */
   handleCommentAttachments(type, anonymousMode) {
-    console.log('AttachmentsModal -> handleCommentAttachments(type)');
-    console.log(type);
-    console.log(this.props.localFiles);
-    const {
-      id,  stage, 
-    } = this.state;
+    
+    
+    const {idea} = this.props;
+    
     let newFiles = [];
     Array.prototype.push.apply(newFiles,this.props.localFiles); 
     Array.prototype.push.apply(newFiles,this.props.remoteFiles); 
-    console.log(newFiles);
     const comment = {
-      id,
-      ideaId: id,
-      commentId: id,
+      id: idea.id,
+      ideaId: idea.id,
+      commentId: idea.id,
       text: this.commentText.value.trim(),
       title: this.title.value.trim(),
       description: this.description.value.trim(),
       anonymousMode,
       files: newFiles,
     };
-    console.log(comment);
     this.props.handleCommentAttachments(comment, type);
   }
 
@@ -129,18 +107,11 @@ class CommentAttachmentsModal extends Component {
   * Upload files as soon as they are dragged and dropped
   */
   onFilesChange = (files) => {
-    console.log('onFilesChange');
-    console.log(this.props);
-    console.log(files);
     const { dispatch, idea, remoteFiles, localFiles, type } = this.props;
 
     let newFiles = [];
     Array.prototype.push.apply(newFiles,files); 
     Array.prototype.push.apply(newFiles,remoteFiles); 
-    console.log("newFiles");
-    console.log(newFiles);
-    console.log("localFiles");
-    console.log(localFiles);
     changeFilesOnNewComment(dispatch, idea.id, localFiles, newFiles);
   }
 
@@ -156,16 +127,10 @@ class CommentAttachmentsModal extends Component {
 */
 
   render() {
-    console.log('AddIdeaModal.render()');
-    console.log(this.props);
     const {
       isOpen, idea, close, type, localFiles, remoteFiles,
     } = this.props;
     console.log('render - type ===>', type);
-    console.log(idea);
-    console.log("localFiles");
-    console.log(localFiles);
-    const { isEditMode } = this.state;
     const renderTitle = () => {
       if (type === 'view') {
         return <span>View Comment Attachments</span>;
@@ -247,10 +212,6 @@ class CommentAttachmentsModal extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log('AttachmentsModal.mapStateToProps...');
-  console.log('state');
-  console.log(state);
-  console.log(ownProps);
   const {comment, idea} = ownProps;
 
   let localFiles = [];
@@ -264,7 +225,6 @@ function mapStateToProps(state, ownProps) {
      // files of a comment that have not been added yet
      const index = state.ideas.commentsToAdd.findIndex(x => x.ideaId === idea.id);
 	 if (index !== -1) {
-	   console.log("index != -1");
 	   localFiles = state.ideas.commentsToAdd[index].files;
 	 }
   }
