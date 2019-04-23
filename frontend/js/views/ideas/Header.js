@@ -28,12 +28,12 @@ class Header extends Component {
   props: Props;
 
   topTypeFilters = {
-    pastHour: 'Past Hour',
-    pastDay: 'Past Day',
-    pastWeek: 'Past Week',
-    pastMonth: 'Past Month',
-    pastYear: 'Past Year',
-    allTime: 'All Time',
+    pastHour: I18n.t('ideas.filter.type.pastHour'),
+    pastDay: I18n.t('ideas.filter.type.pastDay'),
+    pastWeek: I18n.t('ideas.filter.type.pastWeek'),
+    pastMonth: I18n.t('ideas.filter.type.pastMonth'),
+    pastYear: I18n.t('ideas.filter.type.pastYear'),
+    allTime: I18n.t('ideas.filter.type.allTime'),
   };
 
   constructor(props) {

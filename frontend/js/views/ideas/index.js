@@ -144,7 +144,7 @@ class Ideas extends Component {
   }
   
   addIdeaButtonClickHandler() {
-	  const {dispatch} = this.props;
+	const {dispatch} = this.props;
     this.modalIdea = null;
     this.ideaBeingCommented = null;
     this.type = 'add';

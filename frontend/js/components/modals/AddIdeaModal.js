@@ -38,6 +38,8 @@ type Props = {
 
 class AddIdeaModal extends Component {
   componentWillReceiveProps(nextProps) {
+	  
+	  
     const { idea, type } = nextProps;
     console.log('idea ===  ===>', idea);
     this.idea = idea;
@@ -72,12 +74,20 @@ class AddIdeaModal extends Component {
           id: null,
         });
       }
+    } else { // type == 'add'
+        this.setState({
+            tags: [],
+            mainTag: -1,
+          });
     }
     // if (idea !== undefined && idea !== null) {
 
     // } else {
 
     // }
+    
+    console.log("componentWillReceiveProps");
+    console.log(this.state.tags);
   }
 
   props: Props;
