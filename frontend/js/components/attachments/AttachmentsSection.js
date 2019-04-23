@@ -40,6 +40,12 @@ class AttachmentsSection extends Component {
     render() {
         const { allowAttachments, remoteFiles, localFiles } = this.props;
         const { remoteFilesRemoveOne, localFilesRemoveOne, onFilesChange, onFilesError } = this.props;
+        console.log("AttachmentsSection.render()");
+        console.log("remoteFiles");
+        console.log(remoteFiles);
+        console.log("localFiles");
+        console.log(localFiles);
+        
     	return (
                 <div className="files">
                 {/* see accepts options in http://www.iana.org/assignments/media-types/media-types.xhtml */ }

@@ -18,6 +18,7 @@ import {
 import { ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE, TOGGLE_ANONYMOUS } from '../actions/comments';
 import { UPLOAD_FILE_SUCCESS, UPLOAD_FILE_REQUEST, REMOVE_FILES_REQUEST, UPLOAD_FILE_CONTENT_SUCCESS, REMOVE_REMOTE_FILE } from '../actions/files';
 import { UPLOAD_FILE_ON_NEW_COMMENT_SUCCESS, UPLOAD_FILE_ON_NEW_COMMENT_REQUEST, REMOVE_FILES_ON_NEW_COMMENT_REQUEST, UPLOAD_FILE_ON_NEW_COMMENT_CONTENT_SUCCESS, REMOVE_REMOTE_FILE_ON_NEW_COMMENT } from '../actions/files';
+import { API_BASE_URI } from '../const';
 
 
 function updateFileOnElement(element, htmlFormFile, uploadedFileMeta) {
@@ -72,10 +73,13 @@ function completeFileOnElement(element, htmlFormFile, uploadedFileMeta) {
       }
       const fileIndex = element.files.findIndex(x => x.persistenceId === uploadedFileMeta.persistenceId);
       if (fileIndex !== -1) {
+    	let preview = element.files[fileIndex].preview;  
+    	preview.url = API_BASE_URI+"/ideas/attach?fileId="+element.files[fileIndex].persistenceId;
         const newFile = Object.assign({}, element.files[fileIndex], {
           cancelledAt:  uploadedFileMeta.cancelledAt,
           persistenceId: uploadedFileMeta.persistenceId,
           uploadedAt: uploadedFileMeta.uploadedAt,
+          preview: preview,
         });
         element.files = [
           ...element.files.slice(0, fileIndex),
@@ -83,7 +87,7 @@ function completeFileOnElement(element, htmlFormFile, uploadedFileMeta) {
           ...element.files.slice(fileIndex + 1),
         ];
       } else {
-      	
+      	// never should happen as it has been added for REQUEST
       	if (htmlFormFile) {
             const newFile = Object.assign({}, htmlFormFile, {
                 cancelledAt: uploadedFileMeta.cancelledAt,

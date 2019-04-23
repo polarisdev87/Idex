@@ -86,7 +86,7 @@ public class IdeaRestController {
     
     @RequestMapping(value = "/attach", method = RequestMethod.GET)
     public void getImageAsByteArray(HttpServletResponse response,
-			@RequestParam(value = "ideaId", required = true) Long ideaId,
+			@RequestParam(value = "ideaId", required = false) Long ideaId,
 			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
 
     	
@@ -100,8 +100,8 @@ public class IdeaRestController {
     
     @RequestMapping(value = "/comment/attach", method = RequestMethod.GET)
     public void getImageAsByteArray(HttpServletResponse response,
-			@RequestParam(value = "ideaId", required = true) Long ideaId,
-			@RequestParam(value = "commentId", required = true) Long commentId,
+			@RequestParam(value = "ideaId", required = false) Long ideaId,
+			@RequestParam(value = "commentId", required = false) Long commentId,
 			@RequestParam(value = "fileId", required = true) Long persistenceId) throws IOException {
     	
     	Account requester = getRequester();

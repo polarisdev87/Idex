@@ -267,6 +267,9 @@ function uploadFileContentSuccess(uploadedFileMeta, ideaId, oldFile) {
   console.log("uploadFileContentSuccess(...)");  
   console.log("uploadedFileMeta");
   console.log(uploadedFileMeta);
+  console.log("ideaId");
+  console.log(ideaId);
+  console.log(oldFile);
   const newFile = Object.assign({},oldFile,uploadedFileMeta);
   console.log("newFile");
   console.log(newFile);
