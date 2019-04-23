@@ -495,8 +495,8 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minVotesRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minVotesRange}
                           onChange={(x) => { this.setMinVotesRange(x); }}
                         />
                       </div>
@@ -504,8 +504,8 @@ class Admin extends Component {
                       {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxVotesRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxVotesRange}
                           onChange={(x) => { this.setMaxVotesRange(x); }}
                         />
                       </div>
@@ -522,8 +522,8 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minProfitRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minProfitRange}
                           onChange={(x) => { this.setMinProfitRange(x); }}
                         />
                       </div>
@@ -531,8 +531,8 @@ class Admin extends Component {
                       {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxProfitRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxProfitRange}
                           onChange={(x) => { this.setMaxProfitRange(x); }}
                         />
                       </div>
@@ -547,8 +547,8 @@ class Admin extends Component {
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minImplementationRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minImplementationRange}
                           onChange={(x) => { this.setMinImplementationRange(x); }}
                         />
                       </div>
@@ -556,8 +556,8 @@ class Admin extends Component {
                       {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input
-                          type="text" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxImplementationRange}
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxImplementationRange}
                           onChange={(x) => { this.setMaxImplementationRange(x); }}
                         />
                       </div>

@@ -22,10 +22,10 @@ class TimeToMarketFilterSection extends Component {
       <div className="form-group">
         <div className="input-container">
           <div className="select-label label-base-base">{I18n.t('ideas.filter.timeToMarket')}</div>
-          <NumericInput min={0} max={999999} value={this.props.min} placeholder="Min"
-            onChange={this.props.changeMin} />
-          <NumericInput min={0} max={999999} value={this.props.max} placeholder="Max"
-            onChange={this.props.changeMax} />
+          <NumericInput min={0} max={999999} value={this.props.min} placeholder={I18n.t('ideas.filter.min')}
+            onChange={this.props.changeMin} strict />
+          <NumericInput min={0} max={999999} value={this.props.max} placeholder={I18n.t('ideas.filter.max')}
+            onChange={this.props.changeMax} strict />
         </div>
       </div>
 

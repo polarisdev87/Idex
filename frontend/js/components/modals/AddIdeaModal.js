@@ -290,7 +290,7 @@ class AddIdeaModal extends Component {
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                   <label className="label">{I18n.t('ideas.modal.expectedTimeToMarket')}</label>
                   <div className="input-container">
-                    <input ref={el => { this.expectedTtm = el; }} className="form-control" type="text" />
+                    <input pattern="[0-9]*" ref={el => { this.expectedTtm = el; }} className="form-control" type="number" />
                   </div>
                 </div>
               </div>
@@ -301,7 +301,7 @@ class AddIdeaModal extends Component {
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                   <label className="label">{I18n.t('ideas.modal.cost')}</label>
                   <div className="input-container">
-                    <input ref={el => { this.expectedCostInCents = el; }} className="form-control" type="text" />
+                    <input pattern="[0-9]*" ref={el => { this.expectedCostInCents = el; }} className="form-control" type="number" />
                   </div>
                 </div>
               </div>
@@ -312,7 +312,7 @@ class AddIdeaModal extends Component {
                 <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                   <label className="label">{I18n.t('ideas.modal.profit')}</label>
                   <div className="input-container">
-                    <input ref={el => { this.expectedProfitInCents = el; }} className="form-control" type="text" />
+                    <input pattern="[0-9]*" ref={el => { this.expectedProfitInCents = el; }} className="form-control" type="number" />
                   </div>
                 </div>
               </div>

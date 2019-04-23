@@ -19,10 +19,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const translationsObject = {
 		  en: {
-		    application: {
-		      title: 'Awesome app with i18n!',
-		      hello: 'Hello, %{name}!'
-		    },
 		    date: {
 		      long: 'MMMM Do, YYYY'
 		    },
@@ -45,6 +41,8 @@ const translationsObject = {
 		    		results: 'Results',
 		    		applyFilters: 'Apply Filters',
 		    		clearFilters: 'Clear Filters',
+		    		min: 'Min',
+		    		max: 'Max',
 		    	},
 		    	item: {
 		    		votes: 'Votes',
