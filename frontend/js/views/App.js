@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import Navbar from '../components/Navbar'
 
 import { setRoleFromJwt } from '../actions/auth'
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root')
 
 class App extends Component {
   

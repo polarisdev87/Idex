@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import TagsInput from 'react-tagsinput';
 import Toggle from 'react-bootstrap-toggle';
 import { connect } from 'react-redux';
-import { toggleFilterFullPartial } from '../../actions/ideas';
+import {I18n} from 'react-redux-i18n';
+import { getPopularTags } from '../../actions/admin';
 
 type Props = {
   placeholder: '',
@@ -12,22 +13,20 @@ type Props = {
 };
 
 class TagSection extends Component {
-  props: Props;
+
+  componentDidMount() {
+    this.getPopularTagsHandle();
+  }
+
+    props: Props;
 
   state = {
     inputValue: '',
-    optionalMarks: [],
   }
 
   handleChange(tags) {
     this.props.handleTagsChange(tags);
   }
-
-  onToggle(x) {
-    const { dispatch } = this.props;
-    dispatch(toggleFilterFullPartial()); 
-  }
-
 
   defaultRenderLayout(tagComponents, inputComponent, toggleActive) {
     return (
@@ -35,7 +34,7 @@ class TagSection extends Component {
         { tagComponents.length > 1 &&
           <span>
             <Toggle
-              onClick={(x) => { this.onToggle(x); }}
+              onClick={(x) => { this.props.onPartialFullToggle(); }}
               on="Partial"
               off="Full"
               size="sm"
@@ -57,30 +56,38 @@ class TagSection extends Component {
     }
   }
 
+  getPopularTagsHandle() {
+    const {
+      dispatch,
+    } = this.props;
+
+    dispatch(getPopularTags());
+  }
+
 
   render() {
-    const { placeholder, type, className } = this.props;
+    const {
+      placeholder, type, className, partialFullSwitch, popularTags, tags,
+    } = this.props;
+    console.log("TagSection.js");
+    console.log(popularTags);
     const { inputValue } = this.state;
     return (
       <div className="form-group tag-container">
-        <div className="select-label label-base-base">Select Tags:</div>
+        <div className="select-label label-base-base">{I18n.t('tags.selectTags')}</div>
         <div className="input-container display-tag-container">
-          <TagsInput value={this.props.tags} onChange={::this.handleChange} renderLayout={(a, b) => this.defaultRenderLayout(a, b, this.props.partialFullSwitch)} />
+          <TagsInput
+            value={tags}
+            onChange={::this.handleChange}
+            renderLayout={(a, b) => this.defaultRenderLayout(a, b, partialFullSwitch)}
+          />
         </div>
         <div className="top-tag-container">
-          <div className="label-sm-base trending-label">Top Trending Tags:</div>
+          <div className="label-sm-base trending-label">{I18n.t('tags.topTrendingTags')}</div>
           <div className="top-tag-wrapper">
-            <div className="top-tag">
-              asia
-            </div>
-            <div className="top-tag">
-              cloud
-            </div>
-            <div className="top-tag">
-              web
-            </div>
+            {popularTags && popularTags.map((topTag) => <div className="top-tag" key={topTag.name}>{topTag.name}</div>)}
           </div>
-          {this.props.tags.length > 0 &&
+          {tags.length > 0 &&
           <div />
 
           }
@@ -89,7 +96,7 @@ class TagSection extends Component {
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
               <input
-                type="text" className="form-control search-input" placeholder="Search tags ....." ref={el => { this.searchTag = el; }}
+                type="text" className="form-control search-input" placeholder={I18n.t('tags.searchTags')} ref={el => { this.searchTag = el; }}
                 onKeyPress={this.handleKeyPress}
               />
             </div>
@@ -101,9 +108,10 @@ class TagSection extends Component {
 }
 
 
-function mapStateToProps(state) {
+function mapStateToProps(state,ownProps) {
   return {
-      partialFullSwitch: state.ideas.partialFullSwitch,      
+    popularTags: state.admin.popularTags,
+    ...ownProps,
   };
 }
 
@@ -113,5 +121,4 @@ function mapDispatchToProps(dispatch) {
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(TagSection);
-
 

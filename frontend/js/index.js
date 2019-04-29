@@ -9,11 +9,126 @@ import 'jquery';
 import 'bootstrap/dist/js/bootstrap';
 import 'bootstrap-checkbox/dist/js/bootstrap-checkbox';
 import 'babel-polyfill';
+import { loadTranslations, setLocale, syncTranslationWithStore } from 'react-redux-i18n';
+
 
 // Load SCSS
 import '../scss/app.scss';
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+const translationsObject = {
+		  en: {
+		    date: {
+		      long: 'MMMM Do, YYYY'
+		    },
+		    ideas: {
+		    	filter: {
+		    		stage: {
+		    			title: 'Stage',
+		    			anyStage: 'Any Stage (default)',
+		    			incubation: 'Incubation',
+		    			Prototyping: 'Prototyping',
+		    			Launched: 'Launched',
+		    			Cancelled: 'Cancelled',
+		    		},
+		    		type: {
+		    		    pastHour: 'Past Hour',
+		    		    pastDay: 'Past Day',
+		    		    pastWeek: 'Past Week',
+		    		    pastMonth: 'Past Month',
+		    		    pastYear: 'Past Year',
+		    		    allTime: 'All Time',		    			
+		    		},
+		    		title: 'Filter',
+		    		addIdea: 'Add Idea',
+		    		sortBy: 'Sort by:',
+		    		timeToMarket: 'Time to Market (Months):',
+		    		votes: 'Votes:',
+		    		profit: 'Profit:',
+		    		results: 'Results',
+		    		applyFilters: 'Apply Filters',
+		    		clearFilters: 'Clear Filters',
+		    		min: 'Min',
+		    		max: 'Max',
+		    	},
+		    	item: {
+		    		votes: 'Votes',
+		    		comments: 'Comments',
+		    		cost: 'Cost:',
+		    		time: 'Time:',
+		    		months: 'Months',
+		    		addComment: 'Add Comment',
+		    		addAComment: 'Add a Comment .....',
+		    		
+		    	},
+		    	modal: {
+		    		viewCommentAttachments: 'View Comment Attachments',
+		    		editCommentAttachments: 'Edit Comment Attachments',
+		    		title: 'Idea Title',
+		    		description: 'Idea Description',
+		    		comment: 'Comment',
+		    		close: 'Close',
+		    		editIdea: 'Edit Idea',
+		    		expectedTimeToMarket: 'Expected Time To Market (Months)',
+		    		cost: 'Expected Cost to Implement',
+		    		profit: 'Expected Profit',
+		    		tags: 'Tags' ,
+		    		clickTags: '(Click on tag to set as main)',
+		    		dropArea: 'Drop files here or click to upload',
+		    		finishEdit: 'Edit Idea',
+		    		addIdea: 'Add Idea',
+		    		finishAdd: 'Add Idea',
+		    		finishView: 'Close Idea',
+		    		viewIdea: 'View Idea',
+		    	}
+		    },
+		    auth: {
+		    	logout: 'Logout',
+		    	title: 'Log in to your IDEX Account',
+		    	note: 'Your account is your portal to all things!',
+		    	login: 'Login',
+		    	register: 'Register',
+		    	forgot: 'Forgot Password?',
+		    	loginButton: 'Login',
+		    	firstName: 'First Name',
+		    	lastName: 'Last Name',
+		    	email: 'Email',
+		    	confirmEmail: 'Confirm Email',
+		    	userName: 'User Name',
+		    	password: 'Password',
+		    	confirmPassword: 'Confirm Password',
+		    	registerButton: 'Register',
+		    	sendConfirmation: 'Send Confirmation',
+		    	error: {
+		    		notValidEmail: 'Not a Valid email.\n',
+		    		notValidLink: 'Not a Valid link.\n',
+		    		notValidPassword: 'Not a Valid Password.\n',
+		    		passwordsDontMatch: 'Passwords don\'t match.\n',
+		    	}
+		    },
+		    tags: {
+		    	selectTags: 'Select Tags:',
+		    	topTrendingTags: 'Top Trending Tags:',
+		    	searchTags: 'Search tags .....',
+		    },
+		    admin: {
+		    	title: 'Ideas Statistics',
+		    	filterIdeas: 'Filter Ideas',
+		    	submissionDate: 'Submission Date:',
+		    	votes: 'Vote Range (circles size):',
+		    	profit: 'Profit Range (y-axis):',
+		    	implementation: 'Implementation Months (x-axis):',
+		    	to: 'To',
+		    	maximum:'Maximum',
+		    	minimum:'Minimum',
+		    	
+		    }
+		  }
+}
+
+
+
 
 // Creating store
 let store = null;
@@ -40,6 +155,11 @@ if (isProduction) {
     enhancer
   );
 }
+
+syncTranslationWithStore(store)
+store.dispatch(loadTranslations(translationsObject));
+store.dispatch(setLocale('en'));
+
 
 ReactDOM.render(
   <Provider store={store}>

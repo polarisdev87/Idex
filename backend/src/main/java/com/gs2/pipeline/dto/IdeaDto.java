@@ -1,17 +1,23 @@
 package com.gs2.pipeline.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Comment;
+import com.gs2.pipeline.domain.File;
 import com.gs2.pipeline.domain.Idea;
+import com.gs2.pipeline.domain.IdeaFile;
 import com.gs2.pipeline.domain.Tag;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+@JsonIgnoreProperties(value = { "anonymousMode" })
 public class IdeaDto {
 
     private static final String SUBMITTED_BY_FORMAT = "%s <%s %s>";
@@ -27,17 +33,34 @@ public class IdeaDto {
     private Long actualCostInCents;
     private Long expectedTtm;
     private Long actualTtm;
-    private Set<String> tags;
+    private List<String> tags;
+    /**
+     * main tag
+     */
+    private String category;
     private Long votes;
     private Long expectedProfitInCents;
     private Long actualProfitInCents;
     private List<CommentDto> comments;
+    /**
+     * Information about the files has been uploaded during the session and those associated to the idea
+     */
+    List<AttachmentDto> files;
+    UserSessionIdeaDto userSession;
+    
 
     public IdeaDto() {
 
     }
 
-    public IdeaDto(Idea idea) {
+    /**
+     * 
+     * @param idea
+     * @param liked
+     * @param editable
+     * 		idea can be edited
+     */
+    public IdeaDto(Idea idea, Boolean liked, Boolean editable) {
         this.id = idea.getId();
         this.title = idea.getTitle();
         this.description = idea.getDescription();
@@ -51,12 +74,30 @@ public class IdeaDto {
         this.actualTtm = idea.getActualTtm();
         this.expectedProfitInCents = idea.getExpectedProfitInCents();
         this.actualProfitInCents = idea.getActualProfitInCents();
-        this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+        // TODO: Make sure an order to make the first tag the first in the list. 
+        this.tags = idea.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        this.category = idea.getCategory()!=null ? idea.getCategory().getName():null;
         this.votes = idea.getVotes();
         this.comments = getCommentDtos(idea.getComments(), idea);
+        this.userSession = new UserSessionIdeaDto(idea);
+        this.getUserSession().setLiked(liked);
+        this.getUserSession().setEditable(editable);
+        this.files= new ArrayList<AttachmentDto>(AttachmentDto.toDto(idea.getIdeaFiles()));
     }
+    
+    
 
-    public Idea toDao(Set<Tag> tags, Account submittedBy) {
+    /**
+     * 
+     * @param tags
+     * @param files
+     * 	Files are already persisted . Each one has its id
+     * @param category
+     * @param submittedBy
+     * @param mapAttachments
+     * @return
+     */
+    public Idea toDao(Set<Tag> tags, Set<File> files, Tag category, Account submittedBy, Map<Long,AttachmentDto> mapAttachments) {
         Idea idea = new Idea();
 
         idea.setId(id);
@@ -67,13 +108,21 @@ public class IdeaDto {
         idea.setSubmittedBy(submittedBy);
         idea.setUpdatedAt(updatedAt);
         idea.setExpectedCostInCents(expectedCostInCents);
-        idea.setActualCostInCents(actualCostInCents);
+//        idea.setActualCostInCents(actualCostInCents);
         idea.setExpectedTtm(expectedTtm);
-        idea.setActualTtm(actualTtm);
+//        idea.setActualTtm(actualTtm);
         idea.setTags(tags);
+        for (File file:files) {
+        	IdeaFile ideaFile = new IdeaFile();
+        	ideaFile.setIdea(idea);
+        	ideaFile.setFile(file);
+        	ideaFile.setType(mapAttachments.get(file.getId()).getPreview().getType());
+        	idea.addIdeaFile(ideaFile);
+        }
+        idea.setCategory(category);
         idea.setVotes(votes);
         idea.setExpectedProfitInCents(expectedProfitInCents);
-        idea.setActualProfitInCents(actualProfitInCents);
+//        idea.setActualProfitInCents(actualProfitInCents);
 
         return idea;
     }
@@ -105,10 +154,18 @@ public class IdeaDto {
     private List<CommentDto> getCommentDtos(Set<Comment> comments, Idea idea) {
 
         List<CommentDto> commentDtos = new ArrayList<>(comments.size());
-
         for(Comment comment: comments) {
         	Account authorComment=comment.getSubmittedBy();
-            commentDtos.add(new CommentDto(comment, idea.getId(), getSubmittedBy(authorComment), new AccountDto(authorComment,true), comment.getSubmittedAt().getTime()));
+            commentDtos.add(
+            		new CommentDto(
+            				comment, 
+            				idea.getId(), 
+            				getSubmittedBy(authorComment), 
+            				new AccountDto(authorComment,true,comment.getAnonymous()), 
+            				comment.getSubmittedAt().getTime(),
+            				!comment.getAnonymous() && idea.getSubmittedBy().equals(authorComment),
+            				new ArrayList<AttachmentDto>(AttachmentDto.toDtoFromComment(comment.getCommentFiles()))
+            				));
         }
         
         Collections.sort(commentDtos);
@@ -116,6 +173,13 @@ public class IdeaDto {
         return commentDtos;
     }
 
+    
+    
+	public void updateComments(Idea idea) {
+		this.comments = getCommentDtos(idea.getComments(), idea);
+	}
+    
+    
     public String getTitle() {
         return title;
     }
@@ -196,11 +260,11 @@ public class IdeaDto {
         this.actualTtm = actualTtm;
     }
 
-    public Set<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(Set<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 
@@ -243,4 +307,32 @@ public class IdeaDto {
     public void setComments(List<CommentDto> comments) {
         this.comments = comments;
     }
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public List<AttachmentDto> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<AttachmentDto> files) {
+		this.files = files;
+	}
+
+	public UserSessionIdeaDto getUserSession() {
+		return userSession;
+	}
+
+	public void setUserSession(UserSessionIdeaDto userSession) {
+		this.userSession = userSession;
+	}
+
+	
+    
+    
 }

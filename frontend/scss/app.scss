@@ -10,6 +10,7 @@
 @import "component/modals";
 @import "component/info-box";
 @import "component/tag-section";
+@import "component/files";
 
 @import "view/ideas";
 @import "view/auth";
@@ -97,4 +98,9 @@
   font-size: $font-size-base;
   color: $color-base;
   outline: none !important;
+}
+
+.main-tag {
+    border-color: #2196F3!important;
+    border: 6px solid #ccc!important;
 }

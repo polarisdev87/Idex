@@ -3,11 +3,18 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import PropTypes from 'prop-types';
+
 import Header from './Header';
 import IdeaItem from './IdeaItem';
 import AddIdeaModal from '../../components/modals/AddIdeaModal';
-import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError } from '../../actions/ideas';
-
+import CommentAttachmentsModal from '../../components/modals/CommentAttachmentsModal';
+import { updateCommentAttachments } from '../../actions/comments';
+import { areAllAttachmentsUploaded } from '../../actions/files';
+import { fetchIdeas, addIdea, handleAddIdeaError, updateIdea, handleUpdateIdeaError,
+	openIdeaModal, closeIdeaModal,
+	openAttachmentModal, closeAttachmentModal} from '../../actions/ideas';
+	
+	
 
 type Props = {
   dispatch: any;
@@ -18,21 +25,21 @@ class Ideas extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     this.modalIdea = null;
+    this.ideaBeingCommented = null;
+    this.modalComment = null;
+    this.commentText = null;
     this.type = 'view'; // 'add', 'edit'
+    this.commentAttachmentType = "edit"
     dispatch(fetchIdeas());
   }
 
   props: Props;
 
-  state = {
-    isOpen: false,
-  }
-
   handleIdea(idea, type) {
     const { dispatch } = this.props;
     const errorMessage = this.validateIdea(idea);
     console.log('error message ===> ', errorMessage);
-    if (type === 'eidt') {
+    if (type === 'edit') {
       if (errorMessage.length > 0) {
         dispatch(handleUpdateIdeaError(errorMessage));
         alert(errorMessage);
@@ -48,13 +55,35 @@ class Ideas extends Component {
       dispatch(addIdea(idea));
     }
     this.modalIdea = null;
-    this.setState({ isOpen: false });
+    this.ideaBeingCommented = null;
+    this.modalComment = null;
+    dispatch(closeIdeaModal());
   }
 
+  
+  handleCommentAttachments(idea, type, comment) {
+	    console.log('handleCommentAttachments(...)');
+	    console.log(idea);
+	    const { dispatch } = this.props;
+	    if (type === 'edit') {
+	      dispatch(updateCommentAttachments(idea.id));
+	    }
+	    this.modalComment = null;
+	    dispatch(closeAttachmentModal());
+	  }
+  
+  
   closeModal() {
-    this.setState({ isOpen: false });
+	    const { dispatch } = this.props;
+	    dispatch(closeIdeaModal());
   }
 
+  closeAttachmentsModal() {
+	    const { dispatch } = this.props;
+	    dispatch(closeAttachmentModal());
+  }
+
+  
   validateIdea(idea) {
     let errorMessage = '';
     if (idea.title.length === 0) {
@@ -77,7 +106,7 @@ class Ideas extends Component {
       errorMessage += 'ExpectedTtm must be required.\n';
     }
 
-    if (idea.expectedProfit.length === 0) {
+    if (idea.expectedProfitInCents.length === 0) {
       errorMessage += 'ExpectedProfitInCents must be required.\n';
     }
 
@@ -85,6 +114,10 @@ class Ideas extends Component {
       errorMessage += 'Tags must be required.\n';
     }
 
+    // TODO: make a retry behavior when finishing editing or adding ideas
+    if (!areAllAttachmentsUploaded(idea)) {
+      errorMessage += 'Wait until all attachments are uploaded.\n';
+    }
     if (errorMessage.endsWith('\n')) {
       errorMessage = errorMessage.substr(0, errorMessage.length - 1);
     }
@@ -92,47 +125,73 @@ class Ideas extends Component {
     return errorMessage;
   }
 
+
+  addCommentAttachmentsButtonClickHandler(idea, commentText) {
+	  const {dispatch} = this.props;
+	    this.ideaBeingCommented = idea;
+	    this.modalComment = null;
+	    this.commentText = commentText;
+	    this.commentAttachmentType = 'edit';
+	    dispatch(openAttachmentModal());
+  }
+  
+  viewCommentAttachmentsButtonClickHandler(idea,comment) {
+	  const {dispatch} = this.props;
+	    this.ideaBeingCommented = idea;
+	    this.modalComment = comment;
+	    this.commentAttachmentType = 'view';
+	    dispatch(openAttachmentModal());
+  }
+  
   addIdeaButtonClickHandler() {
-    this.setState({ isOpen: true });
+	const {dispatch} = this.props;
     this.modalIdea = null;
+    this.ideaBeingCommented = null;
     this.type = 'add';
+    dispatch(openIdeaModal());
   }
 
   editIdeaButtonClickHandler(idea) {
-    this.setState({
-      isOpen: true,
-    });
+	  const {dispatch} = this.props;
     this.modalIdea = idea;
+    this.ideaBeingCommented = null;
     this.type = 'edit';
-    console.log('edit type ===>', this.type);
+    dispatch(openIdeaModal());
   }
 
   viewIdeaClickHandler(idea) {
-    this.setState({
-      isOpen: true,
-    });
+	  const {dispatch} = this.props;
     this.modalIdea = idea;
+    this.ideaBeingCommented = null;
     this.type = 'view';
-    console.log('view type ===>', this.type);
+    dispatch(openIdeaModal());
   }
 
   render() {
-    console.log('index.js');
-    console.log(this.props);
-    const { isOpen } = this.state;
-    console.log('this.modalIdea ===>', this.modalIdea);
+    const { isOpen, isOpenAttachments } = this.props;
     const {
       ideas: {
-         ideasArr, ideasErrorMessage, isFetchingIdeas, commentsErrorMessage, isFetchingComments, partialFullSwitch,
-        } } = this.props;
+        ideasErrorMessage,
+        isFetchingIdeas,
+        commentsErrorMessage,
+        isFetchingComments,
+        partialFullSwitch,
+      },
+      ideasArr,
+    } = this.props;
     const numIdeas = typeof ideasArr !== 'undefined' ? ideasArr.length : 0;
     const renderIdeaItems = (!isFetchingIdeas && ideasArr !== undefined && ideasArr.length !== 0) ?
       ideasArr.map(item => (
         <IdeaItem
-          key={item.id.toString()}
+          key={item.id}
           idea={item}
+          liked={item.userSession.liked}
+          votes= {item.votes}
+          editable= {item.userSession.editable}
           edit={() => this.editIdeaButtonClickHandler(item)}
           view={() => this.viewIdeaClickHandler(item)}
+          addCommentAttachments={(commentText) => this.addCommentAttachmentsButtonClickHandler(item, commentText)}
+          viewCommentAttachments={(comment) => this.viewCommentAttachmentsButtonClickHandler(item,comment)}
         />
       )) :
       null;
@@ -140,6 +199,7 @@ class Ideas extends Component {
     return (
       <div className="container">
         <div className="ideas-container">
+        
           <Header
             addIdeaButtonClick={() => this.addIdeaButtonClickHandler()}
             fetchIdeas={(
@@ -150,8 +210,8 @@ class Ideas extends Component {
               filter, stages, submittedAtMsMin, submittedAtMsMax,
               votesMin, votesMax, profitMin, profitMax, implementationTimeMsMin,
               implementationTimeMsMax, tags, partialFullSwitch,
-))}
-            numIdeas= {numIdeas}
+            ))}
+            numIdeas={numIdeas}
           />
           {renderIdeaItems}
         </div>
@@ -159,6 +219,15 @@ class Ideas extends Component {
           isOpen={isOpen} idea={this.modalIdea} type={this.type}
           handleIdea={(idea, type) => this.handleIdea(idea, type)}
           close={() => this.closeModal()}
+        />
+        <CommentAttachmentsModal
+          isOpen={isOpenAttachments} 
+          idea={this.ideaBeingCommented} 
+          comment = {this.modalComment}
+          commentText = {this.commentText}
+          type={this.commentAttachmentType}
+          handleCommentAttachments={(idea, type) => this.handleCommentAttachments(idea, type)}
+          close={() => this.closeAttachmentsModal()}
         />
       </div>
     );
@@ -168,7 +237,10 @@ class Ideas extends Component {
 function mapStateToProps(state) {
   return {
     ideas: state.ideas,
-    filters: state.filters,
+    ideasArr: state.ideas.ideasArr,
+    ideaToAdd: state.ideas.ideaToAdd,
+    isOpen: state.ideas.isOpen,
+    isOpenAttachments: state.ideas.isOpenAttachments,
   };
 }
 

@@ -1,5 +1,6 @@
 package com.gs2.pipeline.service.impl;
 
+import com.gs2.pipeline.dao.MailDao;
 import com.gs2.pipeline.domain.Account;
 import com.gs2.pipeline.domain.Authority;
 import com.gs2.pipeline.domain.AuthorityName;
@@ -56,10 +57,14 @@ public class AccountServiceImplTests {
     @Mock
     private Account mockAccount;
 
+    @Mock
+    private MailDao mailDao;
+    
+    
     @Before
     public void setup() {
 
-        this.accountService = new AccountServiceImpl(passwordEncoder, accountRepository, authorityRepository);
+        this.accountService = new AccountServiceImpl(passwordEncoder, accountRepository, authorityRepository, mailDao);
         this.encryptedPassword = RandomStringUtils.randomAlphanumeric(20);
 
         Long id = Math.abs(Long.parseLong(RandomStringUtils.randomNumeric(5)));

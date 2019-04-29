@@ -6,12 +6,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "idea")
 public class Idea {
 
+	
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idea_seq")
@@ -69,6 +71,25 @@ public class Idea {
             joinColumns = {@JoinColumn(name = "idea_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id", referencedColumnName = "id")})
     private Set<Tag> tags;
+    
+    @OneToMany(mappedBy = "primaryKey.idea")    
+    private Set<IdeaFile> ideaFiles = new HashSet<IdeaFile>();
+    
+    public Set<IdeaFile> getIdeaFiles() {
+        return ideaFiles;
+    }    
+    
+    public void setIdeaFiles(Set<IdeaFile> ideaFiles) {
+		this.ideaFiles = ideaFiles;
+	}
+
+    public void addIdeaFile(IdeaFile ideaFile) {
+    	this.ideaFiles.add(ideaFile);
+    }
+
+	@ManyToOne
+    @JoinColumn(name = "category")
+    private Tag category;
 
     @Column(name = "votes")
     private Long votes;
@@ -172,8 +193,8 @@ public class Idea {
         this.tags = tags;
     }
 
-    public IdeaDto toDto() {
-        return new IdeaDto(this);
+    public IdeaDto toDto(Boolean liked, Account requester) {
+        return new IdeaDto(this,liked,this.isEditable(requester));
     }
 
     public void setVotes(Long votes) {
@@ -207,4 +228,35 @@ public class Idea {
     public void setComments(Set<Comment> comments) {
         this.comments = comments;
     }
+
+	public Tag getCategory() {
+		return category;
+	}
+
+	public void setCategory(Tag category) {
+		this.category = category;
+	}
+	
+	
+	
+
+	/**
+	 * requester is allowed to edit Idea
+	 * 
+	 * @param requester
+	 * @return
+	 */
+	public Boolean isEditable(Account requester) {
+		Boolean returnValue = false;
+		if (requester!=null) {
+			returnValue = requester.equals(this.getSubmittedBy());
+			if (!returnValue) {
+				returnValue=requester.hasAuthority(AuthorityName.ROLE_ADMIN);
+			}
+		}
+		return returnValue;
+	}
+    
+    
+    
 }

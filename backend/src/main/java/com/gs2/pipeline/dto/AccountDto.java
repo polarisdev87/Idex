@@ -14,6 +14,10 @@ public class AccountDto {
     private String email;
     private Boolean enabled;
     private Set<Authority> authorities;
+    /**
+     * calculated: When it is anonymous should show anonymous
+     */
+    private String displayName;
 
     public AccountDto() {
     }
@@ -24,20 +28,26 @@ public class AccountDto {
      * @param onlySummary
      *     a type of dto to be returned avoiding to violate privacy of user
      */
-    public AccountDto(Account account,boolean onlySummary) {
-        this.username = account.getUsername();
-        this.firstName = account.getFirstName();
-        this.lastName = account.getLastName();
-       	if (!onlySummary) {
-            this.id = account.getId();
-            this.email = account.getEmail();
-            this.enabled = account.getEnabled();
-            this.authorities = account.getAuthorities();
-    	} 
+    public AccountDto(Account account,boolean onlySummary, boolean anonymous) {
+		if (anonymous) {
+    		this.displayName = "Anonymous"; 
+    	} else {
+   	        this.displayName =  account.getFirstName()+" "+ account.getLastName().substring(0,1)+".";
+   	    	if (!onlySummary) {
+   	            this.displayName =  account.getFirstName()+" "+ account.getLastName().substring(0,1)+".";
+   	            this.username = account.getUsername();
+   	            this.firstName = account.getFirstName();
+   	            this.lastName = account.getLastName();
+   	            this.id = account.getId();
+   	            this.email = account.getEmail();
+   	            this.enabled = account.getEnabled();
+   	            this.authorities = account.getAuthorities();
+   	    	} 
+    	}
     }
 
     public AccountDto(Account account) {
-    	this(account,false);
+    	this(account,false,false);
     }
 
     public Long getId() {
@@ -95,8 +105,18 @@ public class AccountDto {
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
     }
+    
+    
 
-    @Override
+    public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	@Override
     public boolean equals(Object o) {
 
         if (this == o) return true;
@@ -125,4 +145,6 @@ public class AccountDto {
         result = 31 * result + (authorities != null ? authorities.hashCode() : 0);
         return result;
     }
+    
+    
 }

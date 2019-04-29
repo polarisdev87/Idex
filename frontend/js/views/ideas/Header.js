@@ -4,10 +4,19 @@ import { findDOMNode } from 'react-dom';
 import $ from 'jquery';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import {I18n} from 'react-redux-i18n';
+
+
 import TagSection from '../../components/tags/TagSection';
 import VotesFilterSection from '../../components/filters/VotesFilterSection';
 import ProfitFilterSection from '../../components/filters/ProfitFilterSection';
 import TimeToMarketFilterSection from '../../components/filters/TimeToMarketFilterSection';
+import { toggleFilterFullPartial, 
+	changeVotes, 
+	changeImplementationTTM, 
+	changeProfit, 
+	setDefaultFilter} from '../../actions/ideas';
+
 
 const moment = require('moment');
 
@@ -19,16 +28,20 @@ class Header extends Component {
   props: Props;
 
   topTypeFilters = {
-    pastHour: 'Past Hour',
-    pastDay: 'Past Day',
-    pastWeek: 'Past Week',
-    pastMonth: 'Past Month',
-    pastYear: 'Past Year',
-    allTime: 'All Time',
+    pastHour: I18n.t('ideas.filter.type.pastHour'),
+    pastDay: I18n.t('ideas.filter.type.pastDay'),
+    pastWeek: I18n.t('ideas.filter.type.pastWeek'),
+    pastMonth: I18n.t('ideas.filter.type.pastMonth'),
+    pastYear: I18n.t('ideas.filter.type.pastYear'),
+    allTime: I18n.t('ideas.filter.type.allTime'),
   };
 
   constructor(props) {
     super(props);
+    
+    
+    const {dispatch} = props;
+    dispatch(setDefaultFilter());
 
     this.state = this.getDefaultState();
 
@@ -41,6 +54,8 @@ class Header extends Component {
   }
 
   getDefaultState() {
+    const {dispatch} = this.props;
+    dispatch(setDefaultFilter());
     return {
       filterText: `Top - ${this.topTypeFilters.pastDay} (Default)`,
       stagesSelected: {
@@ -51,14 +66,6 @@ class Header extends Component {
         cancelled: false,
       },
       tags: [],
-      optionalMarks: [],
-      votesMin: 0,
-      votesMax: 999999,
-      profitMin: 0,
-      profitMax: 999999,
-      implementationTimeMin: 0,
-      implementationTimeMax: 999999,
-      toggleActive: true,
     };
   }
 
@@ -93,67 +100,69 @@ class Header extends Component {
   }
 
 
-
   addTag(value) {
     const newTags = this.state.tags;
-    const newOptionalMarks = this.state.optionalMarks;
 
     newTags.push(value);
     this.setState({
       tags: newTags,
-      optionalMarks: newOptionalMarks,
     });
   }
 
 
-
-  changeVotesMin(value) {
-    const votesMax = value > this.state.votesMax ? value : this.state.votesMax;
-    this.setState({ votesMin: value, votesMax });
+  handleChangeVotesMin(value) {
+	  const {dispatch, votesMax} = this.props;
+	  dispatch(changeVotes(value,votesMax)); 
   }
 
-  changeVotesMax(value) {
-    const votesMin = value < this.state.votesMin ? value : this.state.votesMin;
-    this.setState({ votesMax: value, votesMin });
-  }
-
-
-  changeProfitMin(value) {
-    const profitMax = value > this.state.profitMax ? value : this.state.profitMax;
-    this.setState({ profitMin: value, profitMax });
-  }
-
-  changeProfitMax(value) {
-    const profitMin = value < this.state.profitMin ? value : this.state.profitMin;
-    this.setState({ profitMax: value, profitMin });
+  handleChangeVotesMax(value) {
+	  const {dispatch, votesMin} = this.props;
+	  console.log("handleChangeVotesMax");
+	  console.log(votesMin);
+	  console.log(value);
+	  dispatch(changeVotes(votesMin, value)); 
   }
 
 
-  changeImplementationTimeMin(value) {
-    const implementationTimeMax = value > this.state.implementationTimeMax ? value : this.state.implementationTimeMax;
-    this.setState({ implementationTimeMin: value, implementationTimeMax });
+  handleChangeProfitMin(value) {
+	  const {dispatch, profitMax} = this.props;
+	  dispatch(changeProfit(value,profitMax)); 
   }
 
-  changeImplementationTimeMax(value) {
-    const implementationTimeMin = value < this.state.implementationTimeMin ? value : this.state.implementationTimeMin;
-    this.setState({ implementationTimeMax: value, implementationTimeMin });
+  handleChangeProfitMax(value) {
+	  const {dispatch, profitMin} = this.props;
+	  dispatch(changeProfit(profitMin, value)); 
+  }
+
+
+  handleChangeImplementationTTMMin(value) {
+	  const {dispatch, implementationTTMMax} = this.props;
+	  dispatch(changeImplementationTTM(value,implementationTTMMax)); 
+  }
+
+
+  
+  handleChangeImplementationTTMMax(value) {
+	  const {dispatch, implementationTTMMin} = this.props;
+	  dispatch(changeImplementationTTM(implementationTTMMin, value)); 
   }
 
 
   applyFilters() {
-    console.log('this', this);
     const {
       filterText,
       stagesSelected,
-      implementationTimeMin,
-      implementationTimeMax,
-      votesMin,
-      votesMax,
-      profitMin,
-      profitMax,
       tags,
-      optionalMarks, 
-} = this.state;
+    } = this.state;
+    
+    const {
+    	votesMin,
+    	votesMax,
+    	profitMin,
+    	profitMax,
+    	implementationTTMMin,
+    	implementationTTMMax,
+    } = this.props;
 
     const stages = [];
 
@@ -174,32 +183,39 @@ class Header extends Component {
     const submittedAtMsMax = null;
     if (filterText.startsWith('Top')) {
       submittedAtMsMin = this.getMomentFromLabel(filterText);
+      mainFilter = 'Top';
     } else {
       mainFilter = 'Newest';
     }
-    this.props.fetchIdeas(mainFilter, stages, submittedAtMsMin, submittedAtMsMax, votesMin, votesMax, profitMin, profitMax, implementationTimeMin, implementationTimeMax, tags);
+    this.props.fetchIdeas(
+      mainFilter,
+      stages,
+      submittedAtMsMin,
+      submittedAtMsMax,
+      votesMin,
+      votesMax,
+      profitMin,
+      profitMax,
+      implementationTTMMin,
+      implementationTTMMax,
+      tags
+    );
   }
 
   clearFilters() {
-    this.setState(this.getDefaultState());
+	    const {dispatch} = this.props;
+	    this.setState(this.getDefaultState());	    
+	    dispatch(setDefaultFilter());
   }
 
   setFilterText(filterText) {
     if (filterText !== 'Newest') {
       this.setState({
         filterText: `Top - ${filterText}`,
-        stagesSelected: this.state.stagesSelected,
       });
     } else {
       this.setState({ filterText });
     }
-  }
-
-
-  setFilterImplementedText(filterText) {
-    this.setState({
-      filterImplementedText: `${filterText}`,
-    });
   }
 
 
@@ -213,14 +229,26 @@ class Header extends Component {
 
     this.setState({
       stagesSelected,
-      filterText: this.state.filterText,
     });
   }
 
 
+  onPartialFullToggle() {
+    const { dispatch } = this.props;
+    dispatch(toggleFilterFullPartial());
+  }
+
+
   render() {
-    const { addIdeaButtonClick } = this.props;
+    const { addIdeaButtonClick, partialFullSwitch, implementationTTMMin, implementationTTMMax, votesMin, votesMax, profitMin, profitMax } = this.props;
     const { stagesSelected, implementedFilterSelected } = this.state;
+    console.log("Header.render()");
+    console.log(this.props);
+    console.log(this.state);
+    console.log("votesMin");
+    console.log(votesMin);
+    console.log("votesMax");
+    console.log(votesMax);
 
 
     return (
@@ -230,10 +258,10 @@ class Header extends Component {
         <div className="nav-container">
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-              <button type="button" className="btn btn-link" data-toggle="collapse" href="#collapse-container-body">Filter</button>
+              <button type="button" className="btn btn-link" data-toggle="collapse" href="#collapse-container-body">{I18n.t('ideas.filter.title')}</button>
             </div>
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-              <button type="button" className="btn btn-link btn-right" onClick={() => addIdeaButtonClick()}>Add Idea</button>
+              <button type="button" className="btn btn-link btn-right" onClick={() => addIdeaButtonClick()}>{I18n.t('ideas.filter.addIdea')}</button>
             </div>
           </div>
         </div>
@@ -242,9 +270,11 @@ class Header extends Component {
           <div className="collapse-container">
             <div className="tag-section">
               <TagSection
+                partialFullSwitch= {partialFullSwitch}
                 tags={this.state.tags}
                 handleTagsChange={(tags) => this.handleTagsChange(tags)}
                 addTag={(tag) => this.addTag(tag)}
+                onPartialFullToggle= {() => this.onPartialFullToggle()}
               />
             </div>
 
@@ -253,42 +283,42 @@ class Header extends Component {
             <div className="row">
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
-                  Stage
+                 {I18n.t('ideas.filter.stage.title')}
                 </div>
                 <div className="">
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any} onChange={() => this.checkStageBox('any')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Any Stage (default)
+                      {I18n.t('ideas.filter.stage.anyStage')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.incubation} onChange={() => this.checkStageBox('incubation')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Incubation
+                      {I18n.t('ideas.filter.stage.incubation')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.prototyping} onChange={() => this.checkStageBox('prototyping')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Prototyping
+                      {I18n.t('ideas.filter.stage.Prototyping')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.launched} onChange={() => this.checkStageBox('launched')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Launched
+                      {I18n.t('ideas.filter.stage.Launched')}
                     </label>
                   </div>
                   <div className="checkbox label-xs-base">
                     <label>
                       <input type="checkbox" value="" checked={stagesSelected.any || stagesSelected.cancelled} onChange={() => this.checkStageBox('cancelled')} />
                       <span className="cr"><i className="cr-icon glyphicon glyphicon-ok" /></span>
-                      Cancelled
+                      {I18n.t('ideas.filter.stage.Cancelled')}
                     </label>
                   </div>
                 </div>
@@ -297,7 +327,7 @@ class Header extends Component {
               {/* Sort by section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <div className="label-base-base">
-                  Sort by:
+                {I18n.t('ideas.filter.sortBy')}
                 </div>
                 <div className="dropdown-container">
                   <ul className="nav site-nav">
@@ -327,10 +357,10 @@ class Header extends Component {
               {/* Expected Time To Market */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <TimeToMarketFilterSection
-                  min={this.state.implementationTimeMin}
-                  max={this.state.implementationTimeMax}
-                  changeMin={(value) => this.changeImplementationTimeMin(value)}
-                  changeMax={(value) => this.changeImplementationTimeMax(value)}
+                  min={implementationTTMMin}
+                  max={implementationTTMMax}
+                  changeMin={(value) => this.handleChangeImplementationTTMMin(value)}
+                  changeMax={(value) => this.handleChangeImplementationTTMMax(value)}
                 />
               </div>
 
@@ -338,20 +368,20 @@ class Header extends Component {
               {/* Votes Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <VotesFilterSection
-                  min={this.state.votesMin}
-                  max={this.state.votesMax}
-                  changeMin={(value) => this.changeVotesMin(value)}
-                  changeMax={(value) => this.changeVotesMax(value)}
+                  min={votesMin}
+                  max={votesMax}
+                  changeMin={(value) => this.handleChangeVotesMin(value)}
+                  changeMax={(value) => this.handleChangeVotesMax(value)}
                 />
               </div>
 
               {/* Profit Section */}
               <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <ProfitFilterSection
-                  min={this.state.profitMin}
-                  max={this.state.profitMax}
-                  changeMin={(value) => this.changeProfitMin(value)}
-                  changeMax={(value) => this.changeProfitMax(value)}
+                  min={profitMin}
+                  max={profitMax}
+                  changeMin={(value) => this.handleChangeProfitMin(value)}
+                  changeMax={(value) => this.handleChangeProfitMax(value)}
                 />
               </div>
             </div>
@@ -360,10 +390,10 @@ class Header extends Component {
             {/* Base Section */}
             <div className="result-container">
               <div className="label-base-base">
-                <span>{ this.props.numIdeas } Results</span>
+                <span>{ this.props.numIdeas } {I18n.t('ideas.filter.results')}</span>
               </div>
-              <button type="button" className="btn btn-link label-base-base" onClick={this.applyFilters.bind(this)} >Apply Filters</button>
-              <button type="button" className="btn btn-link label-base-base" onClick={this.clearFilters.bind(this)} >Clear Filters</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={this.applyFilters.bind(this)} >{I18n.t('ideas.filter.applyFilters')}</button>
+              <button type="button" className="btn btn-link label-base-base" onClick={this.clearFilters.bind(this)} >{I18n.t('ideas.filter.clearFilters')}</button>
             </div>
           </div>
         </div>
@@ -373,7 +403,17 @@ class Header extends Component {
 }
 
 function mapStateToProps(state) {
+	console.log("Header.mapStateToProps");
+	console.log(state);
   return {
+    partialFullSwitch: state.ideas.partialFullSwitch,
+    votesMin: state.ideas.filter.votesMin,
+    votesMax: state.ideas.filter.votesMax,
+    profitMin: state.ideas.filter.profitMin,
+    profitMax: state.ideas.filter.profitMax,
+    implementationTTMMin: state.ideas.filter.implementationTTMMin,
+    implementationTTMMax: state.ideas.filter.implementationTTMMax,
+    
   };
 }
 

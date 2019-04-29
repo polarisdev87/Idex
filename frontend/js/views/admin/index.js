@@ -3,113 +3,109 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
-
-import InfoBox from '../../components/InfoBox';
-import TagSection from '../../components/tags/TagSection';
 import { Bubble } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import {I18n} from 'react-redux-i18n';
+
 
 import 'react-datepicker/dist/react-datepicker.css';
 
-const defaultConfig = {
-  label: '',
-  fill: true,
-  lineTension: 0.1,
-  backgroundColor: 'rgba(0, 0, 0 ,0)',
-  borderColor: 'rgba(0, 0, 0 ,0)',
-  borderCapStyle: 'butt',
-  borderDash: [],
-  borderDashOffset: 0.0,
-  borderJoinStyle: 'miter',
-  pointBorderColor: 'rgba(0, 0, 0 ,0)',
-  pointBackgroundColor: '#fff',
-  pointBorderWidth: 1,
-  pointHoverRadius: 5,
-  pointHoverBackgroundColor: 'rgba(0, 0, 0 ,0)',
-  pointHoverBorderColor: 'rgba(220,220,220,1)',
-  pointHoverBorderWidth: 2,
-  pointRadius: 1,
-  pointHitRadius: 10,
-  data: [],
-};
+import InfoBox from '../../components/InfoBox';
+import TagSection from '../../components/tags/TagSection';
 
-const deafultOption = {
-  legend: { display: false },
-  scales: {
-    yAxes: [{
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 20
-      }
-    }],
-    xAxes: [{
-      ticks: {
-        min: 0,
-        max: 100,
-        stepSize: 20
-      }
-    }],
-  }
-};
+
+
+import {
+  fetchIdeasForBubbleGraph,
+  setStartDate,
+  setEndDate,
+  toggleFilterFullPartialAdmin,
+  setMinVotesRange,
+  setMaxVotesRange,
+  setMinProfitRange,
+  setMaxProfitRange,
+  setMinImplementationRange,
+  setMaxImplementationRange,
+  setGraphIdeasToShow,
+  setGraphCurrentIdea,
+  closeGraphModal,
+  openGraphModal,
+  setGraphTags,
+} from '../../actions/admin';
+import AddIdeaModal from '../../components/modals/AddIdeaModal';
+
 
 class Admin extends Component {
+  constructor(props) {
+    super(props);
+    this.displayIdea = this.displayIdea.bind(this);
+    this.showTooltipLabel = this.showTooltipLabel.bind(this);
+    this.prepareIdeasToShow = this.prepareIdeasToShow.bind(this);
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
+  }
+
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
+    this.type = 'view'; // 'add', 'edit' not being used
+    this.applyFilters();
+  }
+
+    props: props;
 
   state = {
-    startDate: moment(),
-    startDateOfaxis: moment(),
-    bubbleData: {
-      labels: '',
-      datasets: [
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 10, y: 20, r: 15 },
-            ],
-            backgroundColor: this.getColor(0),
-            borderColor: this.getColor(0),
-            pointBorderColor: this.getColor(0),
-          },          
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 55, y: 70, r: 30 },
-            ],
-            backgroundColor: this.getColor(1),
-            borderColor: this.getColor(1),
-            pointBorderColor: this.getColor(1),
-          }
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 30, y: 50, r: 60 },
-            ],
-            backgroundColor: this.getColor(2),
-            borderColor: this.getColor(2),
-            pointBorderColor: this.getColor(2),
-          }
-        },
-        {
-          ...defaultConfig,
-          ...{
-            data: [
-              { x: 20, y: 80, r: 40 },
-            ],
-            backgroundColor: this.getColor(3),
-            borderColor: this.getColor(3),
-            pointBorderColor: this.getColor(3),
-          }
-        },
-      ],
-    },
-    tags:[]
+    tags: [],
   };
+
+
+  handleNextIdea(idea) {
+	  console.log("nextIdea");
+	  const {dispatch} = this.props;
+	  this.modalIdeaIndex ++;
+	  if (this.modalIdeaIndex >= this.ideasToShow.length) {
+		  this.modalIdeaIndex = 0;
+	  }
+	  dispatch(setGraphCurrentIdea(this.ideasToShow[this.modalIdeaIndex]));
+  }
+
+  handlePreviousIdea() {
+	  const {dispatch} = this.props;
+	  console.log("previousIdea");
+	  this.modalIdeaIndex --;
+	  if (this.modalIdeaIndex < 0 ) {
+		  this.modalIdeaIndex = this.ideasToShow.length-1;
+	  }
+	  dispatch(setGraphCurrentIdea(this.ideasToShow[this.modalIdeaIndex]));
+  }
+
+  
+  handleIdea(idea) {
+    this.modalIdeaIndex = -1;
+    this.ideasToShow = [];
+    const {dispatch} = this.props;
+	dispatch(closeGraphModal());
+    
+  }
+
+  closeModal() {
+	  const {dispatch} = this.props;
+	  dispatch(closeGraphModal());
+  }
+
+
+  viewIdeaClickHandler(idea, ideasToShow) {
+	 const {dispatch} = this.props;
+	 dispatch(setGraphCurrentIdea(idea));
+     this.modalIdeaIndex = 0;
+     this.ideasToShow = ideasToShow;
+     this.type = 'view';
+     console.log('view type ===>', this.type);
+     dispatch(openGraphModal());
+  }
 
 
   /* Make changes when tags elements change
@@ -120,100 +116,371 @@ class Admin extends Component {
 
 
   addTag(value) {
-      const newTags = this.state.tags;
-      newTags.push(value);
-      this.setState({
-        tags: newTags,
-      });
+    const newTags = this.state.tags;
+    newTags.push(value);
+    this.setState({
+      tags: newTags,
+    });
   }
 
 
-
+  
   handleChange(date) {
-    this.setState({
-      startDate: date,
-    });
+    const { dispatch } = this.props;
+    dispatch(setStartDate(date));
   }
 
   handleChangeOfaxis(date) {
-    this.setState({
-      startDateOfaxis: date,
-    });
+    const { dispatch } = this.props;
+    dispatch(setEndDate(date));
   }
 
-  getColor(index) {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      if (i < 2) {
-        color += letters[((i * index) + 5) % 16];
-      } else if (i < 4) {
-        color += letters[((i * index) + 7) % 16];
-      } else {
-        color += letters[((i * index) + 9) % 16];
-      }
+
+  applyFilters() {
+    const {
+      partialFullSwitch,
+      submittedAtMsMin,
+      submittedAtMsMax,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
+      dispatch,
+    } = this.props;
+
+    const {
+      tags,
+    } = this.state;
+
+    dispatch(fetchIdeasForBubbleGraph(
+      submittedAtMsMin,
+      submittedAtMsMax,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
+      tags,
+      partialFullSwitch
+    ));
+  }
+
+
+  calculateIncrement(minValue, maxValue, intervals) {
+    const toConvert = (maxValue - minValue) / intervals;
+
+
+    const selectedPower = Math.round(Math.log10(toConvert));
+    const standarized = toConvert / (10 ** selectedPower);
+    let result = 0;
+    if (standarized <= 0.1) {
+      result = 0.1;
+    } else if (standarized <= 0.2) {
+      result = 0.2;
+    } else if (standarized <= 0.5) {
+      result = 0.5;
+    } else if (standarized <= 1) {
+      result = 1;
+    } else if (standarized <= 2) {
+      result = 2;
+    } else if (standarized <= 5) {
+      result = 5;
+    } else {
+      result = 10;
     }
-    return color;
+    const increment = result * Math.pow(10, selectedPower);
+
+    // make min and max value be multiple of increment
+
+
+    let max = maxValue;
+    if (max % increment) {
+      max = (Math.floor(max / increment) + 1) * increment;
+    }
+
+    let min = minValue;
+    if (min % increment) {
+      min = (Math.floor(min / increment)) * increment;
+    }
+
+    return {
+      max,
+      min,
+      increment,
+    };
+  }
+
+
+  calculateMagnitude(range) {
+    let maxLimit = range.max;
+    const minLimit = range.min;
+
+    if (maxLimit == 0) {
+      return {
+        min: 0,
+        max: 100,
+      };
+    }
+    if (maxLimit == minLimit) {
+      maxLimit++;
+    }
+    const selectedPower = Math.floor(Math.log10(maxLimit - minLimit) - 1);
+
+    let baseMax = Math.floor(maxLimit / Math.pow(10, selectedPower)) + 1; // move base to 2 digits numbers
+    let baseMin = Math.floor(minLimit / Math.pow(10, selectedPower)) - 1; // move base to 2 digits numbers
+
+    baseMin *= Math.pow(10, selectedPower); // restore original magnitude
+    baseMax *= Math.pow(10, selectedPower); // restore original magnitude
+
+    const result  = this.calculateIncrement(baseMin, baseMax, 5);
+    return result;
+  }
+
+  prepareOptions(ideasSummary) {
+	  console.log("prepareOptions");
+	  console.log(ideasSummary);
+    let widthRange = {min:0, max:100, increment:20};
+    let heightRange = {min:0, max:100, increment:20};
+    if (ideasSummary.items.length > 0) {
+      let maxX = 0;
+      let maxY = 0;
+      let minX = 99999999;
+      let minY = 99999999;
+      // find min and max of x and y
+      for (const bubbleIdeaIndex in ideasSummary.items) {
+        const bubbleIdea = ideasSummary.items[bubbleIdeaIndex];
+        maxX = Math.max(maxX, bubbleIdea.expectedTtm);
+        maxY = Math.max(maxY, bubbleIdea.expectedProfitInCents);
+        minX = Math.min(minX, bubbleIdea.expectedTtm);
+        minY = Math.min(minY, bubbleIdea.expectedProfitInCents);
+      }
+      const maxWidth = maxX - minX;
+      const maxHeight = maxY - minY;
+
+      minX -= maxWidth / 4;
+      maxX += maxWidth / 4;
+
+      minY -= maxHeight / 4;
+      maxY += maxHeight / 4;
+
+
+      // define magnitude (1, 2, 5, 10, 100, 1000, ...)
+      widthRange = this.calculateMagnitude({ min: minX, max: maxX });
+
+      heightRange = this.calculateMagnitude({ min: minY, max: maxY });
+
+    }
+
+    const defaultOption = {
+      legend: { display: false },
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: heightRange.min,
+            max: heightRange.max,
+            stepSize: heightRange.increment,
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            min: widthRange.min,
+            max: widthRange.max,
+            stepSize: widthRange.increment,
+          },
+        }],
+      },
+      tooltips: {
+    	  mode: 'point',
+    	  callbacks: {
+    		  label: this.showTooltipLabel, 
+    		  afterFooter: this.prepareIdeasToShow,
+    	  }
+      },
+      onClick: this.displayIdea,
+      onElementsClick: this.trackIdeas,
+    };
+    return defaultOption;
+  }
+
+
+  showTooltipLabel(tooltipItem,data) {
+    const { ideasSummary } = this.props;
+      const datasetLabel = data.datasets[tooltipItem.datasetIndex].label;
+      const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+	  return datasetLabel+" "+idea.title+" (Votes:"+idea.votes+")";
+  }
+
+
+  setIdeasToShow(idea) {
+	    const { dispatch } = this.props;
+	    dispatch(setGraphCurrentIdea(idea));
+  }
+	  
+  
+  setIdeasToShow(ideas) {
+    const { dispatch } = this.props;
+    dispatch(setGraphIdeasToShow(ideas));
+  }
+  
+  prepareIdeasToShow(tooltipItems,data) {
+	  
+      const { ideasSummary } = this.props;
+      let selectedIdeas = [];
+      for (let tooltipIndex in tooltipItems) {
+    	  const datasetIndex= tooltipItems[tooltipIndex].datasetIndex;
+          const datasetLabel = data.datasets[datasetIndex].label;
+          const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+          selectedIdeas.push(idea);
+      }
+	  this.setIdeasToShow(selectedIdeas)
+	  return "";
+	  }
+  
+  
+  onPartialFullToggle() {
+    const { dispatch } = this.props;
+    dispatch(toggleFilterFullPartialAdmin());
+  }
+
+
+  setMinVotesRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinVotesRange(event.target.value));
+  }
+
+  setMaxVotesRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxVotesRange(event.target.value));
+  }
+
+  setMinProfitRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinProfitRange(event.target.value));
+  }
+
+  setMaxProfitRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxProfitRange(event.target.value));
+  }
+
+  setMinImplementationRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMinImplementationRange(event.target.value));
+  }
+
+  setMaxImplementationRange(event) {
+    const { dispatch } = this.props;
+    dispatch(setMaxImplementationRange(event.target.value));
+  }
+
+  /**
+   * on this method this is chart
+   */
+
+  
+  hoverIdeas(elem) {
+	  console.log("hoverIdeas");
+	  console.log(elem);
+	  
+  }
+  
+  trackIdeas(elems,other) {
+	  console.log("trackIdeas");
+	  console.log(elems);
+  }
+  
+  displayIdea(clickEvent, chartElement) {
+    const chartGraph = chartElement[0]._chart;
+    const { ideasSummary,ideasToShow } = this.props;
+    const element = chartGraph.getElementAtEvent(clickEvent);
+    const elements = chartGraph.getElementsAtEvent(clickEvent);
+    const dataset = chartGraph.getDatasetAtEvent(clickEvent);
+    // If you click on at least 1 element ...
+    if (element.length > 0) {
+      // Logs it
+      // Here we get the data linked to the clicked bubble ...
+      const datasetLabel = chartGraph.config.data.datasets[element[0]._datasetIndex].label;
+      // data gives you `x`, `y` and `r` values
+      const data = chartGraph.config.data.datasets[element[0]._datasetIndex].data[element[0]._index];
+      const idea = ideasSummary.items.filter(element => element.id == datasetLabel)[0].ideas[0];
+      this.viewIdeaClickHandler(idea, ideasToShow);
+    }
   }
 
   render() {
-    const { bubbleData } = this.state;
-    console.log(bubbleData);
+    const {
+      ideasSummary,
+      bubbleData,
+      partialFullSwitch,
+      startDate,
+      endDate,
+      minVotesRange,
+      maxVotesRange,
+      minProfitRange,
+      maxProfitRange,
+      minImplementationRange,
+      maxImplementationRange,
+      ideasToShow,
+      currentIdea,
+      isOpen,
+    } = this.props;
+    
+    const defaultOption = this.prepareOptions(ideasSummary);
+
     return (
       <div className="container admin-container">
-        <div className="info-container">
-          <div className="row">
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={0} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={1} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={2} ideaNum={121} />
-            </div>
-            <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-              <InfoBox index={3} ideaNum={121} />
-            </div>
-          </div>
-        </div>
+        {/* header - boxes */ }
         <div className="main-container shadow">
+          {/* header - filter */ }
           <div className="header">
             <div className="row">
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <div className="label-base-base">Ideas Statistics</div>
+                <div className="label-base-base">{I18n.t('admin.title')}</div>
               </div>
               <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6 filter-btn">
-                <button type="button" className="btn btn-link base-btn">Filter Ideas</button>
+                <button
+                  type="button" className="btn btn-link base-btn" onClick={(x) =>
+                    this.applyFilters()}
+                >{I18n.t('admin.filterIdeas')}
+                </button>
               </div>
             </div>
           </div>
           <div className="body">
             <div className="section1">
               <div className="tag-section">
-                <TagSection tags={this.state.tags} handleTagsChange={(tags) => this.handleTagsChange(tags)} addTag={(tag) => this.addTag(tag)} />
+                <TagSection
+                  partialFullSwitch={partialFullSwitch}
+                  tags={this.state.tags}
+                  handleTagsChange={(tags) => this.handleTagsChange(tags)}
+                  addTag={(tag) => this.addTag(tag)}
+                  onPartialFullToggle={() => this.onPartialFullToggle()}
+                />
               </div>
               <div className="date-section">
                 <div className="row row-item">
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Submission Date:
+                      {I18n.t('admin.submissionDate')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <DatePicker
-                          selected={this.state.startDate}
+                          selected={startDate}
                           onChange={(date) => this.handleChange(date)}
                         />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      	{I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
                         <DatePicker
-                          selected={this.state.startDateOfaxis}
+                          selected={endDate}
                           onChange={(date) => this.handleChangeOfaxis(date)}
                         />
                       </div>
@@ -223,18 +490,24 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Vote Range (circles size):
+                      {I18n.t('admin.votes')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minVotesRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minVotesRange}
+                          onChange={(x) => { this.setMinVotesRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxVotesRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxVotesRange}
+                          onChange={(x) => { this.setMaxVotesRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -244,18 +517,24 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Profit Range (y-axis):
+                      {I18n.t('admin.profit')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minProfitRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minProfitRange}
+                          onChange={(x) => { this.setMinProfitRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxProfitRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxProfitRange}
+                          onChange={(x) => { this.setMaxProfitRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -263,18 +542,24 @@ class Admin extends Component {
                   <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <div className="row">
                       <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12 label-base-base title-label">
-                        Implementation Months (x-axis):
+                      {I18n.t('admin.implementation')}
                       </div>
                     </div>
                     <div className="row row-content">
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.minImplRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.minimum')} value={minImplementationRange}
+                          onChange={(x) => { this.setMinImplementationRange(x); }}
+                        />
                       </div>
                       <div className="col-xs-2 col-sm-2 col-md-2 col-lg-2 label-base-base to-col-item">
-                        To
+                      {I18n.t('admin.to')}
                       </div>
                       <div className="col-xs-5 col-sm-5 col-md-5 col-lg-5 col-item">
-                        <input type="text" className="form-control data-section-input" placeholder="Minimum" ref={el => { this.maxImplRange = el; }} />
+                        <input pattern="[0-9]*" 
+                          type="number" className="form-control data-section-input" placeholder={I18n.t('admin.maximum')} value={maxImplementationRange}
+                          onChange={(x) => { this.setMaxImplementationRange(x); }}
+                        />
                       </div>
                     </div>
                   </div>
@@ -284,7 +569,19 @@ class Admin extends Component {
             <div className="section2">
               <Bubble
                 data={bubbleData}
-                options={deafultOption}
+                options={defaultOption}
+              />
+            </div>
+            <div>
+              <AddIdeaModal
+                isOpen={isOpen} 
+                idea={currentIdea}
+                ideas = {ideasToShow}
+                nextIdea = {() => this.handleNextIdea()}
+                previousIdea = {() => this.handlePreviousIdea()}
+                type={this.type}
+                handleIdea={(idea, type) => this.handleIdea(idea, type)}
+                close={() => this.closeModal()}
               />
             </div>
           </div>
@@ -292,11 +589,29 @@ class Admin extends Component {
       </div>
     );
   }
-
 }
 
 function mapStateToProps(state) {
-  return {};
+  const result = {
+		    partialFullSwitch: state.admin.partialFullSwitch,
+		    submittedAtMsMin: state.admin.submittedAtMsMin,
+		    submittedAtMsMax: state.admin.submittedAtMsMax,
+		    minVotesRange: state.admin.minVotesRange,
+		    maxVotesRange: state.admin.maxVotesRange,
+		    minProfitRange: state.admin.minProfitRange,
+		    maxProfitRange: state.admin.maxProfitRange,
+		    minImplementationRange: state.admin.minImplementationRange,
+		    maxImplementationRange: state.admin.maxImplementationRange,
+		    tags: state.admin.tags,
+		    ideasSummary: state.admin.ideasSummary,
+		    bubbleData: state.admin.bubbleData,
+		    startDate: state.admin.startDate,
+		    endDate: state.admin.endDate,
+		    ideasToShow: state.admin.ideasToShow,
+		    currentIdea: state.admin.currentIdea,
+		    isOpen : state.admin.isOpen,
+		  };
+  return result
 }
 
 function mapDispatchToProps(dispatch) {

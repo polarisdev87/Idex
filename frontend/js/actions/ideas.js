@@ -1,6 +1,6 @@
-const queryString = require('query-string');
-
 import { API_BASE_URI, ID_TOKEN_KEY } from '../const';
+
+const queryString = require('query-string');
 
 
 export const GET_IDEAS_REQUEST = 'GET_IDEAS_REQUEST';
@@ -21,9 +21,11 @@ function getIdeasError(message) {
 }
 
 function getIdeasSuccess(ideas) {
+  const newIdeas = ideas.map((idea) => { idea.anonymousMode = false; return idea; });
+
   return {
     type: GET_IDEAS_SUCCESS,
-    ideas,
+    ideas: newIdeas,
   };
 }
 
@@ -32,8 +34,11 @@ function getIdeasSuccess(ideas) {
  * Get the ideas according to the filter
  *
  * @param {} filter
+ *      Value entered on the sortby field (main filter is Newest or Top)
  * @param {*} stages
+ *      Asked stages : Any Stage (default) / Incubation / Prototyping / Launched / Cancelled
  * @param {*} submittedAtMsMin
+ *      Type of top filter Past Hour / Past Day / Past Week / Past Month / Past Year / All time
  * @param {*} submittedAtMsMax
  * @param {*} votesMin
  * @param {*} votesMax
@@ -49,6 +54,7 @@ export function fetchIdeas(
   implementationTimeMsMax, tags, partialFullSwitch,
 ) {
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+
 
   let config = {
     method: 'GET',
@@ -77,10 +83,12 @@ export function fetchIdeas(
     throw 'No token saved!';
   }
 
+  console.log('actions/fetchIdeas');
+  console.log(filter);
   return dispatch => {
     dispatch(getIdeasRequest());
 
-    const url = `${API_BASE_URI}/ideas?` + queryString.stringify(query);
+    const url = `${API_BASE_URI}/ideas?${queryString.stringify(query)}`;
 
     return fetch(url, config)
       .then(response => response.json().then(body => ({ body, response })))
@@ -88,12 +96,12 @@ export function fetchIdeas(
         if (!response.ok) {
           dispatch(getIdeasError(`Failed to get ideas. ${body.error}`));
           return Promise.reject(body.error);
-        } else {
-          console.log("ideas.js.fetchIdeas(...) is ok");
-          console.log(query);
-          console.log(queryString);
-          console.log(body);
         }
+        console.log('ideas.js.fetchIdeas(...) is ok');
+        console.log(query);
+        console.log(queryString);
+        console.log(body);
+
         dispatch(getIdeasSuccess(body));
         return true;
       }).catch(err => {
@@ -120,10 +128,20 @@ function updateIdeaError(message) {
   };
 }
 
-function updateIdeaSuccess(users) {
+function updateIdeaSuccess(updatedIdea, oldIdea, anonymousMode) {
+  console.log('updateIdeaSuccess(...)');
+  console.log("updatedIdea");
+  console.log(updatedIdea);
+  console.log("oldIdea");
+  console.log(oldIdea);
+  console.log(anonymousMode);
+  const newIdea = Object.assign({},oldIdea, updatedIdea, { anonymousMode });
+  console.log("newIdea");
+  console.log(newIdea);
+
   return {
     type: UPDATE_IDEA_SUCCESS,
-    users,
+    idea: newIdea,
   };
 }
 
@@ -134,10 +152,14 @@ export function handleUpdateIdeaError(message) {
 }
 
 export function updateIdea(idea) {
+  console.log('updateIdea(idea) initial');
+  console.log(idea);
   const token = localStorage.getItem(ID_TOKEN_KEY) || null;
   let config = {};
 
   if (token) {
+    console.log('idea to post');
+    console.log(idea);
     config = {
       headers: {
         Authorization: `${token}`,
@@ -149,9 +171,10 @@ export function updateIdea(idea) {
   } else {
     throw 'No token saved!';
   }
-
   return dispatch => {
     dispatch(updateIdeaRequest());
+    console.log('updateIdea(idea)');
+    console.log(idea);
     return fetch(`${API_BASE_URI}/ideas`, config)
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
@@ -159,7 +182,8 @@ export function updateIdea(idea) {
           dispatch(updateIdeaError(`Failed to update idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
         }
-        dispatch(updateIdeaSuccess(body));
+        // TODO: Take anonymousMode from userSession property
+        dispatch(updateIdeaSuccess(body, idea, idea.anonymousMode));
         return true;
       }).catch(err => {
         dispatch(updateIdeaError(`Failed to update user. ${err}`));
@@ -216,12 +240,12 @@ export function deleteIdeas(ideaIds) {
       .then(response => response.json().then(body => ({ body, response })))
       .then(({ body, response }) => {
         if (!response.ok) {
-          dispatch(deleteUsersError(`Failed to delete idea. ${body.error}`));
+          dispatch(deleteIdeasError(`Failed to delete idea. ${body.error}`));
           return Promise.reject('Failed to update idea');
         }
-        dispatch(deleteUsersSuccess(body));
+        dispatch(deleteIdeasSuccess(body));
       }).catch(err => {
-        dispatch(deleteUsersError(`Failed to delete idea. ${err}`));
+        dispatch(deleteIdeasError(`Failed to delete idea. ${err}`));
         console.log('Error: ', err);
       });
   };
@@ -237,7 +261,6 @@ export const ADD_IDEA_SUCCESS = 'ADD_IDEA_SUCCESS';
 export const ADD_IDEA_FAILURE = 'ADD_IDEA_FAILURE';
 
 
-
 function addIdeaRequest() {
   return {
     type: ADD_IDEA_REQUEST,
@@ -251,10 +274,11 @@ function addIdeaError(message) {
   };
 }
 
-function addIdeaSuccess(ideas) {
+function addIdeaSuccess(idea, anonymousMode) {
+  const newIdea = Object.assign({}, idea, { anonymousMode });
   return {
     type: ADD_IDEA_SUCCESS,
-    ideas,
+    idea: newIdea,
   };
 }
 
@@ -290,7 +314,9 @@ export function addIdea(idea) {
           dispatch(addIdeaError(`Failed to add idea. ${body.error}`));
           return Promise.reject('Failed to add idea');
         }
-        dispatch(addIdeaSuccess(body));
+        console.log('addIdea(...) -> body');
+        console.log(body);
+        dispatch(addIdeaSuccess(body, idea.anonymousMode));
         return true;
       }).catch(err => {
         dispatch(addIdeaError(`Failed to add idea. ${err}`));
@@ -309,5 +335,149 @@ export function toggleFilterFullPartial() {
   };
 }
 
+
+export const TOGGLE_VOTE = 'TOGGLE_VOTE';
+
+
+export function toggleVote(ideaId) {
+  const token = localStorage.getItem(ID_TOKEN_KEY) || null;
+  let config = {};
+
+  if (token) {
+    config = {
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ ideaId }),
+    };
+  } else {
+    throw 'No token saved!';
+  }
+
+  return dispatch => {
+    dispatch(toggleVoteRequest());
+    return fetch(`${API_BASE_URI}/ideas/vote`, config)
+      .then(response => response.json().then(body => ({ body, response })))
+      .then(({ body, response }) => {
+        if (!response.ok) {
+          dispatch(toggleVoteError(`Failed to toggle vote. ${body.error}`));
+          return Promise.reject('Failed to toggle vote');
+        }
+        dispatch(toggleVoteSuccess(body));
+        return true;
+      }).catch(err => {
+        dispatch(toggleVoteError(`Failed to toggle vote. ${err}`));
+        console.log('Error: ', err);
+      });
+  };
+}
+
+
+export const TOGGLE_VOTE_REQUEST = 'TOGGLE_VOTE_REQUEST';
+export const TOGGLE_VOTE_SUCCESS = 'TOGGLE_VOTE_SUCCESS';
+export const TOGGLE_VOTE_FAILURE = 'TOGGLE_VOTE_FAILURE';
+
+function toggleVoteRequest() {
+  return {
+    type: TOGGLE_VOTE_REQUEST,
+  };
+}
+
+function toggleVoteError(message) {
+  return {
+    type: TOGGLE_VOTE_FAILURE,
+    message,
+  };
+}
+
+function toggleVoteSuccess(idea) {
+  const newIdea = Object.assign({}, idea, { anonymousMode: false });
+  console.log(newIdea);
+
+  return {
+    type: TOGGLE_VOTE_SUCCESS,
+    idea: newIdea,
+  };
+}
+
+
+export const CHANGE_VOTES = 'CHANGE_VOTES';
+
+export function changeVotes(votesMin, votesMax) {
+	console.log("action.changeVotes(...)");
+	console.log(votesMin);
+	console.log(votesMax);
+	return {
+		    type: CHANGE_VOTES,
+		    votesMin,
+		    votesMax,
+		  };
+}
+
+
+export const CHANGE_PROFIT = 'CHANGE_PROFIT';
+
+export function changeProfit(profitMin, profitMax) {
+	return {
+		    type: CHANGE_PROFIT,
+		    profitMin,
+		    profitMax,
+		  };
+}
+
+
+export const CHANGE_IMPLEMENTATION_TTM = 'CHANGE_IMPLEMENTATION_TTM';
+
+export function changeImplementationTTM(implementationTTMMin, implementationTTMMax) {
+	return {
+		    type: CHANGE_IMPLEMENTATION_TTM,
+		    implementationTTMMin,
+		    implementationTTMMax,
+		  };
+}
+
+
+export const SET_DEFAULT_FILTER = 'SET_DEFAULT_FILTER';
+
+export function setDefaultFilter() {
+	return {
+		    type: SET_DEFAULT_FILTER,
+		  };
+}
+
+export const OPEN_IDEA_MODAL = 'OPEN_IDEA_MODAL';
+
+export function openIdeaModal() {
+	return {
+		    type: OPEN_IDEA_MODAL,
+		  };
+}
+
+export const CLOSE_IDEA_MODAL = 'CLOSE_IDEA_MODAL';
+
+export function closeIdeaModal() {
+	return {
+		    type: CLOSE_IDEA_MODAL,
+		  };
+}
+
+
+export const OPEN_ATTACHMENT_MODAL = 'OPEN_ATTACHMENT_MODAL';
+
+export function openAttachmentModal() {
+	return {
+		    type: OPEN_ATTACHMENT_MODAL,
+		  };
+}
+
+export const CLOSE_ATTACHMENT_MODAL = 'CLOSE_ATTACHMENT_MODAL';
+
+export function closeAttachmentModal() {
+	return {
+		    type: CLOSE_ATTACHMENT_MODAL,
+		  };
+}
 
 
