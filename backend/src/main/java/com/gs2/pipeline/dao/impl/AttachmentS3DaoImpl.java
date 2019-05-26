@@ -8,16 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.gs2.pipeline.dao.AttachmentDao;
 import com.gs2.pipeline.domain.IdeaFile;
 import com.gs2.pipeline.dto.UploadDto;
@@ -35,14 +30,7 @@ public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements Attachmen
     private static String S3_BASE_FOLDER;
     
     private static AmazonS3 s3client;
-    
-/*
-    AmazonS3 s3client = AmazonS3ClientBuilder
-  		  .standard()
-  		  .withCredentials(new AWSStaticCredentialsProvider(credentials))
-  		  .withRegion(REGION)
-  		  .build();   
-  */  
+
     @Value("${pipeline.s3.bucket.name}")
     private void setBucketName(String bucketName) {
     	BUCKET_NAME = bucketName;
@@ -52,20 +40,8 @@ public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements Attachmen
     private void setBaseFolder(String baseFolder) {
     	S3_BASE_FOLDER = baseFolder;
     }
-    
-    AmazonS3 amazonS3 = AmazonS3ClientBuilder
-    		  .standard()
-    		  .withCredentials(new DefaultAWSCredentialsProviderChain())
-    		  .withRegion(Regions.DEFAULT_REGION)
-    		  .build();    
 
-    
-    TransferManager tm = TransferManagerBuilder.standard()
-    		  .withS3Client(amazonS3)
-    		  .withMultipartUploadThreshold((long) (5 * 1024 * 1025))
-    		  .build();
-    
-    
+
     private String getFullDestination(Long fileId, String originalFileName) {
     	String baseFolder = S3_BASE_FOLDER;
     	if (baseFolder==null) {
@@ -74,9 +50,8 @@ public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements Attachmen
     		baseFolder += "/";
     	}
         String fileFolder = Long.toString(fileId);
-        String keyName = baseFolder+fileFolder+"/"+originalFileName;
-        return keyName;
-        
+
+    	return baseFolder+fileFolder+"/"+originalFileName;
     }
     
     private AmazonS3 getS3Client() {
@@ -125,9 +100,8 @@ public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements Attachmen
         String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
-        InputStream inputStream = s3object.getObjectContent();        
-        
-        return inputStream;
+
+        return s3object.getObjectContent();
 	}
     
 	@Override
@@ -135,9 +109,8 @@ public class AttachmentS3DaoImpl extends AbstractAwsDaoImpl implements Attachmen
         String keyName = getFullDestination(fileId,originalFileName);
         
         S3Object s3object = getS3Client().getObject(BUCKET_NAME, keyName);
-        InputStream inputStream = s3object.getObjectContent();        
-        
-        return inputStream;
+
+        return s3object.getObjectContent();
 	}
     
 }
