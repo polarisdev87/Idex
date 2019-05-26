@@ -60,6 +60,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/ideas/**").permitAll() //TODO Remove this line. Must be authed to view ideas
+                .mvcMatchers("/swagger-ui.html/**",
+                        "/configuration/**",
+                        "/swagger-resources/**",
+                        "/v2/api-docs",
+                        "/webjars/**").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity
